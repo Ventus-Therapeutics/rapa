@@ -13,7 +13,7 @@ Minimum of Python 3.6 is required.
 1. Download or git clone using: https://github.com/Ventus-Therapeutics/rapa.git
 2. Run:  ``` pip install -r requirement.txt ``` or ``` conda install --yes --file requirement.txt ``` to install the dependencies.
 
-The requirement.txt file can be found in the git repository. 
+The requirement.txt file can be found in the repository: https://github.com/Ventus-Therapeutics/rapa/blob/v1.0/docs/requirement.txt 
 
 
 ## Usage
