@@ -99,7 +99,7 @@ Test PDB files are available in the `tests` folder for validations.
 
 ---
 # 5. Copyright and license
-Code released under the [MIT License](https://github.com/Ventus-Therapeutics/rapa/blob/main/docs/LICENSE)
+Code released under the [MIT License](https://github.com/Ventus-Therapeutics/rapa/blob/main/LICENSE)
 
 
 MIT License
