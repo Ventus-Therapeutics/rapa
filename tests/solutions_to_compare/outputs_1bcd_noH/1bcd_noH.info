@@ -1,0 +1,23 @@
+PDB ID: 1bcd_noH 
+Models: 1: [<Model id=0>]
+Chains: 1: [<Chain id=A>]
+
+###################################### 
+###################################### 
+
+
+Got unknown ASPs/GLUs: [<Residue ASP het=  resseq=110 icode= >, <Residue ASP het=  resseq=34 icode= >] with atoms [<Atom OD1>, <Atom OD1>].
+ And relevant info: [[<Atom OD1>, 34, <Atom OD1>, 110, 3.7638721], [<Atom OD1>, 110, <Atom OD1>, 34, 3.7638721]]
+
+
+Got unknown atoms [<Atom OD1>, <Atom OD1>].
+ And relevant info:
+ [[<Atom OD1>, 34, <Atom OD1>, 110, 3.7638721], [<Atom OD1>, 110, <Atom OD1>, 34, 3.7638721]]
+###############################################################
+###############################################################
+###############################################################
+
+
+The time taken is :270.3860011519864 second or 4.506433352533107 mins or  0.07510722254221845 hours
+Number of files generated: 2 and files generated:
+['/home/pgera/Scripts/all_rapa_scripts/rapa_for_public_release/rapa_version1.0/tests/outputs_1bcd_noH/pdb_out_1bcd_noH/1bcd_noH_out_0.pdb', '/home/pgera/Scripts/all_rapa_scripts/rapa_for_public_release/rapa_version1.0/tests/outputs_1bcd_noH/pdb_out_1bcd_noH/1bcd_noH_out_1.pdb']

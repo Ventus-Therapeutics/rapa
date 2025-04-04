@@ -1,0 +1,23 @@
+PDB ID: 1xl2_noH 
+Models: 1: [<Model id=0>]
+Chains: 2: [<Chain id=A>, <Chain id=B>]
+
+###################################### 
+###################################### 
+
+
+Got unknown ASPs/GLUs: [<Residue ASP het=  resseq=25 icode= >, <Residue ASP het=  resseq=25 icode= >] with atoms [<Atom OD2>, <Atom OD2>].
+ And relevant info: [[<Atom OD2>, 25, <Atom OD2>, 25, 2.8664], [<Atom OD2>, 25, <Atom OD2>, 25, 2.8664]]
+
+
+Got unknown atoms [<Atom OD2>, <Atom OD2>].
+ And relevant info:
+ [[<Atom OD2>, 25, <Atom OD2>, 25, 2.8664], [<Atom OD2>, 25, <Atom OD2>, 25, 2.8664]]
+###############################################################
+###############################################################
+###############################################################
+
+
+The time taken is :164.3928105410887 second or 2.7398801756848115 mins or  0.04566466959474686 hours
+Number of files generated: 3 and files generated:
+['/home/pgera/Scripts/all_rapa_scripts/rapa_for_public_release/rapa_version1.0/tests/outputs_1xl2_noH/pdb_out_1xl2_noH/1xl2_noH_out_0.pdb', '/home/pgera/Scripts/all_rapa_scripts/rapa_for_public_release/rapa_version1.0/tests/outputs_1xl2_noH/pdb_out_1xl2_noH/1xl2_noH_out_1.pdb', '/home/pgera/Scripts/all_rapa_scripts/rapa_for_public_release/rapa_version1.0/tests/outputs_1xl2_noH/pdb_out_1xl2_noH/1xl2_noH_out_2.pdb']
