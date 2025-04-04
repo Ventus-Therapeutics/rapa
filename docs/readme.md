@@ -10,7 +10,7 @@ Copyright (c) 2025 Ventus Therapeutics U.S., Inc.
 Minimum of Python 3.6 is required.
 
 ## Installation
-1. Download or git clone using: https://github.com/Ventustx/rapa.git
+1. Download or git clone using: https://github.com/Ventus-Therapeutics/rapa.git
 2. Run:  ``` pip install -r requirement.txt ``` or ``` conda install --yes --file requirement.txt ``` to install the dependencies.
 
 The requirement.txt file can be found in the git repository. 
@@ -99,7 +99,7 @@ Test PDB files are available in the `tests` folder for validations.
 
 ---
 # 5. Copyright and license
-Code released under the [MIT License](https://github.com/Ventustx/rapa/blob/main/docs/LICENSE)
+Code released under the [MIT License](https://github.com/Ventus-Therapeutics/rapa/blob/main/docs/LICENSE)
 
 
 MIT License
