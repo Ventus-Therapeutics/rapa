@@ -348,7 +348,6 @@ def compute_atoms_connected_to_sp3_in_prime_reference_frame(sp3, aboveSp3, allCl
     if(debug):
         stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
         fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
         
     #Now we will optimize and pick the  appropriate coordinate
     ##Check if all energy values are 0!!
@@ -357,9 +356,10 @@ def compute_atoms_connected_to_sp3_in_prime_reference_frame(sp3, aboveSp3, allCl
       if(log_file):stp.append_to_log("Taking h-bonding possibility at angle 0, as all energy values=0\n")
 
       if(debug):
-        fd.write("Taking h-bonding possibility at angle 0, as all energy values=0\n")
-        fd.flush()
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+        with open(fDebugName, "a") as fd:
+            fd.write("Taking h-bonding possibility at angle 0, as all energy values=0\n")
+            fd.flush()
+        stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
 
       return aatCoordPrime, S, aatPrimePositionMat
 
@@ -375,11 +375,12 @@ def compute_atoms_connected_to_sp3_in_prime_reference_frame(sp3, aboveSp3, allCl
     aatCoordPrime = aatPrimePositionMat[-1]
     minV = np.amin(S[:,-1]) #minimum energy value
     if(debug):
-        fd.write(f"Min Energy corresponding to :{S[-1]} has coords {aatCoordPrime}\n")
-        fd.write(f"Angle | Energy Sum:\n{S} \n")
-        fd.write(f"Min energy found:{minV} at angle: {S[np.where(S[:,-1]==minV)[0][0]][0]}\n") 
-        fd.flush()
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+        with open(fDebugName, "a") as fd:
+            fd.write(f"Min Energy corresponding to :{S[-1]} has coords {aatCoordPrime}\n")
+            fd.write(f"Angle | Energy Sum:\n{S} \n")
+            fd.write(f"Min energy found:{minV} at angle: {S[np.where(S[:,-1]==minV)[0][0]][0]}\n") 
+            fd.flush()
+            stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
 
     return aatCoordPrime, S, aatPrimePositionMat
 
@@ -486,22 +487,22 @@ def print_close_atom_coords(closeAtoms, codePos="default", log_file=0 ,debug=0):
               -closeAtoms: list of close atoms,
               -codePos: is a string to define where one is in the code
         Output: 
-            -prints to screen the close atom coordinates and where we are in the code
+            -prints in debug file the close atom coordinates
     """
     numCloseAtoms =  np.shape(closeAtoms)[0] 
 
     if(debug):
         stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
         fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
-        fd.write("###############################################################################\n\n")
-        fd.flush()
-
-        for i in range(1,numCloseAtoms):
-            fd.write(f"I am at: {codePos} closeAtoms:{closeAtoms[i]} coord: {closeAtoms[i][0].coord}\n")
+        with open(fDebugName, "a") as fd:
+            fd.write("###############################################################################\n\n")
             fd.flush()
+
+            for i in range(1,numCloseAtoms):
+                fd.write(f"I am at: {codePos} closeAtoms:{closeAtoms[i]} coord: {closeAtoms[i][0].coord}\n")
+                fd.flush()
         
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+        stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
  
 
 def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=0, debug=0):
@@ -526,14 +527,7 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=0, deb
                                  -coordAngEnergy[0][1]: associated angle & energy, np.shape(coordAngEnergy[0][1])= (2,1)
      """    
 
-     if(log_file):
-         fLogName = stp.get_log_file_name()
-         fLog = open(fLogName, "a")
 
-     if(debug):
-        stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
-        fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
         
 
 
@@ -542,9 +536,11 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=0, deb
      aboveSp3Coord = aboveSp3.coord
 
      if(debug):
-        fd.write(f"sp3Coord ORIGINAL: {sp3.coord} and above sp3Coord ORIGINAL: {aboveSp3.coord} \n")
-        fd.flush()
-        fd.close()
+        stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
+        fDebugName = stp.get_debug_file_name()
+        with open(fDebugName, "a") as fd:
+            fd.write(f"sp3 coord original: {sp3.coord} and above sp3 coord original: {aboveSp3.coord} \n")
+            fd.flush()
         print_close_atom_coords(allCloseAtoms, codePos = "before computing initial attached atom coord:",log_file=log_file, debug=debug)
      aat0Coord = compute_initial_position_for_atoms_connected_to_sp3(sp3Coord, allCloseAtoms[1][0].coord, bondLen)
 
@@ -553,10 +549,10 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=0, deb
 #    ##Create the transformation matrix
      transformMatrix = setup_transformation_matrix( xHatPrime, yHatPrime, zHatPrime)
      if(debug):
-        fd = open(fDebugName, "a")
-        fd.write(f"xP:{xHatPrime}, yP:{yHatPrime}, zP:{zHatPrime}\n")
-        fd.write(f"CHECK: \nU*U^T = {np.matmul(transformMatrix, np.transpose(transformMatrix))} = I?\n")
-        fd.flush()
+        with open(fDebugName, "a") as fd:
+            fd.write(f"xP:{xHatPrime}, yP:{yHatPrime}, zP:{zHatPrime}\n")
+            fd.write(f"CHECK: \nU*U^T = {np.matmul(transformMatrix, np.transpose(transformMatrix))} = I?\n")
+            fd.flush()
 
      moveCoords = np.array((sp3Coord, aboveSp3Coord, aat0Coord)) 
      primeCoords = move_coords_to_prime_reference_frame(sp3Coord, transformMatrix, moveCoords)
@@ -574,30 +570,32 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=0, deb
 ##########################In the new frame ####################################################################
      aat0CoordPrimeMod = adjust_first_connected_atom_to_sp3_in_prime_reference_frame(aboveSp3.coord, sp3.coord, aat0CoordPrime)
      if(debug):
-        fd.write(f"SP3 Prime:{primeCoords[0]} \n \
-                Above SP3 Prime:{primeCoords[1]} ")
 
-        fd.write(f"Is the y component of h0_prime: {aat0CoordPrime} = [X' comp, 0, Z' comp]?\n") 
-        fd.write(f"Is the y component of h0_prime_modified for adjusted angle to get 109.5: {aat0CoordPrimeMod} = [X' comp, 0, Z' comp]? \n")
-        fd.flush()
-        V0 = Vector(aboveSp3CoordPrime)
-        V1 = Vector(sp3CoordPrime )
-        V2 = Vector(aat0CoordPrime)
-        V3 = Vector(aat0CoordPrimeMod)
-        fd.write(f"Angle before angular adjustment to reach 109.5:{calc_angle(V0,V1,V2)*180/np.pi} and angle now: {calc_angle(V0,V1,V3)*180/np.pi}\n")
-        fd.flush()
+        with open(fDebugName, "a") as fd:
+            fd.write(f"SP3 Prime:{primeCoords[0]} \n \
+                    Above SP3 Prime:{primeCoords[1]} ")
+
+            fd.write(f"Is the y component of h0_prime: {aat0CoordPrime} = [X' comp, 0, Z' comp]?\n") 
+            fd.write(f"Is the y component of h0_prime_modified for adjusted angle to get 109.5: {aat0CoordPrimeMod} = [X' comp, 0, Z' comp]? \n")
+            fd.flush()
+
+            V0 = Vector(aboveSp3CoordPrime)
+            V1 = Vector(sp3CoordPrime )
+            V2 = Vector(aat0CoordPrime)
+            V3 = Vector(aat0CoordPrimeMod)
+            fd.write(f"Angle before angular adjustment to reach 109.5:{calc_angle(V0,V1,V2)*180/np.pi} and angle now: {calc_angle(V0,V1,V3)*180/np.pi}\n")
+            fd.flush()
 
      aatPrimeDistMin, S, aatPrimeMat = compute_atoms_connected_to_sp3_in_prime_reference_frame(sp3, aboveSp3, allCloseAtoms, aat0CoordPrimeMod, log_file=log_file, debug=debug)
 
 #########################End the new frame of reference####################################################################
      set_coords_in_original_reference_frame(sp3, aboveSp3, allCloseAtoms, sp3Coord, aboveSp3Coord, closeAtomCoords, log_file=log_file, debug=debug)
      if(debug):
-        fd.write(f"back to original coordinates ,sp3Coord: {sp3.coord}, above sp3Coord: {aboveSp3.coord}\n")
-        fd.flush()
-        fd.close()
+        with open(fDebugName, "a") as fd:
+            fd.write(f"back to original coordinates ,sp3Coord: {sp3.coord}, above sp3Coord: {aboveSp3.coord}\n")
+            fd.flush()
         print_close_atom_coords(allCloseAtoms, codePos = "back to original frame of reference", log_file=log_file, debug=debug)
         check_bond_angle_for_all_connected_atoms( sp3, aboveSp3, sp3CoordPrime, aboveSp3CoordPrime, aatPrimeDistMin[0], aatPrimeDistMin[1], aatPrimeDistMin[2])
-        fd = open(fDebugName, "a")
 #################### Get back to original frame of reference ###########################
     
      numRows = np.shape(aatPrimeMat)[0]*np.shape(aatPrimeMat)[1]
@@ -620,12 +618,15 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=0, deb
          for j in range(hMax):
              coord2check  = AAtInOriginal[j]
              if(log_file):
-                 fLog.write(f"Need to look for coord so H does not clash. max hyd={hMax}. Currently at iteration:i:{i} \n")
-                 fLog.flush()
+                 fLogName = stp.get_log_file_name()
+                 with open(fLogName, "a") as fLog:
+                     fLog.write(f"Need to look for coord so H does not clash. max hyd={hMax}. Currently at iteration:i:{i} \n")
+                     fLog.flush()
 
              if(debug):
-                fd.write(f"Need to look for coord so H does not clash. max hyd={hMax}. Currently at iteration:i:{i} \n")
-                fd.flush()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"Need to look for coord so H does not clash. max hyd={hMax}. Currently at iteration:i:{i} \n")
+                    fd.flush()
 
 
              residue = sp3.parent
@@ -645,19 +646,23 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=0, deb
 
              if(potClashAtom):
                 if(log_file):
-                    fLog.write(f"potential clash atom = {potClashAtom} \n")
-                    fLog.flush()
+                    with open(fLogName, "a") as fLog:
+                        fLog.write(f"potential clash atom = {potClashAtom} \n")
+                        fLog.flush()
                 if(debug):
-                    fd.write(f"potential clash atom = {potClashAtom} \n")
-                    fd.flush()
+                    with open(fDebugName, "a") as fd:
+                        fd.write(f"potential clash atom = {potClashAtom} \n")
+                        fd.flush()
 
                 for pcAtom in potClashAtom:
                     if(log_file):
-                        fLog.write(f"orignal atom: pot Hyd, its parent: {sp3.parent}, pcAtom:{pcAtom} and parent: {pcAtom.parent} and distance is: {np.linalg.norm(coord2check-np.float32(pcAtom.coord))} \n")
-                        fLog.flush()
+                        with open(fLogName, "a") as fLog:
+                            fLog.write(f"orignal atom: pot Hyd, its parent: {sp3.parent}, pcAtom:{pcAtom} and parent: {pcAtom.parent} and distance is: {np.linalg.norm(coord2check-np.float32(pcAtom.coord))} \n")
+                            fLog.flush()
                     if(debug):
-                        fd.write(f"orignal atom: pot Hyd, its parent: {sp3.parent}, pcAtom:{pcAtom} and parent: {pcAtom.parent} and distance is: {np.linalg.norm(coord2check-np.float32(pcAtom.coord))} \n")
-                        fd.flush()
+                        with open(fDebugName, "a") as fd:
+                            fd.write(f"orignal atom: pot Hyd, its parent: {sp3.parent}, pcAtom:{pcAtom} and parent: {pcAtom.parent} and distance is: {np.linalg.norm(coord2check-np.float32(pcAtom.coord))} \n")
+                            fd.flush()
                 continue
              else: 
                 if(j != hMax-1):
@@ -674,11 +679,11 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=0, deb
                             aroundSp3 ='Hydrogen/lone pair/lone pair'
                          
                         if(debug):
-                            fd.write(f"\n Coordinates picked for {aroundSp3}: {coordAngEnergy[0][0]},\n at angle:{ coordAngEnergy[0][1][0]} with energy: {coordAngEnergy[0][1][1]} \n")
-                            fd.flush()
-                            stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+                            with open(fDebugName, "a") as fd:
+                                fd.write(f"\n Coordinates picked for {aroundSp3}: {coordAngEnergy[0][0]},\n at angle:{ coordAngEnergy[0][1][0]} with energy: {coordAngEnergy[0][1][1]} \n")
+                                fd.flush()
+                            stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
 
-                    if(log_file):fLog.close()
                     return allAAtInOriginal, allAAt, coordAngEnergy
 
 
@@ -697,19 +702,18 @@ def place_hydrogens_lonepairs_SER_THR(res, lastSerial, log_file=0, debug=0):
     """
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")
-
-        fLog.write(f"\n***********************************************************************************************\n\n")
-        fLog.write(f"Place hydrogen for for {res}, {res.id[1]} of chain: {res.parent} \n")
-        fLog.flush()
+        with open(fLogName, "a") as fLog:
+            fLog.write(f"\n***********************************************************************************************\n\n")
+            fLog.write(f"Place hydrogen for for {res}, {res.id[1]} of chain: {res.parent} \n")
+            fLog.flush()
 
     if(debug):
         stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
         fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
-        fd.write(f"\n***********************************************************************************************\n\n")
-        fd.write(f"Place hydrogen for for {res} of chain: {res.parent} \n")
-        fd.flush()
+        with open(fDebugName, "a") as fd:
+            fd.write(f"\n***********************************************************************************************\n\n")
+            fd.write(f"Place hydrogen for for {res} of chain: {res.parent} \n")
+            fd.flush()
     
     structure = res.parent.parent.parent
 
@@ -724,9 +728,9 @@ def place_hydrogens_lonepairs_SER_THR(res, lastSerial, log_file=0, debug=0):
 
     if(not customList):
         if(log_file):
-            fLog.write(f"NO known close atoms found for {res}, {res.id[1]} and chain: {res.parent}\n")
-            fLog.flush()
-            fLog.close()
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"NO known close atoms found for {res}, {res.id[1]} and chain: {res.parent}\n")
+                fLog.flush()
         updatedLastSerial = lastSerial
         aatCoords = []
         return updatedLastSerial, aatCoords
@@ -737,19 +741,19 @@ def place_hydrogens_lonepairs_SER_THR(res, lastSerial, log_file=0, debug=0):
     
     if(np.shape(allCloseAtoms)[0] == 1):
         if(log_file):
-            fLog.write(f"No close atoms found for {res}, {res.id[1]} of chain: {res.parent}\n")
-            fLog.flush()
-            fLog.close()
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"No close atoms found for {res}, {res.id[1]} of chain: {res.parent}\n")
+                fLog.flush()
 
         if(debug):
-            fd.write(f"No close atoms found for {res}, {res.id[1]} of chain: {res.parent}\n")
-            fd.flush()
+            with open(fDebugName, "a") as fd:
+                fd.write(f"No close atoms found for {res}, {res.id[1]} of chain: {res.parent}\n")
+                fd.flush()
         updatedLastSerial = lastSerial
         aatCoords = []
         return updatedLastSerial, aatCoords
 
-    if(debug):
-        fd.close()
+
     aatInOriginal, aatInOriginalAppended, coordAngEnergy = compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=log_file ,debug=debug)
     aatCoords = aatInOriginal[-1]
 
@@ -761,21 +765,22 @@ def place_hydrogens_lonepairs_SER_THR(res, lastSerial, log_file=0, debug=0):
 
         res.add(Bio.PDB.Atom.Atom(name=names[i], coord=aatCoords[i], bfactor=0., occupancy=1., altloc=' ', fullname=names[i], serial_number=lastSerial+i,element=elements[i]))
         if(log_file):
-            fLog.write(f"Side chain hydrogen placed, for {res} with chain: {res.parent}, added {names}, with s.no now at: {lastSerial+i} !\n")
-            fLog.write(f"\n***********************************************************************************************\n\n")
-            fLog.flush()
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"Side chain hydrogen placed, for {res} with chain: {res.parent}, added {names}, with s.no now at: {lastSerial+i} !\n")
+                fLog.write(f"\n***********************************************************************************************\n\n")
+                fLog.flush()
 
     if(debug):
-        fd = open(fDebugName, "a")
-        fd.write(f"Side chain hydrogen placed, for {res} with chain:{res.parent}, added {len(names)} Hs, with s.no now at: {lastSerial+i} !\n")
-        fd.write(f"\n***********************************************************************************************\n\n")
-        fd.flush()
 
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+        with open(fDebugName, "a") as fd:
+            fd.write(f"Side chain hydrogen placed, for {res} with chain:{res.parent}, added {len(names)} Hs, with s.no now at: {lastSerial+i} !\n")
+            fd.write(f"\n***********************************************************************************************\n\n")
+            fd.flush()
+
+        stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
 
     updatedLastSerial = lastSerial + i
 
-    if(log_file):fLog.close()
     return updatedLastSerial, aatCoords
 
 
@@ -796,18 +801,18 @@ def place_hydrogens_lonepairs_LYS(res, lastSerial, log_file=0, debug=0):
     
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")
-        fLog.write(f"\n***********************************************************************************************\n\n")
-        fLog.write(f"Place hydrogen for for {res} of chain: {res.parent} \n")
-        fLog.flush()
+        with open(fLogName, "a") as fLog:
+            fLog.write(f"\n***********************************************************************************************\n\n")
+            fLog.write(f"Place hydrogen for for {res} of chain: {res.parent} \n")
+            fLog.flush()
   
     if(debug):
         stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
         fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
-        fd.write(f"\n***********************************************************************************************\n\n")
-        fd.write(f"Place hydrogen for for {res} of chain: {res.parent} \n")
-        fd.flush()
+        with open(fDebugName, "a") as fd:
+            fd.write(f"\n***********************************************************************************************\n\n")
+            fd.write(f"Place hydrogen for for {res} of chain: {res.parent} \n")
+            fd.flush()
 
     aboveSp3 = res['CE']
     sp3 = res['NZ']
@@ -816,25 +821,17 @@ def place_hydrogens_lonepairs_LYS(res, lastSerial, log_file=0, debug=0):
     customList = stp.get_known_donor_acceptor_list_for_one_atom(structure,sp3, aaType = 'DONOR_ACCEPTOR')
 
 
-    if(debug):
-        stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
-        fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
-
-        fd.write(f"\n***********************************************************************************************\n\n")
-        fd.write(f"Place hydrogen for for {res} of chain: {res.parent} \n")
-        fd.flush()
 
     if(not customList):
         if(log_file):
-            fLog.write(f"No known close atoms found for {res}, {res.id[1]} of chain: {res.parent}\n")
-            fLog.flush()
-            fLog.close()
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"No known close atoms found for {res}, {res.id[1]} of chain: {res.parent}\n")
+                fLog.flush()
 
         if(debug):
-            fd.write(f"No known close atoms found for {res}, {res.id[1]} of chain: {res.parent}\n")
-            fd.flush()
-            fd.close()
+            with open(fDebugName, "a"):
+                fd.write(f"No known close atoms found for {res}, {res.id[1]} of chain: {res.parent}\n")
+                fd.flush()
 
         hCoords = []
         updatedLastSerial = lastSerial
@@ -845,14 +842,14 @@ def place_hydrogens_lonepairs_LYS(res, lastSerial, log_file=0, debug=0):
 
     if(np.shape(allCloseAtoms)[0] == 1):
         if(log_file):
-            fLog.write(f"NO CLOSE ATOMS FOUND for {res}, {res.id[1]} of chain: {res.parent}\n")
-            fLog.flush()
-            fLog.close()
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"No close atoms found for {res}, {res.id[1]} of chain: {res.parent}\n")
+                fLog.flush()
 
         if(debug):
-            fd.write(f"NO CLOSE ATOMS FOUND for {res}, {res.id[1]} of chain: {res.parent}\n")
-            fd.flush()
-            fd.close()
+            with open(fDebugName, "a") as fd:
+                fd.write(f"No close atoms found for {res}, {res.id[1]} of chain: {res.parent}\n")
+                fd.flush()
         hCoords = []
         updatedLastSerial = lastSerial
         return updatedLastSerial, hCoords   
@@ -868,20 +865,20 @@ def place_hydrogens_lonepairs_LYS(res, lastSerial, log_file=0, debug=0):
         res.add(Bio.PDB.Atom.Atom(name=names[i], coord=hCoords[i], bfactor=0., occupancy=1., altloc=' ', fullname=names[i], serial_number=lastSerial+i,element='H'))
     
     if(log_file):
-        fLog.write(f"Side chain hydrogen placed, for {res} with chain:{res.parent}, added {len(names)} Hs, with s.no now at: {lastSerial+i} !\n")
-        fLog.write(f"\n***********************************************************************************************\n\n")
-        fLog.flush()
+        with open(fLogName, "a") as fLog:
+            fLog.write(f"Side chain hydrogen placed, for {res} with chain:{res.parent}, added {len(names)} Hs, with s.no now at: {lastSerial+i} !\n")
+            fLog.write(f"\n***********************************************************************************************\n\n")
+            fLog.flush()
 
     if(debug):
-        fd.write(f"Side chain hydrogen placed, for {res} with chain:{res.parent}, added {len(names)} Hs, with s.no now at: {lastSerial+i} !\n")
-        fd.write(f"\n***********************************************************************************************\n\n")
-        fd.flush()
+        with open(fDebugName, "a") as fd:
+            fd.write(f"Side chain hydrogen placed, for {res} with chain:{res.parent}, added {len(names)} Hs, with s.no now at: {lastSerial+i} !\n")
+            fd.write(f"\n***********************************************************************************************\n\n")
+            fd.flush()
 
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+        stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
 
     updatedLastSerial = lastSerial+i
    
-    if(log_file):fLog.close()
-    if(debug):fd.close()
     return updatedLastSerial, hCoords
 

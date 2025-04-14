@@ -134,10 +134,9 @@ def append_to_log(MSG):
     
         
     fLogName = get_log_file_name()
-    fLog = open(fLogName, "a")
-    fLog.write(MSG)
-    fLog.flush()
-    fLog.close()
+    with open(fLogName, "a") as fLog:
+        fLog.write(MSG)
+        fLog.flush()
 
 
 def append_to_debug_less_detail(MSG):
@@ -150,11 +149,10 @@ def append_to_debug_less_detail(MSG):
     
        
     fDebugName = get_debug_file_name()
-    fd = open(fDebugName, "a")
-    fd.write(MSG)
-    fd.flush()
+    with open(fDebugName, "a") as fd:
+        fd.write(MSG)
+        fd.flush()
 
-    fd.close()
 
 
 
@@ -167,15 +165,15 @@ def append_to_debug(modName, funcName, MSG):
     
     start_debug_file(modName, funcName)
     fDebugName = get_debug_file_name()
-    fd = open(fDebugName, "a")
 
-    fd.write("\n")
-    fd.write(MSG)
-    fd.write("\n")
-    fd.flush()
+    with open(fDebugName, "a") as fd:
+        fd.write("\n")
+        fd.write(MSG)
+        fd.write("\n")
+        fd.flush()
 
 
-    end_debug_file(modName,funcName, fd)
+    end_debug_file(modName,funcName)
 
 
 
@@ -274,21 +272,19 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP', log_file=0, debug=0):
     if(debug):
         start_debug_file(__name__, sys._getframe().f_code.co_name)
         fDebugName = get_debug_file_name()
-        fd = open(fDebugName, "a")
-        fd.write(f"searching for all Unknown res: {resName}\n")    
-        fd.flush()
-
-
+        with open(fDebugName, "a") as fd:
+            fd.write(f"searching for all Unknown res: {resName}\n")    
+            fd.flush()
 
     if(log_file):
         fLogName = get_log_file_name()
-        fLog = open(fLogName, "a")
+
     #Get all the atoms that needs to be searched for an unknown ASP/GLU residue. Also get a list of all ASPs/GLUs to search
     if(resName == 'ASP'):
-
-        if(log_file==1):
-            fLog.write("\nChecking for unknown ASPs\n")
-            fLog.flush()
+        if(log_file):
+            with open(fLogName, "a") as fLog:
+                fLog.write("\nChecking for unknown ASPs\n")
+                fLog.flush()
 
         searchASP_GLUatoms = get_all_unknown_ASP_OD_atoms(structure)
         allASPs_GLUs = get_all_ASPs(structure)
@@ -297,8 +293,9 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP', log_file=0, debug=0):
 
     else:
         if(log_file):
-            fLog.write("\nChecking for unknown GLUs\n")
-            fLog.flush()
+            with open(fLogName, "a") as fLog:
+                fLog.write("\nChecking for unknown GLUs\n")
+                fLog.flush()
 
         searchASP_GLUatoms = get_all_unknown_GLU_OE_atoms(structure)
         allASPs_GLUs = get_all_GLUs(structure)
@@ -306,12 +303,13 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP', log_file=0, debug=0):
         oxygenName2 = 'OE2'
 
     if(debug):
-        for atom in searchASP_GLUatoms:
-            fd.write(f"search atom: {atom} of {atom.parent} of chain: {atom.parent.parent}\n")
-            fd.flush()
-        for res in allASPs_GLUs:
-            fd.write(f"all ASP/GLU residues include: {res} of chain {res.parent}\n")
-            fd.flush()
+        with open(fDebugName, "a") as fd:
+            for atom in searchASP_GLUatoms:
+                fd.write(f"search atom: {atom} of {atom.parent} of chain: {atom.parent.parent}\n")
+                fd.flush()
+            for res in allASPs_GLUs:
+                fd.write(f"all ASP/GLU residues include: {res} of chain {res.parent}\n")
+                fd.flush()
 
 
     #create a list of atom to populate upon hitting an unknown residue with OD/OE atoms
@@ -335,33 +333,34 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP', log_file=0, debug=0):
                 unknownASP_GLUatom.append(puat)
                 unknownASP_GLUatomInfo.append([currASP_GLU[oxygenName1],currASP_GLU.id[1], puat, puat.parent.id[1], currASP_GLU[oxygenName1]-puat])
             if(debug):
-                fd.write(f"collecting unknownASP_GLU atom info:{unknownASP_GLUatomInfo}")
-                fd.flush()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"collecting unknownASP_GLU atom info:{unknownASP_GLUatomInfo}")
+                    fd.flush()
 
         if(potUnknownAtom2):
             for puat2 in potUnknownAtom2:
                 unknownASP_GLUatom.append(puat2)                
                 unknownASP_GLUatomInfo.append([currASP_GLU[oxygenName2],currASP_GLU.id[1], puat2, puat2.parent.id[1], currASP_GLU[oxygenName2]-puat2])
             if(debug):
-                fd.write(f"collecting unknownASP_GLU atom info:{unknownASP_GLUatomInfo}")
-                fd.flush()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"collecting unknownASP_GLU atom info:{unknownASP_GLUatomInfo}")
+                    fd.flush()
 
         #Add the removed atoms back to the search list
         searchASP_GLUatoms.append(currASP_GLU[oxygenName1])
         searchASP_GLUatoms.append(currASP_GLU[oxygenName2])
-        if(log_file==1):
-            fLog.write(f"potUnknownAtom1: {potUnknownAtom1}, potunknownAtom2: {potUnknownAtom2}\n")
-            fLog.flush()
+        if(log_file):
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"potUnknownAtom1: {potUnknownAtom1}, potunknownAtom2: {potUnknownAtom2}\n")
+                fLog.flush()
 
     if(not(unknownASP_GLUatom)):
         unknownASP_GLUatom = []
         unknownASP_GLUatomInfo = []
 
     if(debug):
-        end_debug_file(__name__,sys._getframe().f_code.co_name, fd)
+        end_debug_file(__name__,sys._getframe().f_code.co_name)
 
-    if(log_file):
-        fLog.close()
 
     return unknownASP_GLUatom,unknownASP_GLUatomInfo
 
@@ -384,14 +383,11 @@ def accomodate_for_ASPs_GLUs(structure, unknownASP_GLU, unknownASP_GLU_atomInfo,
     if(debug):
         start_debug_file( __name__, sys._getframe().f_code.co_name)
         fDebugName = get_debug_file_name()
-        fd = open(fDebugName, "a")
 
-    if(log_file==1):
+    if(log_file):
         fLogName = get_log_file_name()
-        f = open(fLogName, "a")
 
     fInfoName = get_info_file_name()
-    fInfo = open(fInfoName, "a")
 
     unASP_GLU_atomInfoArr = np.array(unknownASP_GLU_atomInfo)
     allUnknownIDs = unASP_GLU_atomInfoArr[:,1]
@@ -403,16 +399,21 @@ def accomodate_for_ASPs_GLUs(structure, unknownASP_GLU, unknownASP_GLU_atomInfo,
     ASP_GLU_res_unique = set(ASP_GLU_res)
 
     if(len(uniqueUnknownIDs) > 2):
-        if(log_file==1):
-            f.write(f"\n WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n {uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
-            f.flush()
-
-        fInfo.write(f"\n WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n {uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
-        fInfo.flush()
+        if(log_file):
+            with open(fLogName, "a") as f:
+                f.write(f"\n WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n {uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
+                f.flush()
+    
+        with open(fInfoName, "a") as fInfo:
+            fInfo.write(f"\n WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n {uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
+            fInfo.flush()
         
         if(debug):
-            fd.write(f"\n WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n {uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
-            fd.flush()
+            start_debug_file( __name__, sys._getframe().f_code.co_name)
+            fDebugName = get_debug_file_name()
+            with open(fDebugName, "a") as fd:
+                fd.write(f"\n WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n {uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
+                fd.flush()
 
         over2ASP_GLUs = 1
     else:
@@ -424,28 +425,29 @@ def accomodate_for_ASPs_GLUs(structure, unknownASP_GLU, unknownASP_GLU_atomInfo,
             structure[modelID][chainID][resID].isKnown = 0
 
     if(log_file):
-        f.write(f"###################################### \n")
-        f.write(f"###################################### \n")
-        f.write(f"\n\nGot unknown ASPs/GLUs: {ASP_GLU_res} with atoms {unknownASP_GLU}.\n And relevant info: {unknownASP_GLU_atomInfo}\n")
+        with open(fLogName, "a") as f:
+            f.write(f"###################################### \n")
+            f.write(f"###################################### \n")
+            f.write(f"\n\nGot unknown ASPs/GLUs: {ASP_GLU_res} with atoms {unknownASP_GLU}.\n And relevant info: {unknownASP_GLU_atomInfo}\n")
 
-        f.write(f"\n\nGot unknown atoms {unknownASP_GLU}.\n And relevant info:\n {unknownASP_GLU_atomInfo}\n")
-        f.flush()
-        f.close()
-
-    fInfo.write(f"###################################### \n")
-    fInfo.write(f"###################################### \n")
-    fInfo.write(f"\n\nGot unknown ASPs/GLUs: {ASP_GLU_res} with atoms {unknownASP_GLU}.\n And relevant info: {unknownASP_GLU_atomInfo}\n")
-    fInfo.write(f"\n\nGot unknown atoms {unknownASP_GLU}.\n And relevant info:\n {unknownASP_GLU_atomInfo}\n")
-    fInfo.flush()
-    fInfo.close()
+            f.write(f"\n\nGot unknown atoms {unknownASP_GLU}.\n And relevant info:\n {unknownASP_GLU_atomInfo}\n")
+            f.flush()
+    
+    with open(fInfoName, "a") as fInfo:
+        fInfo.write(f"###################################### \n")
+        fInfo.write(f"###################################### \n")
+        fInfo.write(f"\n\nGot unknown ASPs/GLUs: {ASP_GLU_res} with atoms {unknownASP_GLU}.\n And relevant info: {unknownASP_GLU_atomInfo}\n")
+        fInfo.write(f"\n\nGot unknown atoms {unknownASP_GLU}.\n And relevant info:\n {unknownASP_GLU_atomInfo}\n")
+        fInfo.flush()
 
     if(debug):
-        fd.write(f"###################################### \n")
-        fd.write(f"###################################### \n")
-        fd.write(f"\n\nGot unknown ASPs/GLUs: {ASP_GLU_res} with atoms {unknownASP_GLU}.\n And relevant info: {unknownASP_GLU_atomInfo}\n")
-        fd.write(f"\n\nGot unknown atoms {unknownASP_GLU}.\n And relevant info:\n {unknownASP_GLU_atomInfo}\n")
-        fd.flush() 
-        end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+        with open(fDebugName, "a") as fd:
+            fd.write(f"###################################### \n")
+            fd.write(f"###################################### \n")
+            fd.write(f"\n\nGot unknown ASPs/GLUs: {ASP_GLU_res} with atoms {unknownASP_GLU}.\n And relevant info: {unknownASP_GLU_atomInfo}\n")
+            fd.write(f"\n\nGot unknown atoms {unknownASP_GLU}.\n And relevant info:\n {unknownASP_GLU_atomInfo}\n")
+            fd.flush() 
+            end_debug_file(__name__,sys._getframe().f_code.co_name) 
 
 
     return structure,uniqueUnknownIDs, over2ASP_GLUs
@@ -704,10 +706,8 @@ def detect_clash_for_atoms_of_one_residue(structure, res2check, withinStructClas
     output: If there is a clash details of the clash is spit to the screen
     """    
 
-    if(log_file==1):
+    if(log_file):
         fLogName = get_log_file_name()
-        fLog = open(fLogName, "a")
-
 
     ########################
     ###create the residue search list 
@@ -730,13 +730,12 @@ def detect_clash_for_atoms_of_one_residue(structure, res2check, withinStructClas
             continue
         else:    
             potClashAtom = ns.search(atom.coord,withinStructClashDist)
-            if(potClashAtom):
-                if(log_file):
+            if(potClashAtom and log_file):
+                with open(fLogName, "a") as fLog:
                     fLog.write(f"potential clash atom = {potClashAtom}")
 
                     for pcAtom in potClashAtom:
-                        fLog.write(f"orignal atom: {atom}, its coord: {atom.coord}, its parent: {atom.parent}  orig atm parent is rotamer: {atom.parent.isRotamer},\n pcAtom:{pcAtom}, coord:{pcAtom.coord} and pc atm parent: {pcAtom.parent}, pc atm parent is rotamer: {pcAtom.parent.isRotamer}\n and distance is: {np.linalg.norm(np.float32(atom.coord)-np.float32(pcAtom.coord))} \n")
-    if(log_file):fLog.close()
+                        fLog.write(f"original atom: {atom}, its coord: {atom.coord}, its parent: {atom.parent}  orig atm parent is rotamer: {atom.parent.isRotamer},\n pcAtom:{pcAtom}, coord:{pcAtom.coord} and pc atm parent: {pcAtom.parent}, pc atm parent is rotamer: {pcAtom.parent.isRotamer}\n and distance is: {np.linalg.norm(np.float32(atom.coord)-np.float32(pcAtom.coord))} \n")
 
 def detect_clash_within_structure(structure, log_file=0):
 
@@ -753,9 +752,8 @@ def detect_clash_within_structure(structure, log_file=0):
 
     if(log_file):
         fLogName = get_log_file_name()
-        fLog = open(fLogName, "a")
-        fLog.write("Looked for clash within the structure\n")
-        fLog.close()
+        with open(fLogName, "a") as fLog:
+            fLog.write("Looked for clash within the structure\n")
 
 def detect_clash_within_residue(res2check, log_file=0):
 
@@ -767,7 +765,6 @@ def detect_clash_within_residue(res2check, log_file=0):
 
     if(log_file):
         fLogName = get_log_file_name()
-        fLog = open(fLogName, "a")
 
     for atom2check in res2check:
         ##Creating a search list
@@ -778,12 +775,12 @@ def detect_clash_within_residue(res2check, log_file=0):
         ns = Bio.PDB.NeighborSearch(searchListAtoms)
         potClashAtom = ns.search(atom2check.coord, mc.withinResClashDist)
 
-        if(potClashAtom and log_file==1):
-            fLog.write(f"potential clash atom = {potClashAtom}\n")
-            for pcAtom in potClashAtom:
-                fLog.write(f"orignal atom: {atom2check}, its parent: {atom2check.parent}, pcAtom:{pcAtom} and parent: {pcAtom.parent} and distance is: {np.linalg.norm(np.float32(atom2check.coord)-np.float32(pcAtom.coord))}\n")
+        if(potClashAtom and log_file):
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"potential clash atom = {potClashAtom}\n")
+                for pcAtom in potClashAtom:
+                    fLog.write(f"original atom: {atom2check}, its parent: {atom2check.parent}, pcAtom:{pcAtom} and parent: {pcAtom.parent} and distance is: {np.linalg.norm(np.float32(atom2check.coord)-np.float32(pcAtom.coord))}\n")
     
-    if(log_file):fLog.close()
 
 def detect_clash_within_residue_for_all_residues(structure, log_file=0):
     """
@@ -791,9 +788,6 @@ def detect_clash_within_residue_for_all_residues(structure, log_file=0):
     input: structure:-the structure that contains residues that needs to be checked.
     output: prints out clash details to log file.
     """
-    if(log_file):
-        fLogName = get_log_file_name()
-        fLog = open(fLogName, "a")
 
     for res in structure.get_residues():
         r = mra.my_residue(res)
@@ -801,8 +795,9 @@ def detect_clash_within_residue_for_all_residues(structure, log_file=0):
             detect_clash_within_residue(res, log_file=log_file)
 
     if(log_file):
-        fLog.write("Looked for clash within all residues\n")
-        fLog.close()
+        fLogName = get_log_file_name()
+        with open(fLogName, "a") as fLog:
+            fLog.write("Looked for clash within all residues\n")
 
 
 def setup_structure(protID, outFolder = '.', fName = None):
@@ -834,31 +829,33 @@ def change_HIDEP_ASH_GLH(structure, debug=0):
     if(debug):
         start_debug_file(__name__, sys._getframe().f_code.co_name)
         fDebugName = get_debug_file_name()
-        fd = open(fDebugName, "a")
 
     for res in structure.get_residues():
         #If residue name is HIE/HID/HIP-then rename it to HIS
         if(res.resname == 'HIE' or res.resname == 'HID' or res.resname == 'HIP'):
             structure[res.parent.parent.id][res.parent.id][res.id].resname = 'HIS'
             if(debug):
-                fd.write(f"setting res: {res} on chain: {res.parent} and model :{res.parent.parent} as HIS \n")
-                fd.flush()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"setting res: {res} on chain: {res.parent} and model :{res.parent.parent} as HIS \n")
+                    fd.flush()
         #If residue name is ASH-then rename it to ASP
         if(res.resname == 'ASH'):
             structure[res.parent.parent.id][res.parent.id][res.id].resname = 'ASP'
             if(debug):
-                fd.write(f"setting res: {res} on chain: {res.parent} and model :{res.parent.parent} as ASP \n")
-                fd.flush()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"setting res: {res} on chain: {res.parent} and model :{res.parent.parent} as ASP \n")
+                    fd.flush()
 
         #If residue name is GLH-then rename it to GLU
         if(res.resname == 'GLH'):
             structure[res.parent.parent.id][res.parent.id][res.id].resname = 'GLU'
             if(debug):
-                fd.write(f"setting res: {res} on chain: {res.parent} and model :{res.parent.parent} as GLU \n")
-                fd.flush()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"setting res: {res} on chain: {res.parent} and model :{res.parent.parent} as GLU \n")
+                    fd.flush()
     
     if(debug):
-        end_debug_file(__name__,sys._getframe().f_code.co_name, fd)
+        end_debug_file(__name__,sys._getframe().f_code.co_name)
 
 
     return structure
@@ -875,18 +872,18 @@ def set_initial_residue_side_chain_hydrogen_unknown(structure, debug=0):
     if(debug):
         start_debug_file(__name__, sys._getframe().f_code.co_name)
         fDebugName = get_debug_file_name()
-        fd = open(fDebugName, "a")
 
     for res in structure.get_residues():
          if(res.resname == 'SER' or res.resname == 'THR' or res.resname == 'LYS' or res.resname == 'TYR'):
              res.isSCHknown = 0
              if(debug):
-                fd.write(f"Setting {res} with chain: {res.parent} as unknown side chain hydrogen since that hydrogen position is not fixed. We need to optimize and find best position. \n")
-                fd.flush()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"Setting {res} with chain: {res.parent} as unknown side chain hydrogen since that hydrogen position is not fixed. We need to optimize and find best position. \n")
+                    fd.flush()
          else:
              res.isSCHknown = 1
     if(debug):
-        end_debug_file(__name__,sys._getframe().f_code.co_name, fd)
+        end_debug_file(__name__,sys._getframe().f_code.co_name)
 
 
 def set_initial_known_residues_and_rotamers(structure, debug=0):
@@ -899,7 +896,6 @@ def set_initial_known_residues_and_rotamers(structure, debug=0):
     if(debug):
         start_debug_file(__name__, sys._getframe().f_code.co_name)
         fDebugName = get_debug_file_name()
-        fd = open(fDebugName, "a")
     
     for res in structure.get_residues():
          myRes = mra.my_residue(res)
@@ -907,13 +903,14 @@ def set_initial_known_residues_and_rotamers(structure, debug=0):
          if(myRes.is_residue_of_concern()==1):
             res.isKnown = 0
             if(debug):
-                fd.write(f"Setting {res} with chain: {res.parent} as unknown\n")
-                fd.flush()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"Setting {res} with chain: {res.parent} as unknown\n")
+                    fd.flush()
          else:
             res.isKnown=1
     
     if(debug ==1):
-        end_debug_file(__name__,sys._getframe().f_code.co_name, fd)
+        end_debug_file(__name__,sys._getframe().f_code.co_name)
 
 def start_debug_file(modName, funcName):
     """
@@ -923,23 +920,24 @@ def start_debug_file(modName, funcName):
     funcName: function name
     """
     fDebugName = get_debug_file_name()
-    fd = open(fDebugName, "a")
-    fd.write(f"\n\n###############################################################################\n")    
-    fd.write(f"********************Enter module {modName} at function: {funcName} ********************\n")    
-    fd.flush()
 
-def end_debug_file(modName, funcName, fd):
+    with open(fDebugName, "a") as fd:
+        fd.write(f"\n\n###############################################################################\n")    
+        fd.write(f"********************Enter module {modName} at function: {funcName} ********************\n")    
+        fd.flush()
+
+def end_debug_file(modName, funcName):
     """
     Objective: To end and close the debug file
     input:
     modName: module name
     funcName: function name
-    fd: file of interest
-    """
-    fd.write(f"********************Exit module {modName} at function: {funcName}********************\n")    
-    fd.write(f"###############################################################################\n\n")    
-    fd.flush()
-    fd.close()
+    """ 
+    fDebugName = get_debug_file_name()
+    with open(fDebugName, "a") as fd:
+        fd.write(f"********************Exit module {modName} at function: {funcName}********************\n")    
+        fd.write(f"###############################################################################\n\n")    
+        fd.flush()
 
 
 def remove_added_hydrogens(structure, log_file=0):
@@ -1106,19 +1104,21 @@ def write_to_PDB(structure, fname, removeHLP = False, removeHall = False,set_ori
     if(debug):
         start_debug_file(__name__, sys._getframe().f_code.co_name)
         fDebugName = get_debug_file_name()
-        fd = open(fDebugName, "a")
+
     if(removeHLP == True):
         structure= remove_added_hydrogens(structure, log_file=log_file)
         structure= remove_lonepair(structure, log_file=log_file)
         if(debug):
-            fd.write("Removed the hydrogens that were added to all the residues\n")
-            fd.write("Removed the lonepairs that were added to all the residues\n")
-            fd.flush()
+            with open(fDebugName, "a") as fd:
+                fd.write("Removed the hydrogen that were added to all the residues\n")
+                fd.write("Removed the lonepairs that were added to all the residues\n")
+                fd.flush()
     if(removeHall ==True):
         structure = remove_all_hydrogens_from_all_amino_acids(structure)
         if(debug):
-            fd.write("removed any hydrogen element present on a residue\n")
-            fd.flush()
+            with open(fDebugName, "a") as fd:
+                fd.write("removed any hydrogen element present on a residue\n")
+                fd.flush()
 
     if(set_original_centroid==True):
         set_atom_coords_in_original_frame(structure,mc.xc_orig,mc.yc_orig,mc.zc_orig)
@@ -1128,12 +1128,13 @@ def write_to_PDB(structure, fname, removeHLP = False, removeHall = False,set_ori
     if(log_file):
         append_to_log(f"Writing file at: {fname}  \n")
     if(debug):
-        fd.write(f"Writing file at: {fname}  \n")
-        fd.flush()
+        with open(fDebugName, "a") as fd:
+            fd.write(f"Writing file at: {fname}  \n")
+            fd.flush()
     ###if the file is already present-it will overwrite
     io.save(fname)
     if(debug):
-        end_debug_file(__name__,sys._getframe().f_code.co_name, fd)
+        end_debug_file(__name__,sys._getframe().f_code.co_name)
 
 
 

@@ -724,11 +724,10 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
 
 
     if(debug):
-        fileAcceptor = open(accFname,"a")    
-        writerAcceptor = csv.writer(fileAcceptor)
-        for row in param:
-            writerAcceptor.writerow(row)
-        fileAcceptor.close()
+        with open(accFname,"a") as fileAcceptor:
+            writerAcceptor = csv.writer(fileAcceptor)
+            for row in param:
+                writerAcceptor.writerow(row)
 
 
     return enValAcc, enSumAcc
@@ -846,11 +845,10 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
                 enSumDon = enSumDon+energy
 
     if(debug):
-        fileDonor = open(donorFname,"a")    
-        writerDonor = csv.writer(fileDonor)
-        for row in param:
-            writerDonor.writerow(row)
-        fileDonor.close()
+        with open(donorFname,"a") as fileDonor:
+            writerDonor = csv.writer(fileDonor)
+            for row in param:
+                writerDonor.writerow(row)
 
 
     return enValDon, enSumDon

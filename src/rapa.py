@@ -59,7 +59,6 @@ if __name__ == "__main__":
     parser.add_argument( '-v', '--version', action='version', version='%(prog)s 1.0 ')
 
     args = parser.parse_args()
-    a=1
     #Protein id
     if(args.protein_id):
         protID = args.protein_id
@@ -108,30 +107,17 @@ if __name__ == "__main__":
         #debug file
         stp.start_debug_file(__name__, sys._getframe().f_code.co_name)
         fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "w")
    
     #basic information file
     fInfoName =  stp.get_info_file_name()
-    fInfo = open(fInfoName, "w")
-
     if(log_file):
         #log_file file
         fLogName = stp.get_log_file_name()
-        f = open(fLogName, "w")
 
    
     starttime = timeit.default_timer()
 
-    if(log_file):
-        f.write(f"The PDB ID being used: {protID} and start time is: {starttime}\n")
-        f.flush()
-
-    fInfo.write(f"PDB ID: {protID} \n")
-    fInfo.flush()
-    
-    if(debug):
-        fd.write(f"PDB ID: {protID} \n")
-        fd.flush()
+ 
 
     #set up structure, know the number of model and chain in the pdb 
     structure = stp.setup_structure(protID, outFolder = '.', fName = None)
@@ -141,20 +127,26 @@ if __name__ == "__main__":
 
 
     if(log_file):
-        f.write(f"\nThe structure has number of models {numModels}: {structure.child_list} and number of chains: {numChains}: {chains}\n\n")
-        f.flush()
-        f.close()
+        fLogName = stp.get_log_file_name()
+        with open(fLogName, "w") as f:
+            f.write(f"The PDB ID being used: {protID} and start time is: {starttime}\n")
+            f.flush()
+            f.write(f"\nThe structure has number of models {numModels}: {structure.child_list} and number of chains: {numChains}: {chains}\n\n")
+            f.flush()
 
-    fInfo.write(f"Models: {numModels}: {structure.child_list}\n")
-    fInfo.write(f"Chains: {numChains}: {chains}\n\n")
-    fInfo.flush()
-    fInfo.close()
+    with open(fInfoName, "w") as fInfo:
+        fInfo.write(f"PDB ID: {protID} \n")
+        fInfo.flush()
+        fInfo.write(f"Models: {numModels}: {structure.child_list}\n")
+        fInfo.write(f"Chains: {numChains}: {chains}\n\n")
+        fInfo.flush()
 
     if(debug):
-        fd.write(f"Models: {numModels}: {structure.child_list}\n")
-        fd.write(f"Chains: {numChains}: {chains}\n\n")
-        fd.flush()
-        fd.close()
+        with open(fDebugName, "w") as fd:
+            fd.write(f"PDB ID: {protID} \n")
+            fd.write(f"Models: {numModels}: {structure.child_list}\n")
+            fd.write(f"Chains: {numChains}: {chains}\n\n")
+            fd.flush()
         
           
     #rename HID/HIE/HIP/ASH/GLH->HIS/HIS/HIS/ASP/GLU
@@ -182,16 +174,14 @@ if __name__ == "__main__":
 
 
         if(log_file):
-            f = open(fLogName, "a")
-            f.write("After adding the hydrogens..\n")
-            f.flush()
-            f.close()
+            with open(fLogName, "a") as f:
+                f.write("After adding the hydrogens..\n")
+                f.flush()
 
         if(debug):
-            fd = open(fDebugName, "a")
-            fd.write("After adding the hydrogens..\n")
-            fd.flush()
-            fd.close()
+            with open(fDebugName, "a") as fd:
+                fd.write("After adding the hydrogens..\n")
+                fd.flush()
 
         protIDName = protID + "_HLPsp2"
 
@@ -199,16 +189,14 @@ if __name__ == "__main__":
         protIDName = protID + "_HLPsp2"
 
         if(log_file):
-            f = open(fLogName, "a")
-            f.write("\nHydrogen and lone pairs were already present!..\n")
-            f.flush()
-            f.close()
+            with open(fLogName, "a") as f:
+                f.write("\nHydrogen and lone pairs were already present!..\n")
+                f.flush()
 
         if(debug):
-            fd = open(fDebugName, "a")
-            fd.write("\nHydrogen and lone pairs were already present!..\n")
-            fd.flush()
-            fd.close()
+            with open(fDebugName, "a") as fd:
+                fd.write("\nHydrogen and lone pairs were already present!..\n")
+                fd.flush()
 
      
     if(debug):
@@ -244,50 +232,50 @@ if __name__ == "__main__":
 
     netTime = timeit.default_timer() - starttime
 
-    if(log_file):
-        f = open(fLogName, "a")
-
-    fInfo = open(fInfoName, "a")
 
 
     if(log_file):
-        f.write(f"###############################################################\n")
-        f.write(f"###############################################################\n")
-        f.write(f"###############################################################\n\n\n")
-        f.write(f"The time taken is :{netTime} seconds or {netTime/60} minutes or {netTime/3600} hours \n")
-        f.write(f"Number of files generated: {fileNums} and files generated:\n{filesGen}\n")
-        f.flush()
+        with open(fLogName, "a") as f:
+            f.write(f"###############################################################\n")
+            f.write(f"###############################################################\n")
+            f.write(f"###############################################################\n\n\n")
+            f.write(f"The time taken is :{netTime} seconds or {netTime/60} minutes or {netTime/3600} hours \n")
+            f.write(f"Number of files generated: {fileNums} and files generated:\n{filesGen}\n")
+            f.flush()
 
 
-    
-    fInfo.write(f"###############################################################\n")
-    fInfo.write(f"###############################################################\n")
-    fInfo.write(f"###############################################################\n\n\n")
-    fInfo.write(f"The time taken is :{netTime} second or {netTime/60} mins or  {netTime/3600} hours\n")
-    fInfo.write(f"Number of files generated: {fileNums} and files generated:\n{filesGen}\n")
-    fInfo.flush()
+    with open(fInfoName, "a") as fInfo: 
+        fInfo.write(f"###############################################################\n")
+        fInfo.write(f"###############################################################\n")
+        fInfo.write(f"###############################################################\n\n\n")
+        fInfo.write(f"The time taken is :{netTime} second or {netTime/60} mins or  {netTime/3600} hours\n")
+        fInfo.write(f"Number of files generated: {fileNums} and files generated:\n{filesGen}\n")
+        fInfo.flush()
 
     if(debug):
-        fd = open(fDebugName, "a")
-        fd.write(f"###############################################################\n")
-        fd.write(f"###############################################################\n")
-        fd.write(f"###############################################################\n\n\n")
-        fd.write(f"The time taken is :{netTime} seconds or {netTime/60} minutes or {netTime/3600} hours \n")
-        fd.write(f"Number of files generated: {fileNums} and files generated:\n{filesGen}\n")
-        fd.flush()
+
+        with open(fDebugName, "a") as fd:
+            fd.write(f"###############################################################\n")
+            fd.write(f"###############################################################\n")
+            fd.write(f"###############################################################\n\n\n")
+            fd.write(f"The time taken is :{netTime} seconds or {netTime/60} minutes or {netTime/3600} hours \n")
+            fd.write(f"Number of files generated: {fileNums} and files generated:\n{filesGen}\n")
+            fd.flush()
 
     if(over2ASPs>0 or over2GLUs>0):  
         if(log_file):
-            f.write(f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
-            f.flush()
+            with open(fLogName, "a") as f:
+                f.write(f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
+                f.flush()
 
-        fInfo.write(f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
-        fInfo.flush()
+        with open(fInfoName, "a") as fInfo: 
+            fInfo.write(f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
+            fInfo.flush()
         
         if(debug):
-            fd = open(fDebugName, "a")
-            fd.write(f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
-            fd.flush()
+            with open(fDebugName, "a") as fd:
+                fd.write(f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
+                fd.flush()
 
     if(not keep_hlp):
         file_hlp=f"{protID}" + "_HLPsp2.pdb"
@@ -295,15 +283,13 @@ if __name__ == "__main__":
             os.remove(file_hlp) 
         else:
             if(debug):
-                fd = open(fDebugName, "a")
-                fd.write(f"File {file_hlp} does not exist.")
-                fd.push()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"File {file_hlp} does not exist.")
+                    fd.flush()
 
-    if(log_file):
-        f.close()
    
     if(debug):
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd)
+        stp.end_debug_file(__name__,sys._getframe().f_code.co_name)
 
     print("************************************************************") 
     print(f"RAPA exiting. Run for the given PDB: {protID} is completed")

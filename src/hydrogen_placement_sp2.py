@@ -327,7 +327,6 @@ def placeHydrogens_backbone(structure, lastSerial, log_file=0, debug = 0):
     if(debug):
         stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
         fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
 
     for model in structure.child_list:
         for chain in model.child_list:
@@ -351,8 +350,9 @@ def placeHydrogens_backbone(structure, lastSerial, log_file=0, debug = 0):
 
             if(log_file): stp.append_to_log(f"Collected atoms for chain: {chain} and now I will fix backbone H \n")
             if(debug):
-                fd.write(f"Collected atoms for chain: {chain} and now I will fix backbone  H \n")
-                fd.flush()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"Collected atoms for chain: {chain} and now I will fix backbone  H \n")
+                    fd.flush()
 
 
             bbHcoordsInfo =[]
@@ -382,12 +382,13 @@ def placeHydrogens_backbone(structure, lastSerial, log_file=0, debug = 0):
                res.add(Atom.Atom(name='H', coord=hCoordBB, bfactor=0., occupancy=1., altloc=' ', fullname='H', serial_number=lastSerial+i,element='H'))
                bbHcoordsInfo.append([lastSerial+i, i, res, hCoordBB])
                
-               if debug ==1: 
-                    fd.write(f"For serial number: {lastSerial+i}, i: {i}, res:{res}, and backbone hydrogen coords: {hCoordBB}\n")
-                    fd.flush()
+               if debug:
+                    with open(fDebugName, "a") as fd:
+                        fd.write(f"For serial number: {lastSerial+i}, i: {i}, res:{res}, and backbone hydrogen coords: {hCoordBB}\n")
+                        fd.flush()
 
-    if(debug ==1):
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd)         
+    if(debug):
+        stp.end_debug_file(__name__,sys._getframe().f_code.co_name)         
 
     return lastSerial+i, bbHcoordsInfo
 
@@ -537,7 +538,6 @@ def set_HH_and_lonepair_coords_TYR(sp2, hhCoords, log_file=0, debug=0):
     if(debug):
         stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
         fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
 
     res = sp2.parent
     structure = res.parent.parent.parent
@@ -556,10 +556,10 @@ def set_HH_and_lonepair_coords_TYR(sp2, hhCoords, log_file=0, debug=0):
 
     #If there are no known donor/acceptor then do not assign coordinate values for hydrogen and lone pairs
     if(not customList):
-
         if(debug):
-            fd.write(f"\n NO KNOWN CLOSE ATOMS FOUND for {res}, {res.id}\n")
-            fd.flush()
+            with open(fDebugName, "a") as fd:
+                fd.write(f"\n No known close atoms found for {res}, {res.id}\n")
+                fd.flush()
 
         hCoord = []
         LPCoord = []
@@ -585,8 +585,9 @@ def set_HH_and_lonepair_coords_TYR(sp2, hhCoords, log_file=0, debug=0):
 
         enSum = 0
         if(debug):
-            fd.write(f"close Atom now: {allCloseAtoms}\n")
-            fd.flush()
+            with open(fDebugName, "a") as fd:
+                fd.write(f"close Atom now: {allCloseAtoms}\n")
+                fd.flush()
         #Loop over all the close atoms to find energy interaction with OH-HH/OH-LP
         for i in range(1, np.shape(allCloseAtoms)[0]):
 
@@ -594,36 +595,30 @@ def set_HH_and_lonepair_coords_TYR(sp2, hhCoords, log_file=0, debug=0):
             myCloseAt = mra.my_atom(allCloseAtoms[i][0])
 
             if(myCloseAt.get_behavior().abbrev == 'ac'):
-                if(debug):fd.close()
                 ##Considering donor atom associated with reference atom
                 enValDon, enSumDon = cats.compute_energy_as_donor(closeAt, hhCoords[j], sp2, attractive = 1, atype='SP2',  chV_levelVal = 'level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp2'])
-                if(debug):fd = open(fDebugName, "a")
                 if(enValDon == []):
                     if(debug):
-                        fd.write(f"\n I am DONOR and I will continue as no energyVal found\n")
-                        fd.flush()
+                        with open(fDebugName, "a") as fd:
+                            fd.write(f"\n A donor, will continue as no energy value is found\n")
+                            fd.flush()
                     continue 
                 enSum = enSum + enSumDon
-                if(debug):fd.close()
                 #Considering acceptor atom associated with reference atom
                 enValAcc, enSumAcc = cats.compute_energy_as_acceptor(sp2, lp_vec, closeAt,attractive = 0, atype = 'SP2',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp2'])
-                if(debug):fd = open(fDebugName, "a")
                 enSum = enSum + enSumAcc
 
             if(myCloseAt.get_behavior().abbrev == 'do'):
                 ##Considering acceptor atom associated with reference atom
-                if(debug):fd.close()
                 enValAcc, enSumAcc = cats.compute_energy_as_acceptor(sp2, lp_vec, closeAt, attractive = 1, atype='SP2',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp2'])
-                if(debug):fd = open(fDebugName, "a")
                 if not enValAcc:
                     if(debug):
-                        fd.write(f"\n I am acceptor and will continue as no energyVal found \n")
+                        with open(fDebugName, "a") as fd:
+                            fd.write(f"\n An acceptor, will continue computation as no energy value is found \n")
                     continue
                 enSum = enSum + enSumAcc
                 ##Considering donor atom associated with reference atom
-                if(debug):fd.close()
                 enValDon, enSumDon = cats.compute_energy_as_donor(closeAt, hhCoords[j], sp2, attractive =0, atype = 'SP2',  chV_levelVal ='level_00_chV_00_structureNum_00',log_file=log_file, debug =debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp2'])
-                if(debug):fd = open(fDebugName, "a")
                 enSum = enSum + enSumDon
         enSumList.append([hhCoords[j], enSum])
         
@@ -648,7 +643,7 @@ def set_HH_and_lonepair_coords_TYR(sp2, hhCoords, log_file=0, debug=0):
         LPCoord = hhCoords[0]
 
     if(debug):
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+        stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
 
     return hhCoord,LPCoord  
 #

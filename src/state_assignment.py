@@ -642,12 +642,10 @@ def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist, log_file=0, debug=0):
 
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")
 
     if(debug):
         stp.start_debug_file(__name__, sys._getframe().f_code.co_name)
         fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
 
     unknownASP_GLUatom = []
     unknownASP_GLUatomInfo = []
@@ -692,18 +690,21 @@ def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist, log_file=0, debug=0):
 
     
     if(debug):
-        fd.write(f"Atom found in h-bonding distance neighborhood of {oxygenName1} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom1}, and\n \
- Atom found in h-bonding distance neighborhood of {oxygenName2} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom2} \n")
+        
+        with open(fDebugName, "a") as fd:
+            fd.write(f"Atom found in h-bonding distance neighborhood of {oxygenName1} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom1}, and\n \
+     Atom found in h-bonding distance neighborhood of {oxygenName2} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom2} \n")
 
 
-        fd.write(f"\n For both oxygen atoms the currrent ASP/GLU oxygen atom, current ASP/GLU oxygens residue, current atom residue chain, uat(atom belonging to unknown ASP/GLU in hbonding dist), uat residue, uats residues chain, distance between oxygen atom of current ASP/GLU and uat are the following:\n \
-                {unknownASP_GLUatomInfo}\n\n ")
-        fd.flush()
+            fd.write(f"\n For both oxygen atoms the currrent ASP/GLU oxygen atom, current ASP/GLU oxygens residue, current atom residue chain, uat(atom belonging to unknown ASP/GLU in hbonding dist), uat residue, uats residues chain, distance between oxygen atom of current ASP/GLU and uat are the following:\n \
+                    {unknownASP_GLUatomInfo}\n\n ")
+            fd.flush()
     
     if(log_file):
-        fLog.write(f"Atom found in h-bonding distance neighborhood of {oxygenName1} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom1},\n \
-                and  Atom found in h-bonding distance neighborhood of {oxygenName2} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom2} \n")
-        fLog.flush()
+        with open(fLogName, "a") as fLog:
+            fLog.write(f"Atom found in h-bonding distance neighborhood of {oxygenName1} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom1},\n \
+                    and  Atom found in h-bonding distance neighborhood of {oxygenName2} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom2} \n")
+            fLog.flush()
    
     unknownASP_GLUlist = []
 
@@ -717,12 +718,14 @@ def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist, log_file=0, debug=0):
 
     if(len(unknownASP_GLUset)> mc.numASPsGLUs-1):
         if(log_file):
-            fLog.write(f"number of unique ASPs: {len(unknownASP_GLUset)}. Please check\n\n")
-            fLog.flush()
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"number of unique ASPs: {len(unknownASP_GLUset)}. Please check\n\n")
+                fLog.flush()
        
         if(debug):
-            fd.write(f"number of unique ASPs: {len(unknownASP_GLUset)}. Please check\n\n")
-            fd.flush()
+            with open(fDebugName, "a") as fd:
+                fd.write(f"number of unique ASPs: {len(unknownASP_GLUset)}. Please check\n\n")
+                fd.flush()
 
     
     
@@ -733,15 +736,16 @@ def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist, log_file=0, debug=0):
         
         for unknownASP_GLU in unknownASP_GLUset:
             if(log_file):
-                fLog.write(f"The unknownASP/GLU pair for {currASP_GLU} of {currASP_GLU.parent} is:  {unknownASP_GLU} of chain: {unknownASP_GLU.parent}\n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"The unknownASP/GLU pair for {currASP_GLU} of {currASP_GLU.parent} is:  {unknownASP_GLU} of chain: {unknownASP_GLU.parent}\n")
+                    fLog.flush()
             if(debug):
-                fd.write(f"The unknownASP/GLU pair for {currASP_GLU} of {currASP_GLU.parent} is:  {unknownASP_GLU} of chain: {unknownASP_GLU.parent}\n")
-                fd.flush()
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"The unknownASP/GLU pair for {currASP_GLU} of {currASP_GLU.parent} is:  {unknownASP_GLU} of chain: {unknownASP_GLU.parent}\n")
+                    fd.flush()
 
     if(debug):
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd)
-    if(log_file):fLog.close()
+        stp.end_debug_file(__name__,sys._getframe().f_code.co_name)
 
     return unknownASP_GLUpair
 
@@ -760,26 +764,26 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level, log_fil
 
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")
 
     if(debug):
         stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
         fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
+
         myHvyAt = mra.my_atom(hvyAt)
         myHvyAtBehav = myHvyAt.get_behavior().abbrev
-        fd.write(f"behavior: do=donor, ac=acceptor,bo=both-donor and acceptor, tbd=to be decided\n")
-        fd.write(f"The current heavy atom is: {hvyAt} (with behavior:{myHvyAtBehav}) of residue: {hvyAt.parent} of chain: {hvyAt.parent.parent}\n")
-        fd.flush()
-
-        for i in range(1, np.shape(allCloseAtoms)[0]):
-            cAt= allCloseAtoms[i][0]
-            cAtBehav = mra.my_atom(cAt).get_behavior().abbrev
-            fd.write(f"closeAtom: {cAt}-behavior:{cAtBehav}, closeAtom residue:{cAt.parent}, close atom chain:{cAt.parent.parent} \n")
+        with open(fDebugName, "a") as fd:
+            fd.write(f"behavior: do=donor, ac=acceptor,bo=both-donor and acceptor, tbd=to be decided\n")
+            fd.write(f"The current heavy atom is: {hvyAt} (with behavior:{myHvyAtBehav}) of residue: {hvyAt.parent} of chain: {hvyAt.parent.parent}\n")
             fd.flush()
-        fd.write(f"energy value details in the folder: energyInfo_ for each level and structure present\n")
-        fd.flush()
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+
+            for i in range(1, np.shape(allCloseAtoms)[0]):
+                cAt= allCloseAtoms[i][0]
+                cAtBehav = mra.my_atom(cAt).get_behavior().abbrev
+                fd.write(f"closeAtom: {cAt}-behavior:{cAtBehav}, closeAtom residue:{cAt.parent}, close atom chain:{cAt.parent.parent} \n")
+                fd.flush()
+            fd.write(f"energy value details in the folder: energyInfo_ for each level and structure present\n")
+            fd.flush()
+            stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
     
     enSumTotal = 0
     enValList = []
@@ -832,8 +836,9 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level, log_fil
         #After attempting to place hydrogen/LP-if there is no known closeAtoms-then pls continue and try again in another iteration if it comes up!
         if(currCloseRes.isSCHknown==0): 
             if(log_file):
-                fLog.write(f"Current Close atom:{currCloseRes} is still unknown! Going on to the next close atom\n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"Current Close atom:{currCloseRes} is still unknown! Going on to the next close atom\n")
+                    fLog.flush()
             continue
 ####################################################################################################################
         hvyAt.parent.isKnown = 0
@@ -846,8 +851,9 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level, log_fil
                     hPresent=1
         if(hPresent==-1):            
             if(log_file):
-                fLog.write(f"No backbone hydrogen is present for energy computations. Heavy atom: {hvyAt} belongs to {hvyAt.parent} of its chain: {hvyAt.parent.parent}. Perhaps its the first residue on the chain. \n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"No backbone hydrogen is present for energy computations. Heavy atom: {hvyAt} belongs to {hvyAt.parent} of its chain: {hvyAt.parent.parent}. Perhaps its the first residue on the chain. \n")
+                    fLog.flush()
         else:
             atomHs = cats.get_hydrogen_connected_to_donor(hvyAt)
             #going over all the hydrogen atoms connected to the heavy atom
@@ -874,7 +880,6 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level, log_fil
                     
                 else:
                     continue
-    if(log_file): fLog.close()
     return enValList,enSumTotal
 
 
@@ -901,21 +906,20 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level, log_
     if(debug):
         stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
         fDebugName=stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
         myHvyAt = mra.my_atom(hvyAt)
         myHvyAtBehav = myHvyAt.get_behavior().abbrev
-
-        fd.write(f"behavior: do=donor, ac=acceptor,bo=both-donor and acceptor, tbd=to be decided\n")
-        fd.write(f"The current heavy atom is: {hvyAt} (with behavior: {myHvyAtBehav}) of residue: {hvyAt.parent} of chain: {hvyAt.parent.parent}\n")
-        fd.flush()
-        for i in range(1, np.shape(allCloseAtoms)[0]):
-            cAt = allCloseAtoms[i][0]
-            cAtBehav = mra.my_atom(cAt).get_behavior().abbrev
-            fd.write(f"closeAtom: {cAt}-behavior:{cAtBehav}, closeAtom residue:{cAt.parent}, close atom chain:{cAt.parent.parent} \n")
+        with open(fDebugName, "a") as fd:
+            fd.write(f"behavior: do=donor, ac=acceptor,bo=both-donor and acceptor, tbd=to be decided\n")
+            fd.write(f"The current heavy atom is: {hvyAt} (with behavior: {myHvyAtBehav}) of residue: {hvyAt.parent} of chain: {hvyAt.parent.parent}\n")
             fd.flush()
-        fd.write(f"energy value details in the folder: energyInfo_ for each level and structure present\n")
-        fd.flush()
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+            for i in range(1, np.shape(allCloseAtoms)[0]):
+                cAt = allCloseAtoms[i][0]
+                cAtBehav = mra.my_atom(cAt).get_behavior().abbrev
+                fd.write(f"closeAtom: {cAt}-behavior:{cAtBehav}, closeAtom residue:{cAt.parent}, close atom chain:{cAt.parent.parent} \n")
+                fd.flush()
+            fd.write(f"energy value details in the folder: energyInfo_ for each level and structure present\n")
+            fd.flush()
+            stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
 
     pre_cal_acceptor_info = {'hvyAt': cats.get_info_for_acceptorAt_donorAt(hvyAt)}
 
@@ -1011,7 +1015,6 @@ def compute_energy_for_given_atoms(resState, givenAtoms, chV_level, log_file=0, 
 
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")
 
     struct = resState.parent.parent.parent
 
@@ -1030,8 +1033,9 @@ def compute_energy_for_given_atoms(resState, givenAtoms, chV_level, log_file=0, 
         allCloseAtoms = cats.get_all_close_atom_info_for_one_atom(hvyAt, customList)
         
         if(log_file):
-            fLog.write(f"Evaluate given residue state, hvyAt: {hvyAt} and All close atoms: {allCloseAtoms} and enSumTotal is: {enSumTotal}\n")
-            fLog.flush()
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"Evaluate given residue state, hvyAt: {hvyAt} and All close atoms: {allCloseAtoms} and enSumTotal is: {enSumTotal}\n")
+                fLog.flush()
     
 
         if(myHvyAtBehav == 'do'):
@@ -1039,15 +1043,17 @@ def compute_energy_for_given_atoms(resState, givenAtoms, chV_level, log_file=0, 
             enValList, enSumTotalDonor = energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level, debug=debug)
             enSumTotal = enSumTotal + enSumTotalDonor
             if(log_file):
-                fLog.write(f"energy sum donor from func:{enSumTotalDonor} and enSumTotal:{enSumTotal} \n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"energy sum donor from func:{enSumTotalDonor} and enSumTotal:{enSumTotal} \n")
+                    fLog.flush()
         elif(myHvyAtBehav == 'ac'):
             #If heavyAtom is acceptor-compute energy for all its close atom.
             enValList, enSumTotalAcceptor = energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level, log_file=log_file, debug=debug)
             enSumTotal = enSumTotal + enSumTotalAcceptor
             if(log_file):
-                fLog.write(f"energy sum acceptor from func:{enSumTotalAcceptor} and enSumTotal:{enSumTotal}\n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"energy sum acceptor from func:{enSumTotalAcceptor} and enSumTotal:{enSumTotal}\n")
+                    fLog.flush()
                 
         else:
             continue
@@ -1056,11 +1062,12 @@ def compute_energy_for_given_atoms(resState, givenAtoms, chV_level, log_file=0, 
 
 
     if(log_file):
-        fLog.write(f"For this state:{resState} tot energy is: {enSumTotal}\n")
-        fLog.write("************************************************************************\n")
-        fLog.write("************************************************************************\n")
-        fLog.flush()    
-        fLog.close()
+        with open(fLogName, "a") as fLog:
+            fLog.write(f"For this state:{resState} tot energy is: {enSumTotal}\n")
+            fLog.write("************************************************************************\n")
+            fLog.write("************************************************************************\n")
+            fLog.flush()    
+
     return enSumTotal, enSumForHvys
 
 
@@ -1083,12 +1090,12 @@ def compute_energy_for_given_state(resState, chV_level, log_file=0, debug=0):
     if(debug):
         stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
         fDebugName = stp.get_debug_file_name()
-        fd = open(fDebugName, "a")
-        fd.write(f"For this state:{resState} (of {resState.parent}) where isRotamer: {resState.isRotamer}, given atoms: {LOAAresState} total energy is: {enSumTotal}, while the individual energies assembled as: heavy atom and energy value is: {enSumForHvys}\n")
-        fd.write("************************************************************************\n")
-        fd.write("************************************************************************\n")
-        fd.flush() 
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+        with open(fDebugName, "a") as fd:
+            fd.write(f"For this state:{resState} (of {resState.parent}) where isRotamer: {resState.isRotamer}, given atoms: {LOAAresState} total energy is: {enSumTotal}, while the individual energies assembled as: heavy atom and energy value is: {enSumForHvys}\n")
+            fd.write("************************************************************************\n")
+            fd.write("************************************************************************\n")
+            fd.flush() 
+            stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
 
     return enSumTotal, enSumForHvys
 
@@ -1104,8 +1111,6 @@ def compute_energy_for_all_states(unknownRes, structStates, chV_level, log_file=
     """
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")
-
 
     resStates = []
     energyList = []
@@ -1128,9 +1133,10 @@ def compute_energy_for_all_states(unknownRes, structStates, chV_level, log_file=
         #accesing the residue state:
         resState = structState[modelID][chainID][unknownRes0[count].id]
         if(log_file):
-            fLog.write("************************************************************************\n")
-            fLog.write(f"State: {con}, with ID {unknownRes0[count].id[1]} and chain: {unknownRes0[count].parent} and isRotamer: {resState.isRotamer} \n")
-            fLog.flush()
+            with open(fLogName, "a") as fLog:
+                fLog.write("************************************************************************\n")
+                fLog.write(f"State: {con}, with ID {unknownRes0[count].id[1]} and chain: {unknownRes0[count].parent} and isRotamer: {resState.isRotamer} \n")
+                fLog.flush()
         if(debug):
             stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f" ************************************************************************\n State: {con}, with ID {unknownRes0[count].id[1]} and chain: {unknownRes0[count].parent} and isRotamer: {resState.isRotamer} \n")
         resStates.append(resState)
@@ -1138,7 +1144,6 @@ def compute_energy_for_all_states(unknownRes, structStates, chV_level, log_file=
         enSumTotalResState, enSumForHvys = compute_energy_for_given_state(resState, chV_level, log_file=log_file, debug=debug)
         energyList.append([resState, enSumTotalResState, structState, resState, con ])
 
-    if(log_file):fLog.close()
     return energyList, resStates
 
 
@@ -1193,9 +1198,9 @@ def set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, coll
     
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")
-        fLog.write(MSG+"\n")
-        fLog.flush()
+        with open(fLogName, "a") as fLog:
+            fLog.write(MSG+"\n")
+            fLog.flush()
     
     collectData.append([unknownRes, res2keep, unknownRes.parent.id, MSG ]) 
     changeVal+=1
@@ -1225,7 +1230,6 @@ def set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, coll
                  updated structure kept is: {structure}\n\
                  message to print:{MSG}\n ")
 
-    if(log_file): fLog.close()
 
     return structure, unknownResMod, changeVal, collectData
 
@@ -1337,7 +1341,6 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
 
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")
 
     ##Evaluating 5 possible cases
     #1. all energy values are zero
@@ -1380,9 +1383,10 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
             res2keep=unknownRes 
             MSG=f'{unknownRes} and pair: {unknownASP_GLUpair} All energies = 0  '
             if(log_file):
-                fLog.write(MSG+"\n")
-                fLog.flush()
-                fLog.close()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(MSG+"\n")
+                    fLog.flush()
+
             collectData.append([unknownRes, res2keep, unknownRes.parent.id, MSG ]) 
             unknownResMod.remove(unknownRes)
             unknownResMod.remove(unknownASP_GLUpair)
@@ -1472,10 +1476,11 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
             #update skip info
             skipResInfo.append([unknownRes, degenInfo,degenStructNames,S])
             if(log_file):
-                fLog.write(f"Skipping: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate Info: {degenInfo} with {EnDiffWithMin[indDegen]}<{mc.ECutOff}\n")
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"Skipping: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate Info: {degenInfo} with {EnDiffWithMin[indDegen]}<{mc.ECutOff}\n")
 
-                fLog.write("###########################################################################\n")
-                fLog.flush()
+                    fLog.write("###########################################################################\n")
+                    fLog.flush()
                 
             if(debug):
                 stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f' \n Skipping: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate Info: {degenInfo} with {EnDiffWithMin[indDegen]}<{mc.ECutOff} \n')
@@ -1486,8 +1491,9 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
             MinEn = sortedEnArray[0,1]
 
             if(log_file):
-                fLog.write(f"All Energy Values are positive OR negetive: {sortedEnArray}\n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"All Energy Values are positive OR negative: {sortedEnArray}\n")
+                    fLog.flush()
 
             #find the difference with minimum energy
             EnDiffWithMin =abs(sortedEnArray[:,1]-MinEn)
@@ -1508,24 +1514,24 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
             skipResInfo.append([unknownRes, degenArray,degenStructNames,S])
 
             if(log_file):
-                fLog.write(f"Please Skip: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate names: {degenNames} and values are: {degenArray} with {EnDiffWithMin}<{mc.ECutOff}\n")
-                fLog.write("###########################################################################\n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"Please Skip: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate names: {degenNames} and values are: {degenArray} with {EnDiffWithMin}<{mc.ECutOff}\n")
+                    fLog.write("###########################################################################\n")
+                    fLog.flush()
 
             if(debug):
                 stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Please Skip: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate names: {degenNames} and values are: {degenArray} with {EnDiffWithMin}<{mc.ECutOff}\n ###########################################################################\n")
                 
     else:
            if(log_file): 
-               fLog.write("ERROR: SHOULD NOT GO THROUGH DEGENERATE CASES!\n")
-               fLog.flush()
-               fLog.close()
+               with open(fLogName, "a") as fLog:
+                   fLog.write("ERROR: SHOULD NOT GO THROUGH DEGENERATE CASES!\n")
+                   fLog.flush()
            if(debug):
                stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"ERROR: SHOULD NOT GO THROUGH DEGENERATE CASES. \n")
            os.exit()
            
     
-    if(log_file):fLog.close()
     return structure, unknownResMod,changeVal, skipVal, collectData, skipResInfo
 
 
@@ -1558,7 +1564,6 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
 
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")          
 
     modelID = unknownRes.parent.parent.id
     chainID = unknownRes.parent.id
@@ -1581,9 +1586,10 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
 
     #Checking the degenerate case
     if(origStateHIP and rotamerStateHIP and abs(sumOrigState - sumRotamer)<1*mc.ECutOff and (enSumTotND1 !=0 and enSumTotNE2 !=0 and enSumTotND1Ro !=0 and enSumTotNE2Ro !=0 ) ):
-          if(log_file): 
-              fLog.write(f"HIP:{unknownRes} of {unknownRes.parent} is DEGENERATE!! \n")
-              fLog.flush()
+          if(log_file):  
+              with open(fLogName, "a") as fLog:
+                  fLog.write(f"HIP:{unknownRes} of {unknownRes.parent} is DEGENERATE!! \n")
+                  fLog.flush()
           if(debug):
               stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"HIP:{unknownRes} of {unknownRes.parent} is DEGENERATE!! \n")
           #create the list and array of energy information
@@ -1612,8 +1618,9 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
         ##Also check if the closest atom is OG from SER or OG1 from THR. If it is then HIP cannot be the state.
         ##Because OG/OG1 are poor acceptors
         if(log_file):
-            fLog.write(f"possibility of original state HIP as the two energy values are: {enSumTotND1} and {enSumTotNE2}\n")
-            fLog.flush()
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"possibility of original state HIP as the two energy values are: {enSumTotND1} and {enSumTotNE2}\n")
+                fLog.flush()
         if(debug):
             stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"possibility of original state HIP as the two energy values are: {enSumTotND1} and {enSumTotNE2}")
         myHIP = mra.my_residue(resHIP)
@@ -1648,8 +1655,9 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
             if(any(a == 1 for a in cannotBeHIP)):
                 ##If it cannot be HIP-delete the appropriate structures and move on
                 if(log_file):
-                    fLog.write(f"cannotBeHIP: {cannotBeHIP}\n")
-                    fLog.flush()
+                    with open(fLogName, "a") as fLog:
+                        fLog.write(f"cannotBeHIP: {cannotBeHIP}\n")
+                        fLog.flush()
 
                 if(debug):
                     stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"cannotBeHIP: {cannotBeHIP}\n")
@@ -1671,8 +1679,9 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
         
         else: 
             if(log_file):
-                fLog.write(f"ERROR: Investigating HIP-where energies for both nitrogen's<-{1*mc.ECutOff} but close atoms = 0. PLS CHECK CODE \n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"ERROR: Investigating HIP-where energies for both nitrogen's<-{1*mc.ECutOff} but close atoms = 0. PLS CHECK CODE \n")
+                    fLog.flush()
             
             if(debug):
                 stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"ERROR: Investigating HIP-where energies for both nitrogen's<-1*{mc.ECutOff} but close atoms = 0. Check more details. \n")
@@ -1683,8 +1692,9 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
         ##Check if the closest atom is OG from SER or OG1 from THR. If it is then HIP cannot be the state
         ##Because OG/OG1 are poor acceptors
         if(log_file):
-            fLog.write("possibility of rotamer state HIP...\n")
-            fLog.flush()
+            with open(fLogName, "a") as fLog:
+                fLog.write("possibility of rotamer state HIP...\n")
+                fLog.flush()
         if(debug):
             stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"possibility of rotamer state HIP...\n")
         myHIPR = mra.my_residue(resHIPR)
@@ -1720,8 +1730,9 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
             if(any(value == 1 for value in cannotBeHIPR)):
                 ##If it cannot by HIP-delete the appropriate structures.
                 if(log_file):
-                    fLog.write(f"cannotBeHIPR: {cannotBeHIPR} \n")
-                    fLog.flush()
+                    with open(fLogName, "a") as fLog:
+                        fLog.write(f"cannotBeHIPR: {cannotBeHIPR} \n")
+                        fLog.flush()
 
                 if(debug):
                     stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"cannotBeHIPR: {cannotBeHIPR} \n")
@@ -1744,8 +1755,9 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
 
         else: 
             if(log_file):
-                fLog.write(f"Investigating HIP Rotamer-where energies for both nitrogen's<-{1*mc.ECutOff} but close atoms = 0. Check more details. \n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"Investigating HIP Rotamer-where energies for both nitrogen's<-{1*mc.ECutOff} but close atoms = 0. Check more details. \n")
+                    fLog.flush()
             if(debug):
                 stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Investigating HIP Rotamer-where energies for both nitrogens<-{1*mc.ECutOff} but close atoms = 0. Check more details. \n")
             os.exit()
@@ -1754,7 +1766,6 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
         del S['struct'+str(unknownRes.id[1])+'HIP' ]
         del S['struct'+str(unknownRes.id[1])+'HIPR' ]
 
-    if(log_file):fLog.close() 
     return structure, unknownResMod, changeVal, skipVal, collectData, skipResInfo, S, HIPset, HIPdegen
 
 
@@ -1774,8 +1785,6 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
 
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")
-
 
     skipVal = 0
     changeVal =0 
@@ -1795,9 +1804,10 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
     uniqRes = Counter(unknownResNames).items()
 
     if(log_file):
-        fLog.write(f"\n Level:{level}, structure number on this level: {numCount}, unknown residue to iterate over: {unknownResIter}, and its length: {len(unknownResIter)}\n\n")
-        fLog.write(f"\n The unknowns present: {uniqRes} \n\n")
-        fLog.flush()
+        with open(fLogName, "a") as fLog:
+            fLog.write(f"\n Level:{level}, structure number on this level: {numCount}, unknown residue to iterate over: {unknownResIter}, and its length: {len(unknownResIter)}\n\n")
+            fLog.write(f"\n The unknowns present: {uniqRes} \n\n")
+            fLog.flush()
 
     
     if(debug):
@@ -1811,10 +1821,11 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
         if(unknownRes.isKnown == 1):continue
         
         if(log_file):
-            fLog.write("\n###############################################################################\n")
-            fLog.write("###############################################################################\n\n")
-            fLog.write(f"unknown residue number: {count+1}/{lenUnResOrig} and unknown res is: {unknownRes} and its known val:{unknownRes.isKnown} and is rotamer:{unknownRes.isRotamer}, Skip value:{skipVal}, ChangeVal: {changeVal}\n")
-            fLog.flush()
+            with open(fLogName, "a") as fLog:
+                fLog.write("\n###############################################################################\n")
+                fLog.write("###############################################################################\n\n")
+                fLog.write(f"unknown residue number: {count+1}/{lenUnResOrig} and unknown res is: {unknownRes} and its known val:{unknownRes.isKnown} and is rotamer:{unknownRes.isRotamer}, Skip value:{skipVal}, ChangeVal: {changeVal}\n")
+                fLog.flush()
         
         if(debug):
             stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f" ###############################################################################\n ###############################################################################\n\n Number: {count+1}/{lenUnResOrig} and unknown res is: {unknownRes} and its known val:{unknownRes.isKnown} and is rotamer:{unknownRes.isRotamer}, Skip value:{skipVal}, ChangeVal: {changeVal}\n")
@@ -1833,8 +1844,9 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
         ###Check if close atoms are present. If not, HIS->HIE, ASN/GLN remain the same. Now these are known.
         if(all(x < 2 for x in dim)):
             if(log_file):
-                fLog.write(f"No Close Atoms Found!\n\n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"No Close Atoms Found!\n\n")
+                    fLog.flush()
             if(debug):
                 stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"No Close Atoms Found!\n\n")
             
@@ -1848,8 +1860,9 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
             unknownResMod.remove(unknownRes)
         else:
             if(log_file):
-                fLog.write(f"checked for close atoms and close atoms are present!!\n\n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"checked for close atoms and close atoms are present!!\n\n")
+                    fLog.flush()
             if(debug):
                 stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"checked for close atoms and close atoms are present!!\n\n")
             #create branch of a given unknown residue.
@@ -1869,16 +1882,18 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
 
                 if(HIPdegen==1 or HIPset==1):
                     if(log_file):
-                        fLog.write("Continuing to the next unknown in the for loop as HIP is set or HIP is degenerate\n")
-                        fLog.flush()
+                        with open(fLogName, "a") as fLog:
+                            fLog.write("Continuing to the next unknown in the for loop as HIP is set or HIP is degenerate\n")
+                            fLog.flush()
 
                     if(debug):
                         stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Continuing to the next unknown in the for loop as HIP is set or HIP is degenerate\n")
                     continue
 
                 if(log_file):
-                    fLog.write("continuing as HIP is not an option!!\n") ##continue in the for loop
-                    fLog.flush()
+                    with open(fLogName, "a") as fLog:
+                        fLog.write("continuing as HIP is not an option!!\n") ##continue in the for loop
+                        fLog.flush()
 
                 if(debug):
                     stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"continuing as HIP is not an option!!\n")
@@ -1886,8 +1901,9 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
             else:
                 #If not a HIS/all HIS energy values are zero. Declare HIP is not possible.
                 if(log_file):
-                    fLog.write(f"Not checking for HIP- as I am {unknownRes} of {unknownRes.parent} and currently am not on HIS or all the HIS energies are zero\n\n")
-                    fLog.flush()
+                    with open(fLogName, "a") as fLog:
+                        fLog.write(f"Not checking for HIP- as I am {unknownRes} of {unknownRes.parent} and currently am not on HIS or all the HIS energies are zero\n\n")
+                        fLog.flush()
                 if(debug):
                     stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Not checking for HIP- as I am {unknownRes} of {unknownRes.parent} and currently am not on HIS or all the HIS energies are zero\n\n")
     #########Take the smallest value and subtract from all other values. Find out how many values are<1
@@ -1914,7 +1930,6 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
                 structure, unknownResMod, changeVal, collectData = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, collectData, S, saveText, log_file=log_file, debug=debug)
                 del S
 
-    if(log_file):fLog.close()
    
     return structure,changeVal,skipVal,skipResInfo
 
@@ -1944,13 +1959,13 @@ def resolve_residue_ambiguities_in_structure(structure,fOutName = 'out', maxLeve
 
     if(log_file):
         fLogName = stp.get_log_file_name()
-        fLog = open(fLogName, "a")
 
     for level in range(maxLevel):
         level+=1
         if(log_file):
-            fLog.write(f"Starting a new level:{level}\n")
-            fLog.flush()
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"Starting a new level:{level}\n")
+                fLog.flush()
         
         if(debug):
             stp.append_to_debug( __name__, sys._getframe().f_code.co_name,f"Starting a new level:{level}\n")
@@ -1962,16 +1977,18 @@ def resolve_residue_ambiguities_in_structure(structure,fOutName = 'out', maxLeve
         if(currLevelSLen == 0):
             #if there are no structures in the current level then break out as all the files to be written are also done.
             if(log_file):
-                fLog.write("Current S length =0! No more structures to explore\n") 
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write("Current S length=0! No more structures to explore\n") 
+                    fLog.flush()
             if(debug):
                 stp.append_to_debug( __name__, sys._getframe().f_code.co_name,"Current structure list(S) length =0! No more structs to explore\n")
 
             break
         if(level > maxLevel-1): 
             if(log_file):
-                fLog.write("ERROR: Exceeding max level limit!\n")
-                fLog.flush()
+                with open(fLogName, "a") as fLog:
+                    fLog.write("ERROR: Exceeding max level limit!\n")
+                    fLog.flush()
             if(debug):
                 stp.append_to_debug( __name__, sys._getframe().f_code.co_name,"ERROR LEVEL: Exceeding max level limit!\n")
         
@@ -1979,10 +1996,11 @@ def resolve_residue_ambiguities_in_structure(structure,fOutName = 'out', maxLeve
         LOS_newLevel = []
         LOS_newLevel_dicts = []
         if(log_file):
-            fLog.write(f"In the OUTER most loop where level is: {level} and length of structure list(S):{currLevelSLen}\n")
-            fLog.flush()
+            with open(fLogName, "a") as fLog:
+                fLog.write(f"In the OUTER most loop where level is: {level} and length of structure list(S):{currLevelSLen}\n")
+                fLog.flush()
         if(debug):
-            stp.append_to_debug( __name__, sys._getframe().f_code.co_name,f"In the OUTER MOST loop where level is: {level} and length of structure list(S):{currLevelSLen}\n")
+            stp.append_to_debug( __name__, sys._getframe().f_code.co_name,f"In the outer most loop where level is: {level} and length of structure list(S):{currLevelSLen}\n")
 
         #Need to iterate over each structure in the current level:
         for st in range(currLevelSLen):
@@ -1996,10 +2014,11 @@ def resolve_residue_ambiguities_in_structure(structure,fOutName = 'out', maxLeve
                 #if exceeding max-human intervention is required.
                 if(chV > chValMax-1): 
                     if(log_file):
-                        fLog.write("\n##########################################\n")
-                        fLog.write("\nERROR CHV: Exceeding max chV level limit!\n")
-                        fLog.write("\n##########################################\n")
-                        fLog.flush()
+                        with open(fLogName, "a") as fLog:
+                            fLog.write("\n##########################################\n")
+                            fLog.write("\nERROR CHV: Exceeding max chV level limit!\n")
+                            fLog.write("\n##########################################\n")
+                            fLog.flush()
 
                     if(debug):
                         stp.append_to_debug( __name__, sys._getframe().f_code.co_name,\
@@ -2016,9 +2035,10 @@ def resolve_residue_ambiguities_in_structure(structure,fOutName = 'out', maxLeve
                     chV_level = "level_"+str(level)+"_chV_" + str(chV) +"_structureNum_"+str(st)
 
                     if(log_file):
-                        fLog.write("\n###########################################################\n #############################################################\n")
-                        fLog.write(f"chV(in range of chValMax or max amount of change Values that can occur ={chValMax}): {chV}, chVal(or number of residue changed in this level):{chVal} current level: {level}, st:{st}/{currLevelSLen-1}, counting number of times a change occurs: {count-1}\n")
-                        fLog.flush()
+                        with open(fLogName, "a") as fLog:
+                            fLog.write("\n###########################################################\n #############################################################\n")
+                            fLog.write(f"chV(in range of chValMax or max amount of change Values that can occur ={chValMax}): {chV}, chVal(or number of residue changed in this level):{chVal} current level: {level}, st:{st}/{currLevelSLen-1}, counting number of times a change occurs: {count-1}\n")
+                            fLog.flush()
 
                     if(debug):
                         stp.append_to_debug( __name__, sys._getframe().f_code.co_name,\
@@ -2031,8 +2051,9 @@ f"\n###########################################################\n ##############
                     skipValAll.append(skpVal)
 
                     if(log_file):
-                        fLog.write(f"chVal after goin through the iterative loop: {chVal}\n")
-                        fLog.flush()
+                        with open(fLogName, "a") as fLog:
+                            fLog.write(f"chVal after goin through the iterative loop: {chVal}\n")
+                            fLog.flush()
 
                     if(debug):
                         stp.append_to_debug( __name__, sys._getframe().f_code.co_name,\
@@ -2045,8 +2066,9 @@ f"\n###########################################################\n ##############
                         #If change value  =0, and there are still unknowns in the list-it is time to branch!!
                         if(LOURch0):
                            if(log_file):
-                               fLog.write(f"level:{level},In resolve ambiguity, in List Of Unknown Residue change0 (LOURcho): unknown {LOURch0} and length: {len(LOURch0)}\n")
-                               fLog.flush()
+                               with open(fLogName, "a") as fLog:
+                                   fLog.write(f"level:{level},In resolve ambiguity, in List Of Unknown Residue change0 (LOURcho): unknown {LOURch0} and length: {len(LOURch0)}\n")
+                                   fLog.flush()
                            if(debug):
                                stp.append_to_debug( __name__, sys._getframe().f_code.co_name,\
                                 f"chVal after goin through the iterative loop: {chVal}\n")
@@ -2058,9 +2080,10 @@ f"\n###########################################################\n ##############
                         #If change value=0, and there are still unknowns in the list-it is time to branch.
                         if(LOURch0):
                            if(log_file):
-                               fLog.write(f"level:{level},In resolve ambiguity, in List Of Unknown Residue change0 (LOURcho): unknown {LOURch0} and length: {len(LOURch0)}\n")
+                               with open(fLogName, "a") as fLog:
+                                fLog.write(f"level:{level},In resolve ambiguity, in List Of Unknown Residue change0 (LOURcho): unknown {LOURch0} and length: {len(LOURch0)}\n")
 
-                               fLog.flush()
+                                fLog.flush()
                            if(debug):
                                stp.append_to_debug( __name__, sys._getframe().f_code.co_name,\
                                        f"level:{level},In resolve ambiguity, in List Of Unknown Residue change0 (LOURcho): unknown {LOURch0} and length: {len(LOURch0)}\n")
@@ -2090,12 +2113,13 @@ f"\n###########################################################\n ##############
                            listOfStructsAll.append(S2branch)
                 
                            if(log_file):
-                               fLog.write(f"printing all list of structs: {listOfStructsAll}, its length: {len(listOfStructsAll)}\n")
-                               fLog.write(f"I am breaking out of loop as ChVal = {chVal} and branch of S has been created: {S2branch}\n")
-                               fLog.flush()
+                               with open(fLogName, "a") as fLog:
+                                   fLog.write(f"printing all list of structs: {listOfStructsAll}, its length: {len(listOfStructsAll)}\n")
+                                   fLog.write(f"Breaking out of loop as ChVal = {chVal} and branch of S has been created: {S2branch}\n")
+                                   fLog.flush()
 
                            if(debug):
-                               stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"printing all list of structs: {listOfStructsAll}, its length: {len(listOfStructsAll)}\n I am breaking out of loop as ChVal = {chVal} and branch of S has been created: {S2branch}\n")
+                               stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"printing all list of structs: {listOfStructsAll}, its length: {len(listOfStructsAll)}\n Breaking out of loop as ChVal = {chVal} and branch of S has been created: {S2branch}\n")
                            break###Breaking out of chValMax for loop
                         else:
                             ###If there are no more unknown residue, pls WRITE2PDB
@@ -2103,8 +2127,9 @@ f"\n###########################################################\n ##############
                             fPDBname = f"{fOutName}_{pdbFileNum}.pdb"
                             
                             if(log_file):
-                                fLog.write(f"I am now writing a file: {fPDBname} since currently my state is: chV: {chV}, chVal:{chVal} current level: {level}, st:{st}/{currLevelSLen-1}, counting number of times a change occurs: {count}\n")  
-                                fLog.flush()
+                                with open(fLogName, "a") as fLog:
+                                    fLog.write(f"Writing a file: {fPDBname} since currently my state is: chV: {chV}, chVal:{chVal} current level: {level}, st:{st}/{currLevelSLen-1}, counting number of times a change occurs: {count}\n")  
+                                    fLog.flush()
                             
                             if(debug):
                                 stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"I am now writing a file: {fPDBname} since currently my state is: chV: {chV}, chVal:{chVal} current level: {level}, st:{st}/{currLevelSLen-1}, counting number of times a change occurs: {count}\n")
@@ -2121,18 +2146,20 @@ f"\n###########################################################\n ##############
                     else:
 
                         if(log_file):
-                            #If change value is not yet zero-keep iterating over by updating the current struct to new struct
-                            fLog.write("\nNow assigning the new struct to current struct\n")
-                            fLog.flush() 
+                            #If change value is not yet zero-keep iterating over by updating the current struct to new struct   
+                            with open(fLogName, "a") as fLog:
+                                fLog.write("\nNow assigning the new structure to current structure\n")
+                                fLog.flush() 
 
                         if(debug):
-                            stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"\n Now assigning the new struct to current struct\n")
+                            stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"\n Now assigning the new structure to current structure\n")
                         structCurr = structNew
                 else:
                      if(log_file):
+                         with open(fLogName, "a") as fLog:
                          #If change value is not greater than 0 then break out of the loop.
-                         fLog.write(f"change value is not greater than 0. I am breaking out. \n")
-                         fLog.flush()
+                             fLog.write(f"change value is not greater than 0. I am breaking out. \n")
+                             fLog.flush()
 
                      if(debug):
                         stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"change value is not greater than 0. I am breaking out. \n")
@@ -2140,6 +2167,6 @@ f"\n###########################################################\n ##############
 
         #flatten the list of structures that are created for the new iteration and update list of current structures
         listOfStructsCurr = [item for sublist in LOS_newLevel for item in sublist]
-    if(log_file):fLog.close()
+
     return pdbFileNum, filesGen,listOfStructsAll,skipInfoAll, skipValAll
 
