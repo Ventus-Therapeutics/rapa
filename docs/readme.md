@@ -33,8 +33,8 @@ $<path to rapa folder>/src/rapa.py -pID [input_pdb_name] -o [out_name]
 $<path to rapa folder>/src/rapa.py -pID '1xl2_noH' -o '1xl2_out'  
 ```
 ##### Notes
-1. The input argument is the name of input PDB file without the extension **.pdb**
-2. The provided PDBs in the example folder have **no gaps, no steric clashes, no hydrogen atoms and has all residue names in AMBER format**, hence meeting the criterion to run RAPA on it.
+1. The input argument is the name of input PDB file **without** the extension **.pdb**
+2. The provided PDBs in the example folder have **no gaps, no steric clashes, no hydrogen atoms and has all residue names in AMBER format**, hence meeting the conditions to run RAPA on it.
 
 #### Command-Line Arguments  
 
