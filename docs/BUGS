@@ -1,0 +1,1 @@
+Fixed a bug in state_assignment.py at line 666:It should be: stp.get_all_unknown_GLU_OE_atoms

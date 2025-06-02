@@ -1,0 +1,417 @@
+diff --git a/src_clean/close_atoms.py b/src_clean/close_atoms.py
+index 4f3625a..1982622 100644
+--- a/src_clean/close_atoms.py
++++ b/src_clean/close_atoms.py
+@@ -548,8 +548,24 @@ def get_hydrogen_connected_to_donor(atomDonor,  debug=0):
+           atom3 =[]
+     return atom3
+ 
++def get_info_for_acceptorAt_donorAt(inputAt, debug=0):
++    struct = inputAt.parent.parent.parent.parent
++    ##Only known atoms are picked up here
++    customList = stp.get_known_donor_acceptor_list_for_one_atom(struct, inputAt, aaType = 'DONOR_ACCEPTOR_BOTH', debug=debug)
++    allCloseAtoms = get_all_close_atom_info_for_one_atom(inputAt, customList, debug=debug)
++    ##ONLY UNKNOWN LIST are picked up here!!ONLY to write2file!
++    closeAtmsTBDList= stp.get_unknown_donor_acceptor_list_for_one_atom(struct, inputAt, aaType = 'DONOR_ACCEPTOR_BOTH_TBD',debug=debug)
++
++    #close atoms that are not fixed yet
++    if(closeAtmsTBDList):
++        closeAtmsTBD = get_all_close_atom_info_for_one_atom(inputAt, closeAtmsTBDList, debug = 0)
++    else:
++        closeAtmsTBD = "NONE"
++
++    return [allCloseAtoms, closeAtmsTBD]
+ 
+-def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype = 'SP3', chV_levelVal ='level_00_chV_00_structureNum_00', debug=0 ):
++
++def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype = 'SP3', chV_levelVal ='level_00_chV_00_structureNum_00', debug=0, pre_cal_acceptor_info=None):
+ 
+     ''' 
+     objective: To compute energy for an acceptor atom
+@@ -582,17 +598,10 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
+     enValAcc = []
+     enSumAcc = 0
+ 
+-    ##Only known atoms are picked up here
+-    customList = stp.get_known_donor_acceptor_list_for_one_atom(struct, acceptorAt, aaType = 'DONOR_ACCEPTOR_BOTH', debug=debug)
+-    allCloseAtoms = get_all_close_atom_info_for_one_atom(acceptorAt, customList, debug=debug)
+-    ##ONLY UNKNOWN LIST are picked up here!!ONLY to write2file!
+-    closeAtmsTBDList= stp.get_unknown_donor_acceptor_list_for_one_atom(struct, acceptorAt, aaType = 'DONOR_ACCEPTOR_BOTH_TBD',debug=debug)
+-
+-    #close atoms that are not fixed yet
+-    if(closeAtmsTBDList):
+-        closeAtmsTBD = get_all_close_atom_info_for_one_atom(acceptorAt, closeAtmsTBDList, debug = 0)
+-    else:
+-        closeAtmsTBD = "NONE"
++    if pre_cal_acceptor_info is None:
++        [allCloseAtoms, closeAtmsTBD] = get_info_for_acceptorAt_donorAt(acceptorAt, debug)
++    else: 
++        [allCloseAtoms, closeAtmsTBD] = pre_cal_acceptor_info
+ 
+     donorAt_vec = donorAt.get_vector() ##Atom2
+     atom1 = acceptorAt
+@@ -682,8 +691,9 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
+     return enValAcc, enSumAcc
+ 
+ 
+-def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 'SP3', hName = 'H', chV_levelVal ='level_00_chV_00_structureNum_00', debug =0):
+-   
++def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive=1, atype='SP3', hName='H',
++                            chV_levelVal='level_00_chV_00_structureNum_00', debug=0, pre_cal_donor_info=None):
++
+     ''' 
+     objective: To compute energy for a donor atom
+     input:  -acceptorAt: current acceptor atom
+@@ -698,7 +708,7 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
+             -enSumAcc: sum of all energies associated with the acceptor atom
+     '''
+    
+-    
++
+     struct = donorAt.parent.parent.parent.parent
+     param = []
+     if(debug==1):
+@@ -716,19 +726,10 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
+     enValDon = []
+     enSumDon = 0
+ 
+-
+-    ##Only known atoms are picked up here
+-    customList = stp.get_known_donor_acceptor_list_for_one_atom(struct,  donorAt, aaType = 'DONOR_ACCEPTOR_BOTH', debug=debug)
+-    allCloseAtoms = get_all_close_atom_info_for_one_atom(donorAt, customList, debug=debug)
+-
+-    ##ONLY UNKNOWN LIST to write2file!##WRTOneAtom allows the atoms of self residues to be considerd as known
+-    closeAtmsTBDList = stp.get_unknown_donor_acceptor_list_for_one_atom(struct, donorAt, aaType = 'DONOR_ACCEPTOR_BOTH_TBD', debug=debug)
+-    
+-    #close atoms that are not fixed yet
+-    if(closeAtmsTBDList):
+-        closeAtmsTBD = get_all_close_atom_info_for_one_atom(donorAt, closeAtmsTBDList, debug=debug)
+-    else:
+-        closeAtmsTBD = "NONE"
++    if pre_cal_donor_info is None:
++        [allCloseAtoms, closeAtmsTBD] = get_info_for_acceptorAt_donorAt(donorAt)
++    else: 
++        [allCloseAtoms, closeAtmsTBD] = pre_cal_donor_info
+ 
+     myAcceptorAt = mra.my_atom(acceptorAt)
+     ##FOR attractive =0 : number of LPs = number of Hydrogen attached->atom3
+diff --git a/src_clean/hydrogen_placement_sp2.py b/src_clean/hydrogen_placement_sp2.py
+index 4300b20..599ac2d 100644
+--- a/src_clean/hydrogen_placement_sp2.py
++++ b/src_clean/hydrogen_placement_sp2.py
+@@ -548,6 +548,13 @@ def set_HH_and_lonepair_coords_TYR(aboveSp2, sp2, hhCoords, debug=0):
+     enVal =[]
+     enSumList = [] 
+ 
++    # these getting unknown/known residues take a long time
++    # but eventually when "compute_energy_donor" gets called
++    # but only the first argument of the function is needed to get unknown/known residue list
++    # so we're pulling these calcaultion out when the first argument is the same in the loop to reduce time
++    # Make it a dictionary so it's clear which atom's info is getting used
++    pre_cal_acceptor_donor_info = {'sp2': cats.get_info_for_acceptorAt_donorAt(sp2, debug)}
++
+     #Loop over the hydrogens coords-i.e going to be 2-(hhcoord/lpcoord) and find minimum energy interaction values to assign it position
+     for j in range(np.shape(hhCoords)[0]):
+         hh_coord= hhCoords[j]
+@@ -570,7 +577,10 @@ def set_HH_and_lonepair_coords_TYR(aboveSp2, sp2, hhCoords, debug=0):
+             if(myCloseAt.get_behavior().abbrev == 'ac'):
+                 if(debug==1):fd.close()
+                 ##Considering donor atom associated with reference atom
+-                enValDon, enSumDon = cats.compute_energy_as_donor(closeAt, hhCoords[j], sp2, attractive = 1, atype='SP2',  chV_levelVal = 'level_00_chV_00_structureNum_00', debug=debug )
++                enValDon, enSumDon = cats.compute_energy_as_donor(closeAt, hhCoords[j], sp2, attractive=1, atype='SP2',
++                                                                  chV_levelVal='level_00_chV_00_structureNum_00',
++                                                                  debug=debug, pre_cal_donor_info=
++                                                                  pre_cal_acceptor_donor_info['sp2'])
+                 if(debug==1):fd = open(fDebugName, "a")
+                 if(enValDon == []):
+                     if(debug==1):
+@@ -580,14 +590,22 @@ def set_HH_and_lonepair_coords_TYR(aboveSp2, sp2, hhCoords, debug=0):
+                 enSum = enSum + enSumDon
+                 if(debug==1):fd.close()
+                 #Considering acceptor atom associated with reference atom
+-                enValAcc, enSumAcc = cats.compute_energy_as_acceptor(sp2, lp_vec, closeAt,attractive = 0, atype = 'SP2',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
++                enValAcc, enSumAcc = cats.compute_energy_as_acceptor(sp2, lp_vec, closeAt,attractive = 0,
++                                                                     atype = 'SP2',  chV_levelVal
++                                                                     ='level_00_chV_00_structureNum_00', debug=debug,
++                                                                     pre_cal_acceptor_info=pre_cal_acceptor_donor_info[
++                                                                         'sp2'])
+                 if(debug==1):fd = open(fDebugName, "a")
+                 enSum = enSum + enSumAcc
+ 
+             if(myCloseAt.get_behavior().abbrev == 'do'):
+                 ##Considering acceptor atom associated with reference atom
+                 if(debug==1):fd.close()
+-                enValAcc, enSumAcc = cats.compute_energy_as_acceptor(sp2, lp_vec, closeAt, attractive = 1, atype='SP2',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
++                enValAcc, enSumAcc = cats.compute_energy_as_acceptor(sp2, lp_vec, closeAt, attractive = 1,
++                                                                     atype='SP2',  chV_levelVal
++                                                                     ='level_00_chV_00_structureNum_00', debug=debug,
++                                                                     pre_cal_acceptor_info=pre_cal_acceptor_donor_info[
++                                                                         'sp2'])
+                 if(debug==1):fd = open(fDebugName, "a")
+                 if not enValAcc:
+                     if(debug==1):
+@@ -596,7 +614,10 @@ def set_HH_and_lonepair_coords_TYR(aboveSp2, sp2, hhCoords, debug=0):
+                 enSum = enSum + enSumAcc
+                 ##Considering donor atom associated with reference atom
+                 if(debug==1):fd.close()
+-                enValDon, enSumDon = cats.compute_energy_as_donor(closeAt, hhCoords[j], sp2, attractive =0, atype = 'SP2',  chV_levelVal ='level_00_chV_00_structureNum_00', debug =debug)
++                enValDon, enSumDon = cats.compute_energy_as_donor(closeAt, hhCoords[j], sp2, attractive=0, atype='SP2',
++                                                                  chV_levelVal='level_00_chV_00_structureNum_00',
++                                                                  debug=debug, pre_cal_donor_info=
++                                                                  pre_cal_acceptor_donor_info['sp2'])
+                 if(debug==1):fd = open(fDebugName, "a")
+                 enSum = enSum + enSumDon
+         enSumList.append([hhCoords[j], enSum])
+diff --git a/src_clean/hydrogen_placement_sp3.py b/src_clean/hydrogen_placement_sp3.py
+index 5453aeb..de953c4 100644
+--- a/src_clean/hydrogen_placement_sp3.py
++++ b/src_clean/hydrogen_placement_sp3.py
+@@ -13,6 +13,7 @@ import setup_protein as stp
+ import close_atoms as cats
+ import my_math as mm
+ 
++
+ def check_bond_angle_for_all_connected_atoms(sp3,abvSP3, sp3Coord, abvSP3Coord, aat0, aat1, aat2, debug=0):
+ 
+     ''' Objective: checks/prints the bond angle with all attached atoms
+@@ -167,7 +168,8 @@ def get_all_connected_atoms(aat0CoordPrime, debug=0):
+     return aatPrime 
+ 
+     
+-def get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, aboveSp3, aatPrime, allCloseAtoms, ang, debug=0):
++def get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, aboveSp3, aatPrime, allCloseAtoms, ang,
++                                                                          debug=0, pre_cal_acceptor_donor_info=None):
+ 
+     '''
+         objective: energy value of all close Atoms for Hydrogens and Lone Pairs
+@@ -202,32 +204,54 @@ def get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, a
+ 
+         if(myCloseAt.get_behavior().abbrev == 'ac'):
+             ##Assume the first to be the Hydrogen atom (the others can be either two hydrogens-LYS or two lone pairs-SER/THR)
+-            aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
++            aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=1, atype='SP3',
++                                                                 chV_levelVal='level_00_chV_00_structureNum_00',
++                                                                 debug=debug, pre_cal_donor_info=
++                                                                 pre_cal_acceptor_donor_info['sp3'])
+ 
+             if(sp3.parent.resname == 'LYS'):
+                 #For the case of two hydrogens:
+-                aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3,  attractive=1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
+-                aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3, attractive=1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
++                aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3, attractive=1,
++                                                                     atype='SP3',
++                                                                     chV_levelVal='level_00_chV_00_structureNum_00',
++                                                                     debug=debug, pre_cal_donor_info=
++                                                                     pre_cal_acceptor_donor_info['sp3'])
++                aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3, attractive=1,
++                                                                     atype='SP3',
++                                                                     chV_levelVal='level_00_chV_00_structureNum_00',
++                                                                     debug=debug, pre_cal_donor_info=
++                                                                     pre_cal_acceptor_donor_info['sp3'])
+ 
+             else:
+-                aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt, attractive = 0, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
+-                aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt, attractive = 0, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
++                aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt, attractive = 0, atype = 'SP3', chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
++                aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt, attractive = 0, atype = 'SP3', chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
+                 
+             enSum = enSum + aat0enSum + aat1enSum + aat2enSum
+ 
+ 
+         if(myCloseAt.get_behavior().abbrev == 'do'):
+             ##Assume the first to be the Hydrogen atom (the others can be either two hydrogens-LYS or two lone pairs-SER/THR)
+-            aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=0, atype= 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
++            aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=0, atype='SP3',
++                                                                 chV_levelVal='level_00_chV_00_structureNum_00',
++                                                                 debug=debug, pre_cal_donor_info=
++                                                                 pre_cal_acceptor_donor_info['sp3'])
+ 
+             if(sp3.parent.resname == 'LYS'):
+                 #For the case of two hydrogens:
+-                aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3, attractive =0, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
+-                aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3, attractive =0, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
++                aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3, attractive=0,
++                                                                     atype='SP3',
++                                                                     chV_levelVal='level_00_chV_00_structureNum_00',
++                                                                     debug=debug, pre_cal_donor_info=
++                                                                     pre_cal_acceptor_donor_info['sp3'])
++                aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3, attractive=0,
++                                                                     atype='SP3',
++                                                                     chV_levelVal='level_00_chV_00_structureNum_00',
++                                                                     debug=debug, pre_cal_donor_info=
++                                                                     pre_cal_acceptor_donor_info['sp3'])
+ 
+             else:
+-                aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt, attractive = 1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
+-                aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt, attractive = 1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
++                aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt, attractive = 1, atype = 'SP3', chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
++                aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt, attractive = 1, atype = 'SP3', chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
+ 
+             enSum = enSum + aat0enSum + aat1enSum + aat2enSum
+ 
+@@ -261,6 +285,14 @@ def optimize_connected_atoms_by_rotation_in_plane(sp3, aboveSp3, aatPrime,allClo
+     #end angle for LYS: 120, and end angle for SER/THR: 360
+     endAng = mc.optRotAngle_LYS if(sp3.parent.resname == 'LYS') else mc.optRotAngle
+     
++
++    # these getting unknown/known residues take a long time
++    # but eventually when "compute_energy_donor" gets called
++    # but only the first argument of the function is needed to get unknown/known residue list
++    # so we're pulling these calcaultion out when the first argument is the same in the loop to reduce time
++    # Make it a dictionary so it's clear which atom's info is getting used
++    pre_cal_acceptor_donor_info= {'sp3': cats.get_info_for_acceptorAt_donorAt(sp3, debug)}
++
+     for ind,ang in enumerate(range(0,endAng,10)):
+         aatPrimeRot = np.einsum("ij,kj->ki", mm.get_rotation_matrix(ang, debug=debug), aatPrime)
+         if(debug==1):
+@@ -269,7 +301,9 @@ def optimize_connected_atoms_by_rotation_in_plane(sp3, aboveSp3, aatPrime,allClo
+         aatPrimeMat.append(aatPrimeRot)   
+ 
+         ##aat1 and aat2 will be acceptors if SER/THR or aa1 and aat2 will be donors if LYS #ACATS = All Close Atoms
+-        aat0Energy, aat1Energy, aat2Energy, enSum = get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, aboveSp3, aatPrimeMat[ind], allCloseAtoms, ang, debug=debug)               
++        aat0Energy, aat1Energy, aat2Energy, enSum = get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(
++            sp3, aboveSp3, aatPrimeMat[ind], allCloseAtoms, ang, debug=debug,
++            pre_cal_acceptor_donor_info=pre_cal_acceptor_donor_info)
+         sumEnergyInfo.append([ang, enSum])
+ 
+     #outputting it as an array
+diff --git a/src_clean/state_assignment.py b/src_clean/state_assignment.py
+index d95db4e..efd6699 100644
+--- a/src_clean/state_assignment.py
++++ b/src_clean/state_assignment.py
+@@ -15,7 +15,6 @@ import hydrogen_placement_sp3 as hsp3
+ import close_atoms as cats
+ 
+ 
+-
+ def setup_HIS(HISres, structure, HIStype = None, debug =0):
+ 
+     ''' 
+@@ -787,11 +786,16 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level,con, deb
+     struct = hvyAt.parent.parent.parent.parent  ###Since only one struct is being used. Lets usee hvy at struc
+     modelIDhvyAt = hvyAt.parent.parent.parent.id
+     chainIDhvyAt = hvyAt.parent.parent.id
+-   
++
++    # these getting unknown/known residues take a long time
++    # but eventually when "compute_energy_donor" gets called
++    # but only the first argument of the function is needed to get unknown/known residue list
++    # so we're pulling these calcaultion out when the first argument is the same in the loop to reduce time
++    # Make it a dictionary so it's clear which atom's info is getting used
++    pre_cal_donor_info = {'hvyAt': cats.get_info_for_acceptorAt_donorAt(hvyAt, debug)}
+     ##Iterating over all close atoms, and implement energy computation depending on close atom behavior 
+     #energy computation is done, since heavy atom behavior is already known-Its a DONOR!
+     for i in range(1, np.shape(allCloseAtoms)[0]):
+-         
+         currCloseAtom = allCloseAtoms[i][0]
+         closeAtomBehav = mra.my_atom(currCloseAtom).get_behavior().abbrev
+         currCloseResID = currCloseAtom.parent.id
+@@ -852,21 +856,33 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level,con, deb
+             #going over all the hyrogen atoms connected to the heavy atom
+             for hat in atomHs:
+                 if(closeAtomBehav=='do'):
+-                    enVal, enSum=cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=0, atype='SP2', hName=hat.id, chV_levelVal=chV_level, debug=debug)
++                    enVal, enSum= cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=0,
++                                                               atype='SP2', hName=hat.id, chV_levelVal=chV_level,
++                                                               debug=debug, pre_cal_donor_info=pre_cal_donor_info[
++                            'hvyAt'])
+                     enSumTotal = enSumTotal+enSum
+                     enValList.append(enVal)
+ 
+                 elif(closeAtomBehav=='ac'):
+                     #Next if it is an acceptor
+-                    enVal, enSum = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=1, atype='SP2',hName=hat.id, chV_levelVal=chV_level, debug=debug)
++                    enVal, enSum = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=1,
++                                                                atype='SP2', hName=hat.id, chV_levelVal=chV_level,
++                                                                debug=debug, pre_cal_donor_info=pre_cal_donor_info[
++                            'hvyAt'])
+                     enSumTotal = enSumTotal+enSum
+                     enValList.append(enVal)
+ 
+                 elif(closeAtomBehav=='bo'):
+                     #If both then-First acceptor
+-                    enVal0, enSum0 = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive = 1, atype = 'SP2', hName = hat.id, chV_levelVal = chV_level, debug=debug)
++                    enVal0, enSum0 = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=1,
++                                                                  atype='SP2', hName=hat.id, chV_levelVal=chV_level,
++                                                                  debug=debug, pre_cal_donor_info=pre_cal_donor_info[
++                            'hvyAt'])
+                     #Next donor
+-                    enVal1, enSum1 = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive = 0, atype = 'SP2', hName = hat.id, chV_levelVal = chV_level, debug=debug)
++                    enVal1, enSum1 = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=0,
++                                                                  atype='SP2', hName=hat.id, chV_levelVal=chV_level,
++                                                                  debug=debug, pre_cal_donor_info=pre_cal_donor_info[
++                            'hvyAt'])
+                     enSumTotal = enSumTotal+enSum0+enSum1
+                     enValList.append([enVal0, enVal1])
+                     
+@@ -915,6 +931,13 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level,con,
+         fd.flush()
+         stp.end_debug_file(__name__,sys._getframe().f_code.co_name, fd) 
+ 
++    # these getting unknown/known residues take a long time
++    # but eventually when "compute_energy_donor" gets called
++    # but only the first argument of the function is needed to get unknown/known residue list
++    # so we're pulling these calcaultion out when the first argument is the same in the loop to reduce time
++    # Make it a dictionary so it's clear which atom's info is getting used
++    pre_cal_acceptor_info = {'hvyAt': cats.get_info_for_acceptorAt_donorAt(hvyAt, debug)}
++
+     for i in range(1, np.shape(allCloseAtoms)[0]):
+         currCloseAtom = allCloseAtoms[i][0]
+         closeAtomBehav = mra.my_atom(currCloseAtom).get_behavior().abbrev
+@@ -970,13 +993,19 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level,con,
+ 
+                 if(closeAtomBehav == 'do'):
+                     #If close atom is a donor
+-                    enVal,enSum = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 1, atype = 'SP2', chV_levelVal = chV_level, debug=debug)
++                    enVal,enSum = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 1,
++                                                                  atype = 'SP2', chV_levelVal = chV_level,
++                                                                  debug=debug,
++                                                                  pre_cal_acceptor_info=pre_cal_acceptor_info['hvyAt'])
+                     #summing the total energy for a given heavy atom
+                     enSumTotal = enSumTotal+enSum
+                     enValList.append(enVal)                            
+                 elif(closeAtomBehav == 'ac'):
+                     #If close atom is an acceptor
+-                    enVal, enSum = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 0, atype = 'SP2', chV_levelVal = chV_level, debug=debug)
++                    enVal, enSum = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 0,
++                                                                   atype = 'SP2', chV_levelVal = chV_level,
++                                                                   debug=debug,
++                                                                   pre_cal_acceptor_info=pre_cal_acceptor_info['hvyAt'])
+                     #summing the total energy for a given heavy atom
+                     enSumTotal=enSumTotal+enSum
+                     enValList.append(enVal)
+@@ -984,8 +1013,16 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level,con,
+                 elif(closeAtomBehav == 'bo'):
+                     #If close atom is both then taking the donor first(attractive=1) and then acceptor(attractive=0)
+                     #remember our hvy atom is still an acceptor!!
+-                    enVal0,enSum0 = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 1, atype = 'SP2', chV_levelVal = chV_level, debug=debug)
+-                    enVal1,enSum1 = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 0, atype = 'SP2', chV_levelVal = chV_level, debug=debug)
++                    enVal0,enSum0 = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 1,
++                                                                    atype = 'SP2', chV_levelVal = chV_level,
++                                                                    debug=debug,
++                                                                    pre_cal_acceptor_info=pre_cal_acceptor_info[
++                                                                        'hvyAt'])
++                    enVal1,enSum1 = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 0,
++                                                                    atype = 'SP2', chV_levelVal = chV_level,
++                                                                    debug=debug,
++                                                                    pre_cal_acceptor_info=pre_cal_acceptor_info[
++                                                                        'hvyAt'])
+ 
+                     #summing the total energy for a given heavy atom
+                     enSumTotal=enSumTotal+enSum0+enSum1
+@@ -1016,6 +1053,7 @@ def compute_energy_for_given_atoms(resState, givenAtoms, chV_level, con, debug=0
+ 
+     enSumTotal = 0
+     enSumForHvys = []
++
+    
+     #Iterate over the given atoms in the input (as we need the energy for all those atoms wrt its close atoms)
+     for hvyAt in givenAtoms:
+@@ -1787,6 +1825,7 @@ def iterate_list_of_unknown_residues_and_set_states(structure,level, chV_level,
+     fLog.write(f"\n The unknowns present: {uniqRes} \n\n")
+     fLog.flush()
+ 
++    
+     if(debug==1):
+         stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"\n Level:{level}, structure number on this level: {numCount}, unknown residue to iterate over: {unknownResIter}, and its length: {len(unknownResIter)}\n\n The unknowns present: {uniqRes} \n\n", debug=0)
+     
