@@ -1,0 +1,28 @@
+#!/bin/tcsh
+# Job name:
+#SBATCH --job-name=rapa
+#SBATCH --output=rapa_slurm.log
+#
+# Account:
+#SBATCH --account=account_name
+#
+# Partition:
+#
+#SBATCH --partition=split_gpu
+
+# Number of nodes:
+#SBATCH --nodes=1
+#
+#SBATCH --ntasks=1
+#
+#SBATCH --cpus-per-task=1
+#
+## Command(s) to run -- Replace this with your own
+## $1 is the pdb file name
+## $2 is the out file prefix name
+
+
+
+
+rapa.py -pID $1 -o $2 
+

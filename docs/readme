@@ -1,0 +1,96 @@
+
+RAPA (Rotamer And Protonation Assignment) is a tool that aids in protein preparation by assigning various protonation and rotamer states of unassigned amino-acids of the given structure and outputs all the models that are energetically accessible. 
+
+##################################################################
+Preparing files for RAPA:
+##################################################################
+The input PDB file provided must fulfill the following criterion.
+
+1)No gaps(in terms of missing residues or missing atoms) must be present in the protein structure.
+2)No steric clashes must occur in the protein structure.
+3)No hydrogen must be present in the PDB file.
+4)All residue names must be in AMBER format.
+
+#################################################################################
+How to run this tool?
+#################################################################################
+
+Add the following to your ~/.bashrc:
+    source $SCRIPTS_ROOT/rapa.sh
+
+After adding the above line to your .bashrc, please open a new shell window so that all the files get appropriately sourced.
+
+
+
+The input command-line arguments that can be added are the following,
+
+    1) -pID or --protein_id (a required argument, type=string): is an input flag with data type string of the PDB input file name. It is a required argument. RAPA will not run without an input PDB file. For example, for running RAPA on a protein '1bcd.pdb', the user needs to provide an input flag as -pID '1bcd' or --protein_id '1bcd'.
+
+    2) -o or --out_name (an optional argument, type=string, default value='[pID]_out'): is a flag with data type string that the program will use for the prefix of the output PDB files that are generated. For example, if the user provides a -o flag for an input protein '1bcd.pdb' as -o '1bcd_o' then the output PDB files will be: 1bcd_o_0.pdb, 1bcd_o_1.pdb, 1bcd_o_2.pdb, 1bcd_o_3.pdb,...etc. If the user does not provide this flag, RAPA uses default option and the output PDB files would be: 1bcd_out_0.pdb, 1bcd_out_1.pdb, 1bcd_out_2.pdb, 1bcd_out_3.pdb,...etc.
+
+    3) -hlp or --HLPsp2_known (an optional argument, type=int, default value=0): is a flag with data type integer value of 0 or 1 to indicate if sp2 hydrogen and lone pair coordinates have been added in a new PDB file with suffix "_HLPsp2.pdb" for the given input structure. If a user is running this tool for the first time for a particular protein, then the user should provide the value 0(which is also the default value) for this flag since the new PDB file (with suffix "_HLPsp2.pdb") will not be present. If the user already ran RAPA once for the input PDB then there would be a file with the suffix "_HLPsp2.pdb" created in the folder associated with that protein. If the file with suffix "_HLPsp2.pdb" is already present, then the user can provide the integer value 1 for this flag. It will help save some computation time. Please note for each protein this file will be distinct. For example, if there are two proteins: 1xl2.pdb and 1bcd.pdb, each of them will have an independent "_HLPsp2.pdb" file, i.e "1xl2_HLPsp2.pdb" and "1bcd_HLPsp2.pdb". These cannot be used interchangeably.
+
+    4) -d or --debug (an optional argument, type=int, default value=0): is a flag with data type integer value of 0 or 1 to indicate if the user needs to debug or needs to look at more information regarding the run. If the debug flag is switched on, then it will produce a .debug file. This file will have additional information regarding the run. Please note, if the flag value provided is 1, then the program will slow down due to generation of the debug file. Users must switch on this flag only for debug purposes.
+
+   5) -v or --version: is a flag to check the version of RAPA.
+
+Examples to run RAPA on a PDB, '1xl2_spruce_noH.pdb',
+rapa.py -pID [input_pdb_name]  -o [out_name] -hlp 0 -d 0
+rapa.py -pID '1xl2_spruce_noH' -o '1xl2_out' -hlp 0 -d 0
+
+Since the last three arguments are optional, this will also run RAPA:
+rapa.py -pID '1xl2_spruce_noH'
+
+However it is suggested to provide the output name prefix that the user desires. 
+
+
+Submit to SLURM queue:
+
+A sample rapa_slurm script is available at /usr/prog/rapa/version0.6r1/rapa_slurm. Please modify it if required as per your convenience.
+There are two required arguments for the script: $1=input PDB name and $2= output prefix name. 
+Usage:  
+	sbatch rapa_slurm [input_pdb_name] [out_name]
+
+For example, if you want to run RAPA on PDB: 1bcd.pdb via SLURM with output PDB prefix 1bcd_out, then do the following.
+   	sbatch rapa_slurm 1bcd 1bcd_out
+
+################################################################################
+#Files and folders generated from rapa:
+#################################################################################
+
+The files and folders generated from RAPA are as follows.
+
+1) [input_pdb_name]_HLPsp2.pdb: This file is created for each input PDB and used by RAPA. It has sp2 hydrogen and lone pair coordinates computed and added. It is also useful for debugging.
+2) outputs_[input_pdb_name]: is a folder which contains output files from RAPA.
+
+  2.1) [input_pdb_name].info: This is a file that has basic information regarding the run. 
+			      2.1.a)It provides the name of the PDB file, ID and number of models and chains in the structure. 
+			       
+			      2.1.b)It gives information regarding residue number, atom IDs of ASPs/GLUs that RAPA investigates.
+                                    It also provides information regarding any unresolved ASPs or GLUs with relevant
+                                    residue numbers, atom IDs and distance information. Note if there are more than 2 ASPs/GLUs within hydrogen bonding distance
+                                    to each other, then RAPA does not resolve those residues. Users must intervene in this case.
+
+                              2.1.c)At the end of the run, it gives time taken for the run, number of output PDB files produced (by RAPA) and its path.
+
+  2.2) [input_pdb_name].log: This is a log file with more details of the run.
+  2.3) pdb_out_[input_pdb_name]: This folder contains all the PDB output files generated by RAPA.
+
+
+
+#################################################################################
+Results from rapa
+#################################################################################
+
+All the output PDB files are generated in the folder:
+outputs_[input_pdb_name]/pdb_out_[input_pdb_name]/
+
+
+Info file to check after the run:./outputs_[input_pdb_name]/[input_pdb_name].info
+This is a file with basic information regarding the run. At the end of the run, it provides 
+the number of PDB output files generated and its path. It also provides information 
+regarding any unresolved ASPs or GLUs with relevant residue number and atom IDs.
+Note if there are more than 2 ASPs/GLUs within hydrogen bonding distance to each other, then the code does not
+resolve those residues. Users must intervene in this case.
+
+
