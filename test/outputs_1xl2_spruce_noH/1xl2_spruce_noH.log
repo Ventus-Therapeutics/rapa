@@ -1,0 +1,620 @@
+The PDB ID being used: 1xl2_spruce_noH and start time is: 41166036.8839545
+
+The structure has number of models 1: [<Model id=0>] and number of chains: 2: [<Chain id=A>, <Chain id=B>]
+
+Collected atoms for chain: <Chain id=A> and now I will fix backbone H 
+Collected atoms for chain: <Chain id=B> and now I will fix backbone H 
+Writing file at: 1xl2_spruce_noH_HLPsp2.pdb  
+After adding the hydrogens..
+
+Checking for unknown ASPs
+potUnknownAtom1: [], potunknownAtom2: [<Atom OD2>]
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: [<Atom OD2>]
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+
+Checking for unknown GLUs
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+potUnknownAtom1: [], potunknownAtom2: []
+###################################### 
+###################################### 
+
+
+Got unknown ASPs/GLUs: [<Residue ASP het=  resseq=25 icode= >, <Residue ASP het=  resseq=25 icode= >] with atoms [<Atom OD2>, <Atom OD2>].
+ And relevant info: [[<Atom OD2>, 25, <Atom OD2>, 25, 2.8664], [<Atom OD2>, 25, <Atom OD2>, 25, 2.8664]]
+
+
+Got unknown atoms [<Atom OD2>, <Atom OD2>].
+ And relevant info:
+ [[<Atom OD2>, 25, <Atom OD2>, 25, 2.8664], [<Atom OD2>, 25, <Atom OD2>, 25, 2.8664]]
+Starting a new level:1
+In the OUTER MOST loop where level is: 1 and length of structure list(S):1
+
+###########################################################
+ #############################################################
+chV(in range of chValMax or max amount of change Values that can occur =15): 1, chVal(or number of residue changed in this level):1 current level: 1, st:0/0, counting number of times a change occurs: 0
+
+ Level:1, structure number on this level: 1, unknown residue to iterate over: [<Residue GLN het=  resseq=2 icode= >, <Residue GLN het=  resseq=7 icode= >, <Residue GLN het=  resseq=18 icode= >, <Residue ASP het=  resseq=25 icode= >, <Residue GLN het=  resseq=58 icode= >, <Residue GLN het=  resseq=61 icode= >, <Residue HIS het=  resseq=69 icode= >, <Residue ASN het=  resseq=83 icode= >, <Residue ASN het=  resseq=88 icode= >, <Residue GLN het=  resseq=92 icode= >, <Residue ASN het=  resseq=98 icode= >, <Residue GLN het=  resseq=2 icode= >, <Residue GLN het=  resseq=7 icode= >, <Residue GLN het=  resseq=18 icode= >, <Residue ASP het=  resseq=25 icode= >, <Residue GLN het=  resseq=58 icode= >, <Residue GLN het=  resseq=61 icode= >, <Residue HIS het=  resseq=69 icode= >, <Residue ASN het=  resseq=83 icode= >, <Residue ASN het=  resseq=88 icode= >, <Residue GLN het=  resseq=92 icode= >, <Residue ASN het=  resseq=98 icode= >], and its length: 22
+
+
+ The unknowns present: dict_items([('GLN', 12), ('ASP', 2), ('HIS', 2), ('ASN', 6)]) 
+
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 1/22 and unknown res is: <Residue GLN het=  resseq=2 icode= > and its known val:0 and is rotamer:0, SKPVAL:0, ChangeVal: 0
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: GLN, with ID 2 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 2, 'GLN', 'ac', 0.0], [<Atom NE2>, 2, 'GLN', 'do', 2.2511406], [<Atom OG1>, 96, 'THR', 'bo', 3.441951]] and enSumTotal is: 0
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=96 icode= >, 96 of chain: <Chain id=B> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+Side chain hydrogen placed, for <Residue THR het=  resseq=96 icode= > with chain: <Chain id=B>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum acceptor from func:1.2369370583779773 and enSumTotal:1.2369370583779773
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 2, 'GLN', 'do', 0.0], [<Atom OE1>, 2, 'GLN', 'ac', 2.2511406]] and enSumTotal is: 1.2369370583779773
+energy sum donor from func:0.0 and enSumTotal:1.2369370583779773 
+For this state:<Residue GLN het=  resseq=2 icode= > tot energy is: 1.2369370583779773
+************************************************************************
+************************************************************************
+************************************************************************
+State: GLNR, with ID 2 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 2, 'GLN', 'ac', 0.0], [<Atom NE2>, 2, 'GLN', 'do', 2.2511406]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 2, 'GLN', 'do', 0.0], [<Atom OE1>, 2, 'GLN', 'ac', 2.2511406], [<Atom OG1>, 96, 'THR', 'bo', 3.441951]] and enSumTotal is: 0.0
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=96 icode= >, 96 of chain: <Chain id=B> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+Side chain hydrogen placed, for <Residue THR het=  resseq=96 icode= > with chain: <Chain id=B>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum donor from func:-0.8021168574648092 and enSumTotal:-0.8021168574648092 
+For this state:<Residue GLN het=  resseq=2 icode= > tot energy is: -0.8021168574648092
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue GLN het=  resseq=2 icode= > of <Chain id=A> and I am not on HIS or all my HIS energies are ZERO
+
+State Set! The energies of :<Residue GLN het=  resseq=2 icode= > is -0.8021168574648092 and <Residue GLN het=  resseq=2 icode= > is 1.2369370583779773, Saving residue: GLN to residue state corresponding to minimum energy  i.e -0.8021168574648092 and isRotamer:1
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 2/22 and unknown res is: <Residue GLN het=  resseq=7 icode= > and its known val:0 and is rotamer:0, SKPVAL:0, ChangeVal: 1
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: GLN, with ID 7 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 7, 'GLN', 'ac', 0.0], [<Atom NE2>, 7, 'GLN', 'do', 2.2393956]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 7, 'GLN', 'do', 0.0], [<Atom OE1>, 7, 'GLN', 'ac', 2.2393956]] and enSumTotal is: 0.0
+energy sum donor from func:0.0 and enSumTotal:0.0 
+For this state:<Residue GLN het=  resseq=7 icode= > tot energy is: 0.0
+************************************************************************
+************************************************************************
+************************************************************************
+State: GLNR, with ID 7 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 7, 'GLN', 'ac', 0.0], [<Atom NE2>, 7, 'GLN', 'do', 2.2393956]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 7, 'GLN', 'do', 0.0], [<Atom OE1>, 7, 'GLN', 'ac', 2.2393956]] and enSumTotal is: 0.0
+energy sum donor from func:0.0 and enSumTotal:0.0 
+For this state:<Residue GLN het=  resseq=7 icode= > tot energy is: 0.0
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue GLN het=  resseq=7 icode= > of <Chain id=A> and I am not on HIS or all my HIS energies are ZERO
+
+ALL ENERGIES = 0, Saving residue: <Residue GLN het=  resseq=7 icode= > to residue state corresponding to minimum energy  i.e 0.0 and isRotamer:0
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 3/22 and unknown res is: <Residue GLN het=  resseq=18 icode= > and its known val:0 and is rotamer:0, SKPVAL:0, ChangeVal: 2
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: GLN, with ID 18 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 18, 'GLN', 'ac', 0.0], [<Atom NE2>, 18, 'GLN', 'do', 2.2749748]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 18, 'GLN', 'do', 0.0], [<Atom OE1>, 18, 'GLN', 'ac', 2.2749748]] and enSumTotal is: 0.0
+energy sum donor from func:0.0 and enSumTotal:0.0 
+For this state:<Residue GLN het=  resseq=18 icode= > tot energy is: 0.0
+************************************************************************
+************************************************************************
+************************************************************************
+State: GLNR, with ID 18 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 18, 'GLN', 'ac', 0.0], [<Atom NE2>, 18, 'GLN', 'do', 2.2749748]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 18, 'GLN', 'do', 0.0], [<Atom OE1>, 18, 'GLN', 'ac', 2.2749748]] and enSumTotal is: 0.0
+energy sum donor from func:0.0 and enSumTotal:0.0 
+For this state:<Residue GLN het=  resseq=18 icode= > tot energy is: 0.0
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue GLN het=  resseq=18 icode= > of <Chain id=A> and I am not on HIS or all my HIS energies are ZERO
+
+ALL ENERGIES = 0, Saving residue: <Residue GLN het=  resseq=18 icode= > to residue state corresponding to minimum energy  i.e 0.0 and isRotamer:0
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 4/22 and unknown res is: <Residue ASP het=  resseq=25 icode= > and its known val:0 and is rotamer:0, SKPVAL:0, ChangeVal: 3
+checked for close atoms and close atoms are present!!
+
+Atom found in hbonding distance neighborhood of OD1 belonging to <Residue ASP het=  resseq=25 icode= > of <Chain id=A> is : [],
+             and  Atom found in hbonding distance neighborhood of OD2 belonging to <Residue ASP het=  resseq=25 icode= > of <Chain id=A> is : [<Atom OD2>] 
+The unknownASP/GLU pair for <Residue ASP het=  resseq=25 icode= > of <Chain id=A> is:  <Residue ASP het=  resseq=25 icode= > of chain: <Chain id=B>
+Need to create ASH from ASP_A:<Residue ASP het=  resseq=25 icode= > from <Chain id=A>, and <Residue ASP het=  resseq=25 icode= > from from <Chain id=B> with minimum distance: 4.208974838256836.
+     All distances from lone pair(LP3/LP4 or LP5/LP6) associated with OD of ASP_A to OD of ASP_B: ['ODA_LP3A_OD1B', 'ODA_LP4A_OD1B', 'ODA_LP3A_OD2B', 'ODA_LP4A_OD2B'] are: [4.7712893, 6.3974886, 4.208975, 5.481134]. Dropping LP:<Atom LP3> as it is associated with minimum distance 
+Need to create ASH from ASP_A:<Residue ASP het=  resseq=25 icode= > from <Chain id=A>, and <Residue ASP het=  resseq=25 icode= > from from <Chain id=B> with minimum distance: 2.2724854946136475.
+     All distances from lone pair(LP3/LP4 or LP5/LP6) associated with OD of ASP_A to OD of ASP_B: ['ODA_LP3A_OD1B', 'ODA_LP4A_OD1B', 'ODA_LP3A_OD2B', 'ODA_LP4A_OD2B'] are: [3.3319461, 4.571143, 2.2724855, 2.9105568]. Dropping LP:<Atom LP5> as it is associated with minimum distance 
+Need to create ASH from ASP_A:<Residue ASP het=  resseq=25 icode= > from <Chain id=B>, and <Residue ASP het=  resseq=25 icode= > from from <Chain id=A> with minimum distance: 3.834911346435547.
+     All distances from lone pair(LP3/LP4 or LP5/LP6) associated with OD of ASP_A to OD of ASP_B: ['ODA_LP3A_OD1B', 'ODA_LP4A_OD1B', 'ODA_LP3A_OD2B', 'ODA_LP4A_OD2B'] are: [6.3642735, 4.680472, 5.229838, 3.8349113]. Dropping LP:<Atom LP4> as it is associated with minimum distance 
+Need to create ASH from ASP_A:<Residue ASP het=  resseq=25 icode= > from <Chain id=B>, and <Residue ASP het=  resseq=25 icode= > from from <Chain id=A> with minimum distance: 2.1138579845428467.
+     All distances from lone pair(LP3/LP4 or LP5/LP6) associated with OD of ASP_A to OD of ASP_B: ['ODA_LP3A_OD1B', 'ODA_LP4A_OD1B', 'ODA_LP3A_OD2B', 'ODA_LP4A_OD2B'] are: [4.9396243, 3.5435452, 3.1189115, 2.113858]. Dropping LP:<Atom LP6> as it is associated with minimum distance 
+Atom found in hbonding distance neighborhood of OD1 belonging to <Residue ASP het=  resseq=25 icode= > of <Chain id=A> is : [],
+             and  Atom found in hbonding distance neighborhood of OD2 belonging to <Residue ASP het=  resseq=25 icode= > of <Chain id=A> is : [<Atom OD2>] 
+The unknownASP/GLU pair for <Residue ASP het=  resseq=25 icode= > of <Chain id=A> is:  <Residue ASP het=  resseq=25 icode= > of chain: <Chain id=B>
+************************************************************************
+State: ASH_OD1A, with ID 25 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1>, 25, 'ASH', 'ac', 0.0], [<Atom OD2>, 25, 'ASH', 'bo', 2.2009478], [<Atom N>, 27, 'GLY', 'do', 2.9280992], [<Atom O>, 25, 'ASH', 'ac', 3.1916494], [<Atom N>, 26, 'THR', 'do', 3.362674], [<Atom N>, 28, 'ALA', 'do', 3.3805642], [<Atom N>, 27, 'GLY', 'do', 3.3843656]] and enSumTotal is: 0
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=26 icode= >, 26 of chain: <Chain id=A> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+Side chain hydrogen placed, for <Residue THR het=  resseq=26 icode= > with chain: <Chain id=A>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum acceptor from func:-0.9232596702426017 and enSumTotal:-0.9232596702426017
+Evaluate given residue state, hvyAt: <Atom OD2> and All close atoms: [[<Atom OD2>, 25, 'ASH', 'bo', 0.0], [<Atom OD1>, 25, 'ASH', 'ac', 2.2009478]] and enSumTotal is: -0.9232596702426017
+For this state:<Residue ASH het=  resseq=25 icode= > tot energy is: -0.9232596702426017
+************************************************************************
+************************************************************************
+************************************************************************
+State: ASH_OD2A, with ID 25 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1>, 25, 'ASH', 'ac', 0.0], [<Atom OD2>, 25, 'ASH', 'bo', 2.2009478]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom OD2> and All close atoms: [[<Atom OD2>, 25, 'ASH', 'bo', 0.0], [<Atom OD1>, 25, 'ASH', 'ac', 2.2009478], [<Atom N>, 27, 'GLY', 'do', 2.9280992], [<Atom O>, 25, 'ASH', 'ac', 3.1916494], [<Atom N>, 26, 'THR', 'do', 3.362674], [<Atom N>, 28, 'ALA', 'do', 3.3805642], [<Atom N>, 27, 'GLY', 'do', 3.3843656]] and enSumTotal is: 0.0
+For this state:<Residue ASH het=  resseq=25 icode= > tot energy is: 0.0
+************************************************************************
+************************************************************************
+************************************************************************
+State: ASH_OD1B, with ID 25 and chain: <Chain id=B> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1>, 25, 'ASP', 'ac', 0.0], [<Atom OD2>, 25, 'ASP', 'ac', 2.2009478]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom OD2> and All close atoms: [[<Atom OD2>, 25, 'ASP', 'ac', 0.0], [<Atom OD1>, 25, 'ASP', 'ac', 2.2009478], [<Atom N>, 27, 'GLY', 'do', 2.9280992], [<Atom O>, 25, 'ASP', 'ac', 3.1916494], [<Atom N>, 26, 'THR', 'do', 3.362674], [<Atom N>, 28, 'ALA', 'do', 3.3805642], [<Atom N>, 27, 'GLY', 'do', 3.3843656]] and enSumTotal is: 0.0
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=26 icode= >, 26 of chain: <Chain id=A> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+Side chain hydrogen placed, for <Residue THR het=  resseq=26 icode= > with chain: <Chain id=A>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum acceptor from func:-0.9232596702426017 and enSumTotal:-0.9232596702426017
+For this state:<Residue ASP het=  resseq=25 icode= > tot energy is: -0.9232596702426017
+************************************************************************
+************************************************************************
+************************************************************************
+State: ASH_OD2B, with ID 25 and chain: <Chain id=B> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1>, 25, 'ASP', 'ac', 0.0], [<Atom OD2>, 25, 'ASP', 'ac', 2.2009478]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom OD2> and All close atoms: [[<Atom OD2>, 25, 'ASP', 'ac', 0.0], [<Atom OD1>, 25, 'ASP', 'ac', 2.2009478], [<Atom N>, 27, 'GLY', 'do', 2.9280992], [<Atom O>, 25, 'ASP', 'ac', 3.1916494], [<Atom N>, 26, 'THR', 'do', 3.362674], [<Atom N>, 28, 'ALA', 'do', 3.3805642], [<Atom N>, 27, 'GLY', 'do', 3.3843656]] and enSumTotal is: 0.0
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=26 icode= >, 26 of chain: <Chain id=A> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+Side chain hydrogen placed, for <Residue THR het=  resseq=26 icode= > with chain: <Chain id=A>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum acceptor from func:-0.9232596702426017 and enSumTotal:-0.9232596702426017
+For this state:<Residue ASP het=  resseq=25 icode= > tot energy is: -0.9232596702426017
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue ASP het=  resseq=25 icode= > of <Chain id=A> and I am not on HIS or all my HIS energies are ZERO
+
+SKIPPING: <Residue ASP het=  resseq=25 icode= > as lowest vals:-0.9232596702426017 and -0.9232596702426017, degenergate Info: [[<Residue ASH het=  resseq=25 icode= > -0.9232596702426017
+  <Structure id=1xl2_spruce_noH_HLPsp2>
+  <Residue ASH het=  resseq=25 icode= > 'ASH_OD1A']
+ [<Residue ASP het=  resseq=25 icode= > -0.9232596702426017
+  <Structure id=1xl2_spruce_noH_HLPsp2>
+  <Residue ASP het=  resseq=25 icode= > 'ASH_OD1B']
+ [<Residue ASP het=  resseq=25 icode= > -0.9232596702426017
+  <Structure id=1xl2_spruce_noH_HLPsp2>
+  <Residue ASP het=  resseq=25 icode= > 'ASH_OD2B']] with [0.0 0.0 0.0]<1.0
+###########################################################################
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 5/22 and unknown res is: <Residue GLN het=  resseq=58 icode= > and its known val:0 and is rotamer:0, SKPVAL:1, ChangeVal: 3
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: GLN, with ID 58 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 58, 'GLN', 'ac', 0.0], [<Atom NE2>, 58, 'GLN', 'do', 2.2206361], [<Atom NZ>, 43, 'LYS', 'do', 3.8146555]] and enSumTotal is: 0
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue LYS het=  resseq=43 icode= > of chain: <Chain id=A> 
+Taking h-bonding possibility at angle 0, as all energy values=0
+Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12 
+Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12 
+Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12 
+Side chain hydrogen placed, for <Residue LYS het=  resseq=43 icode= > with chain:<Chain id=A>, added 3 Hs, with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 58, 'GLN', 'do', 0.0], [<Atom OE1>, 58, 'GLN', 'ac', 2.2206361], [<Atom OD1>, 60, 'ASP', 'ac', 2.9750948], [<Atom OD2>, 60, 'ASP', 'ac', 3.652299]] and enSumTotal is: 0.0
+energy sum donor from func:-5.745785922414059 and enSumTotal:-5.745785922414059 
+For this state:<Residue GLN het=  resseq=58 icode= > tot energy is: -5.745785922414059
+************************************************************************
+************************************************************************
+************************************************************************
+State: GLNR, with ID 58 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 58, 'GLN', 'ac', 0.0], [<Atom NE2>, 58, 'GLN', 'do', 2.2206361], [<Atom OD1>, 60, 'ASP', 'ac', 2.9750948], [<Atom OD2>, 60, 'ASP', 'ac', 3.652299]] and enSumTotal is: 0
+energy sum acceptor from func:6.053004140033472 and enSumTotal:6.053004140033472
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 58, 'GLN', 'do', 0.0], [<Atom OE1>, 58, 'GLN', 'ac', 2.2206361], [<Atom NZ>, 43, 'LYS', 'do', 3.8146555]] and enSumTotal is: 6.053004140033472
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue LYS het=  resseq=43 icode= > of chain: <Chain id=A> 
+Taking h-bonding possibility at angle 0, as all energy values=0
+Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12 
+Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12 
+Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12 
+Side chain hydrogen placed, for <Residue LYS het=  resseq=43 icode= > with chain:<Chain id=A>, added 3 Hs, with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum donor from func:0.0 and enSumTotal:6.053004140033472 
+For this state:<Residue GLN het=  resseq=58 icode= > tot energy is: 6.053004140033472
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue GLN het=  resseq=58 icode= > of <Chain id=A> and I am not on HIS or all my HIS energies are ZERO
+
+State Set! The energies of :<Residue GLN het=  resseq=58 icode= > is -5.745785922414059 and <Residue GLN het=  resseq=58 icode= > is 6.053004140033472, Saving residue: GLN to residue state corresponding to minimum energy  i.e -5.745785922414059 and isRotamer:0
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 6/22 and unknown res is: <Residue GLN het=  resseq=61 icode= > and its known val:0 and is rotamer:0, SKPVAL:1, ChangeVal: 4
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: GLN, with ID 61 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 61, 'GLN', 'ac', 0.0], [<Atom NE2>, 61, 'GLN', 'do', 2.237798]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 61, 'GLN', 'do', 0.0], [<Atom OE1>, 61, 'GLN', 'ac', 2.237798]] and enSumTotal is: 0.0
+energy sum donor from func:0.0 and enSumTotal:0.0 
+For this state:<Residue GLN het=  resseq=61 icode= > tot energy is: 0.0
+************************************************************************
+************************************************************************
+************************************************************************
+State: GLNR, with ID 61 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 61, 'GLN', 'ac', 0.0], [<Atom NE2>, 61, 'GLN', 'do', 2.237798]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 61, 'GLN', 'do', 0.0], [<Atom OE1>, 61, 'GLN', 'ac', 2.237798]] and enSumTotal is: 0.0
+energy sum donor from func:0.0 and enSumTotal:0.0 
+For this state:<Residue GLN het=  resseq=61 icode= > tot energy is: 0.0
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue GLN het=  resseq=61 icode= > of <Chain id=A> and I am not on HIS or all my HIS energies are ZERO
+
+ALL ENERGIES = 0, Saving residue: <Residue GLN het=  resseq=61 icode= > to residue state corresponding to minimum energy  i.e 0.0 and isRotamer:0
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 7/22 and unknown res is: <Residue HIS het=  resseq=69 icode= > and its known val:0 and is rotamer:0, SKPVAL:1, ChangeVal: 5
+checked for close atoms and close atoms are present!!
+
+No Lone pairs to place for HIStype:HIP, and unknown residue: <Residue HIS het=  resseq=69 icode= > on chain: <Chain id=A>Tried to place lone pairs but no Lone pairs for: <Residue HIP het=  resseq=69 icode= > on chain: <Chain id=A> 
+************************************************************************
+State: HIE, with ID 69 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom ND1> and All close atoms: [[<Atom ND1>, 69, 'HIE', 'ac', 0.0], [<Atom NE2>, 69, 'HIE', 'do', 2.1526225], [<Atom O>, 93, 'ILE', 'ac', 3.8019764]] and enSumTotal is: 0
+energy sum acceptor from func:0.7071935780115517 and enSumTotal:0.7071935780115517
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 69, 'HIE', 'do', 0.0], [<Atom ND1>, 69, 'HIE', 'ac', 2.1526225], [<Atom O>, 99, 'PHE', 'ac', 3.8994594]] and enSumTotal is: 0.7071935780115517
+energy sum donor from func:0.0 and enSumTotal:0.7071935780115517 
+For this state:<Residue HIE het=  resseq=69 icode= > tot energy is: 0.7071935780115517
+************************************************************************
+************************************************************************
+************************************************************************
+State: HID, with ID 69 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom ND1> and All close atoms: [[<Atom ND1>, 69, 'HID', 'do', 0.0], [<Atom NE2>, 69, 'HID', 'ac', 2.1526225], [<Atom O>, 93, 'ILE', 'ac', 3.8019764]] and enSumTotal is: 0
+energy sum donor from func:-0.13446227679905487 and enSumTotal:-0.13446227679905487 
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 69, 'HID', 'ac', 0.0], [<Atom ND1>, 69, 'HID', 'do', 2.1526225], [<Atom O>, 99, 'PHE', 'ac', 3.8994594]] and enSumTotal is: -0.13446227679905487
+energy sum acceptor from func:0.0 and enSumTotal:-0.13446227679905487
+For this state:<Residue HID het=  resseq=69 icode= > tot energy is: -0.13446227679905487
+************************************************************************
+************************************************************************
+************************************************************************
+State: HIER, with ID 69 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom ND1> and All close atoms: [[<Atom ND1>, 69, 'HIE', 'ac', 0.0], [<Atom NE2>, 69, 'HIE', 'do', 2.193732], [<Atom N>, 69, 'HIE', 'do', 3.2288823], [<Atom O>, 67, 'CYS', 'ac', 3.4181635], [<Atom O>, 66, 'ILE', 'ac', 3.8862746]] and enSumTotal is: 0
+energy sum acceptor from func:0.44136594598770174 and enSumTotal:0.44136594598770174
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 69, 'HIE', 'do', 0.0], [<Atom ND1>, 69, 'HIE', 'ac', 2.193732], [<Atom O>, 99, 'PHE', 'ac', 3.5324988]] and enSumTotal is: 0.44136594598770174
+energy sum donor from func:-0.15226232842074694 and enSumTotal:0.2891036175669548 
+For this state:<Residue HIE het=  resseq=69 icode= > tot energy is: 0.2891036175669548
+************************************************************************
+************************************************************************
+************************************************************************
+State: HIDR, with ID 69 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom ND1> and All close atoms: [[<Atom ND1>, 69, 'HID', 'do', 0.0], [<Atom NE2>, 69, 'HID', 'ac', 2.193732], [<Atom N>, 69, 'HID', 'do', 3.2288823], [<Atom O>, 67, 'CYS', 'ac', 3.4181635], [<Atom O>, 66, 'ILE', 'ac', 3.8862746]] and enSumTotal is: 0
+energy sum donor from func:-1.830194778755586 and enSumTotal:-1.830194778755586 
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 69, 'HID', 'ac', 0.0], [<Atom ND1>, 69, 'HID', 'do', 2.193732], [<Atom O>, 99, 'PHE', 'ac', 3.5324988]] and enSumTotal is: -1.830194778755586
+energy sum acceptor from func:0.04285592519396797 and enSumTotal:-1.787338853561618
+For this state:<Residue HID het=  resseq=69 icode= > tot energy is: -1.787338853561618
+************************************************************************
+************************************************************************
+Evaluate given residue state, hvyAt: <Atom ND1> and All close atoms: [[<Atom ND1>, 69, 'HIP', 'do', 0.0], [<Atom NE2>, 69, 'HIP', 'do', 2.1526225], [<Atom O>, 93, 'ILE', 'ac', 3.8019764]] and enSumTotal is: 0
+energy sum donor from func:-0.13446227679905487 and enSumTotal:-0.13446227679905487 
+For this state:<Residue HIP het=  resseq=69 icode= > tot energy is: -0.13446227679905487
+************************************************************************
+************************************************************************
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 69, 'HIP', 'do', 0.0], [<Atom ND1>, 69, 'HIP', 'do', 2.1526225], [<Atom O>, 99, 'PHE', 'ac', 3.8994594]] and enSumTotal is: 0
+energy sum donor from func:0.0 and enSumTotal:0.0 
+For this state:<Residue HIP het=  resseq=69 icode= > tot energy is: 0.0
+************************************************************************
+************************************************************************
+Evaluate given residue state, hvyAt: <Atom ND1> and All close atoms: [[<Atom ND1>, 69, 'HIP', 'do', 0.0], [<Atom NE2>, 69, 'HIP', 'do', 2.193732], [<Atom N>, 69, 'HIP', 'do', 3.2288823], [<Atom O>, 67, 'CYS', 'ac', 3.4181635], [<Atom O>, 66, 'ILE', 'ac', 3.8862746]] and enSumTotal is: 0
+energy sum donor from func:-1.830194778755586 and enSumTotal:-1.830194778755586 
+For this state:<Residue HIP het=  resseq=69 icode= > tot energy is: -1.830194778755586
+************************************************************************
+************************************************************************
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 69, 'HIP', 'do', 0.0], [<Atom ND1>, 69, 'HIP', 'do', 2.193732], [<Atom O>, 99, 'PHE', 'ac', 3.5324988]] and enSumTotal is: 0
+energy sum donor from func:-0.15226232842074694 and enSumTotal:-0.15226232842074694 
+For this state:<Residue HIP het=  resseq=69 icode= > tot energy is: -0.15226232842074694
+************************************************************************
+************************************************************************
+continuing as HIP is not an option!!
+State Set! The energies of :<Residue HID het=  resseq=69 icode= > is -1.787338853561618 and <Residue HID het=  resseq=69 icode= > is -0.13446227679905487, Saving residue: HID to residue state corresponding to minimum energy  i.e -1.787338853561618 and isRotamer:1
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 8/22 and unknown res is: <Residue ASN het=  resseq=83 icode= > and its known val:0 and is rotamer:0, SKPVAL:1, ChangeVal: 6
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: ASN, with ID 83 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1>, 83, 'ASN', 'ac', 0.0], [<Atom ND2>, 83, 'ASN', 'do', 2.2981863], [<Atom N>, 34, 'GLU', 'do', 2.7946856], [<Atom N>, 83, 'ASN', 'do', 3.357585]] and enSumTotal is: 0
+energy sum acceptor from func:-0.9364524853346197 and enSumTotal:-0.9364524853346197
+Evaluate given residue state, hvyAt: <Atom ND2> and All close atoms: [[<Atom ND2>, 83, 'ASN', 'do', 0.0], [<Atom OD1>, 83, 'ASN', 'ac', 2.2981863], [<Atom O>, 21, 'GLU', 'ac', 2.940909], [<Atom N>, 83, 'ASN', 'do', 3.977624]] and enSumTotal is: -0.9364524853346197
+energy sum donor from func:-1.9837490416875392 and enSumTotal:-2.920201527022159 
+For this state:<Residue ASN het=  resseq=83 icode= > tot energy is: -2.920201527022159
+************************************************************************
+************************************************************************
+************************************************************************
+State: ASNR, with ID 83 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1>, 83, 'ASN', 'ac', 0.0], [<Atom ND2>, 83, 'ASN', 'do', 2.2981863], [<Atom O>, 21, 'GLU', 'ac', 2.940909], [<Atom N>, 83, 'ASN', 'do', 3.977624]] and enSumTotal is: 0
+energy sum acceptor from func:0.4933949130751927 and enSumTotal:0.4933949130751927
+Evaluate given residue state, hvyAt: <Atom ND2> and All close atoms: [[<Atom ND2>, 83, 'ASN', 'do', 0.0], [<Atom OD1>, 83, 'ASN', 'ac', 2.2981863], [<Atom N>, 34, 'GLU', 'do', 2.7946856], [<Atom N>, 83, 'ASN', 'do', 3.357585]] and enSumTotal is: 0.4933949130751927
+energy sum donor from func:0.7035844502021664 and enSumTotal:1.196979363277359 
+For this state:<Residue ASN het=  resseq=83 icode= > tot energy is: 1.196979363277359
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue ASN het=  resseq=83 icode= > of <Chain id=A> and I am not on HIS or all my HIS energies are ZERO
+
+State Set! The energies of :<Residue ASN het=  resseq=83 icode= > is -2.920201527022159 and <Residue ASN het=  resseq=83 icode= > is 1.196979363277359, Saving residue: ASN to residue state corresponding to minimum energy  i.e -2.920201527022159 and isRotamer:0
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 9/22 and unknown res is: <Residue ASN het=  resseq=88 icode= > and its known val:0 and is rotamer:0, SKPVAL:1, ChangeVal: 7
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: ASN, with ID 88 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1>, 88, 'ASN', 'ac', 0.0], [<Atom ND2>, 88, 'ASN', 'do', 2.2667062], [<Atom OG1>, 31, 'THR', 'bo', 2.8771389], [<Atom N>, 88, 'ASN', 'do', 3.0045564], [<Atom N>, 31, 'THR', 'do', 3.1115973], [<Atom N>, 89, 'LEU', 'do', 3.2288485], [<Atom O>, 86, 'GLY', 'ac', 3.689632], [<Atom O>, 29, 'ASP', 'ac', 3.7939668]] and enSumTotal is: 0
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=31 icode= >, 31 of chain: <Chain id=A> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+Side chain hydrogen placed, for <Residue THR het=  resseq=31 icode= > with chain: <Chain id=A>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum acceptor from func:-2.1774991213256403 and enSumTotal:-2.1774991213256403
+Evaluate given residue state, hvyAt: <Atom ND2> and All close atoms: [[<Atom ND2>, 88, 'ASN', 'do', 0.0], [<Atom OD1>, 88, 'ASN', 'ac', 2.2667062], [<Atom O>, 74, 'THR', 'ac', 2.97679], [<Atom N>, 89, 'LEU', 'do', 3.8051758], [<Atom N>, 74, 'THR', 'do', 3.9625432]] and enSumTotal is: -2.1774991213256403
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=74 icode= >, 74 of chain: <Chain id=A> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+Side chain hydrogen placed, for <Residue THR het=  resseq=74 icode= > with chain: <Chain id=A>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum donor from func:-2.4845851049848067 and enSumTotal:-4.662084226310447 
+For this state:<Residue ASN het=  resseq=88 icode= > tot energy is: -4.662084226310447
+************************************************************************
+************************************************************************
+************************************************************************
+State: ASNR, with ID 88 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1>, 88, 'ASN', 'ac', 0.0], [<Atom ND2>, 88, 'ASN', 'do', 2.2667062], [<Atom O>, 74, 'THR', 'ac', 2.97679], [<Atom N>, 89, 'LEU', 'do', 3.8051758], [<Atom N>, 74, 'THR', 'do', 3.9625432]] and enSumTotal is: 0
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=74 icode= >, 74 of chain: <Chain id=A> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+Side chain hydrogen placed, for <Residue THR het=  resseq=74 icode= > with chain: <Chain id=A>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum acceptor from func:3.1566234380492446 and enSumTotal:3.1566234380492446
+Evaluate given residue state, hvyAt: <Atom ND2> and All close atoms: [[<Atom ND2>, 88, 'ASN', 'do', 0.0], [<Atom OD1>, 88, 'ASN', 'ac', 2.2667062], [<Atom OG1>, 31, 'THR', 'bo', 2.8771389], [<Atom N>, 88, 'ASN', 'do', 3.0045564], [<Atom N>, 31, 'THR', 'do', 3.1115973], [<Atom N>, 89, 'LEU', 'do', 3.2288485], [<Atom O>, 86, 'GLY', 'ac', 3.689632], [<Atom O>, 29, 'ASP', 'ac', 3.7939668]] and enSumTotal is: 3.1566234380492446
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=31 icode= >, 31 of chain: <Chain id=A> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+potential clash atom = [<Atom HD22>] 
+orignal atom: pot Hyd, its parent: <Residue THR het=  resseq=31 icode= >, pcAtom:<Atom HD22> and parent: <Residue ASN het=  resseq=88 icode= > and distance is: 1.1277784618699143 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:35 
+potential clash atom = [<Atom HD22>] 
+orignal atom: pot Hyd, its parent: <Residue THR het=  resseq=31 icode= >, pcAtom:<Atom HD22> and parent: <Residue ASN het=  resseq=88 icode= > and distance is: 1.2425275488713308 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:34 
+potential clash atom = [<Atom HD22>] 
+orignal atom: pot Hyd, its parent: <Residue THR het=  resseq=31 icode= >, pcAtom:<Atom HD22> and parent: <Residue ASN het=  resseq=88 icode= > and distance is: 1.358844268699325 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:33 
+potential clash atom = [<Atom HD22>] 
+orignal atom: pot Hyd, its parent: <Residue THR het=  resseq=31 icode= >, pcAtom:<Atom HD22> and parent: <Residue ASN het=  resseq=88 icode= > and distance is: 1.499648576396791 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:32 
+Side chain hydrogen placed, for <Residue THR het=  resseq=31 icode= > with chain: <Chain id=A>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum donor from func:-0.54886675119673 and enSumTotal:2.6077566868525146 
+For this state:<Residue ASN het=  resseq=88 icode= > tot energy is: 2.6077566868525146
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue ASN het=  resseq=88 icode= > of <Chain id=A> and I am not on HIS or all my HIS energies are ZERO
+
+State Set! The energies of :<Residue ASN het=  resseq=88 icode= > is -4.662084226310447 and <Residue ASN het=  resseq=88 icode= > is 2.6077566868525146, Saving residue: ASN to residue state corresponding to minimum energy  i.e -4.662084226310447 and isRotamer:0
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 10/22 and unknown res is: <Residue GLN het=  resseq=92 icode= > and its known val:0 and is rotamer:0, SKPVAL:1, ChangeVal: 8
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: GLN, with ID 92 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 92, 'GLN', 'ac', 0.0], [<Atom NE2>, 92, 'GLN', 'do', 2.2209253], [<Atom N>, 72, 'ILE', 'do', 2.9152408], [<Atom O>, 72, 'ILE', 'ac', 3.2898371]] and enSumTotal is: 0
+energy sum acceptor from func:-2.893237366724647 and enSumTotal:-2.893237366724647
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 92, 'GLN', 'do', 0.0], [<Atom OE1>, 92, 'GLN', 'ac', 2.2209253], [<Atom O>, 72, 'ILE', 'ac', 2.8331127], [<Atom O>, 88, 'ASN', 'ac', 3.9931586]] and enSumTotal is: -2.893237366724647
+energy sum donor from func:-0.39588732538055016 and enSumTotal:-3.2891246921051973 
+For this state:<Residue GLN het=  resseq=92 icode= > tot energy is: -3.2891246921051973
+************************************************************************
+************************************************************************
+************************************************************************
+State: GLNR, with ID 92 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 92, 'GLN', 'ac', 0.0], [<Atom NE2>, 92, 'GLN', 'do', 2.2209253], [<Atom O>, 72, 'ILE', 'ac', 2.8331127], [<Atom O>, 88, 'ASN', 'ac', 3.9931586]] and enSumTotal is: 0
+energy sum acceptor from func:0.3187552029100278 and enSumTotal:0.3187552029100278
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 92, 'GLN', 'do', 0.0], [<Atom OE1>, 92, 'GLN', 'ac', 2.2209253], [<Atom N>, 72, 'ILE', 'do', 2.9152408], [<Atom O>, 72, 'ILE', 'ac', 3.2898371]] and enSumTotal is: 0.3187552029100278
+energy sum donor from func:1.8897532940120652 and enSumTotal:2.208508496922093 
+For this state:<Residue GLN het=  resseq=92 icode= > tot energy is: 2.208508496922093
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue GLN het=  resseq=92 icode= > of <Chain id=A> and I am not on HIS or all my HIS energies are ZERO
+
+State Set! The energies of :<Residue GLN het=  resseq=92 icode= > is -3.2891246921051973 and <Residue GLN het=  resseq=92 icode= > is 2.208508496922093, Saving residue: GLN to residue state corresponding to minimum energy  i.e -3.2891246921051973 and isRotamer:0
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 11/22 and unknown res is: <Residue ASN het=  resseq=98 icode= > and its known val:0 and is rotamer:0, SKPVAL:1, ChangeVal: 9
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: ASN, with ID 98 and chain: <Chain id=A> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1>, 98, 'ASN', 'ac', 0.0], [<Atom ND2>, 98, 'ASN', 'do', 2.29944], [<Atom O>, 97, 'LEU', 'ac', 3.460196], [<Atom N>, 98, 'ASN', 'do', 3.8025541]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom ND2> and All close atoms: [[<Atom ND2>, 98, 'ASN', 'do', 0.0], [<Atom OD1>, 98, 'ASN', 'ac', 2.29944], [<Atom N>, 98, 'ASN', 'do', 3.253353], [<Atom OG1>, 96, 'THR', 'bo', 3.4098563], [<Atom O>, 96, 'THR', 'ac', 3.7187521], [<Atom O>, 97, 'LEU', 'ac', 3.7364092]] and enSumTotal is: 0.0
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=96 icode= >, 96 of chain: <Chain id=A> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+Side chain hydrogen placed, for <Residue THR het=  resseq=96 icode= > with chain: <Chain id=A>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum donor from func:0.2504536135816302 and enSumTotal:0.2504536135816302 
+For this state:<Residue ASN het=  resseq=98 icode= > tot energy is: 0.2504536135816302
+************************************************************************
+************************************************************************
+************************************************************************
+State: ASNR, with ID 98 and chain: <Chain id=A> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1>, 98, 'ASN', 'ac', 0.0], [<Atom ND2>, 98, 'ASN', 'do', 2.29944], [<Atom N>, 98, 'ASN', 'do', 3.253353], [<Atom OG1>, 96, 'THR', 'bo', 3.4098563], [<Atom O>, 96, 'THR', 'ac', 3.7187521], [<Atom O>, 97, 'LEU', 'ac', 3.7364092]] and enSumTotal is: 0
+
+***********************************************************************************************
+
+Place hydrogen for for <Residue THR het=  resseq=96 icode= >, 96 of chain: <Chain id=A> 
+Need to look for coord so H does not clash. max hyd=1. Currently at iteration:i:36 
+Side chain hydrogen placed, for <Residue THR het=  resseq=96 icode= > with chain: <Chain id=A>, added ['HG1', 'LP3', 'LP4'], with s.no now at: 2575 !
+
+***********************************************************************************************
+
+energy sum acceptor from func:-0.27903588069110263 and enSumTotal:-0.27903588069110263
+Evaluate given residue state, hvyAt: <Atom ND2> and All close atoms: [[<Atom ND2>, 98, 'ASN', 'do', 0.0], [<Atom OD1>, 98, 'ASN', 'ac', 2.29944], [<Atom O>, 97, 'LEU', 'ac', 3.460196], [<Atom N>, 98, 'ASN', 'do', 3.8025541]] and enSumTotal is: -0.27903588069110263
+energy sum donor from func:0.0 and enSumTotal:-0.27903588069110263 
+For this state:<Residue ASN het=  resseq=98 icode= > tot energy is: -0.27903588069110263
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue ASN het=  resseq=98 icode= > of <Chain id=A> and I am not on HIS or all my HIS energies are ZERO
+
+Smallest Energy is NEGETIVE and the next pos or zero!, Saving residue: <Residue ASN het=  resseq=98 icode= > to residue state corresponding to minimum energy  i.e -0.27903588069110263 and isRotamer:1, (specifically:smallest: -0.27903588069110263 and next smallest:0.2504536135816302)
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 12/22 and unknown res is: <Residue GLN het=  resseq=2 icode= > and its known val:0 and is rotamer:0, SKPVAL:1, ChangeVal: 10
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: GLN, with ID 2 and chain: <Chain id=B> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 2, 'GLN', 'ac', 0.0], [<Atom NE2>, 2, 'GLN', 'do', 2.2532566]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 2, 'GLN', 'do', 0.0], [<Atom OE1>, 2, 'GLN', 'ac', 2.2532566], [<Atom ND2>, 98, 'ASN', 'do', 2.8682725], [<Atom OG1>, 96, 'THR', 'bo', 3.360703], [<Atom OD1>, 98, 'ASN', 'ac', 3.9638267]] and enSumTotal is: 0.0
+energy sum donor from func:3.9839354001164606 and enSumTotal:3.9839354001164606 
+For this state:<Residue GLN het=  resseq=2 icode= > tot energy is: 3.9839354001164606
+************************************************************************
+************************************************************************
+************************************************************************
+State: GLNR, with ID 2 and chain: <Chain id=B> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 2, 'GLN', 'ac', 0.0], [<Atom NE2>, 2, 'GLN', 'do', 2.2532566], [<Atom ND2>, 98, 'ASN', 'do', 2.8682725], [<Atom OG1>, 96, 'THR', 'bo', 3.360703], [<Atom OD1>, 98, 'ASN', 'ac', 3.9638267]] and enSumTotal is: 0
+energy sum acceptor from func:-3.2035499121416757 and enSumTotal:-3.2035499121416757
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 2, 'GLN', 'do', 0.0], [<Atom OE1>, 2, 'GLN', 'ac', 2.2532566]] and enSumTotal is: -3.2035499121416757
+energy sum donor from func:0.0 and enSumTotal:-3.2035499121416757 
+For this state:<Residue GLN het=  resseq=2 icode= > tot energy is: -3.2035499121416757
+************************************************************************
+************************************************************************
+Not checking for HIP- as I am <Residue GLN het=  resseq=2 icode= > of <Chain id=B> and I am not on HIS or all my HIS energies are ZERO
+
+State Set! The energies of :<Residue GLN het=  resseq=2 icode= > is -3.2035499121416757 and <Residue GLN het=  resseq=2 icode= > is 3.9839354001164606, Saving residue: GLN to residue state corresponding to minimum energy  i.e -3.2035499121416757 and isRotamer:1
+
+###############################################################################
+###############################################################################
+
+unknown residue number: 13/22 and unknown res is: <Residue GLN het=  resseq=7 icode= > and its known val:0 and is rotamer:0, SKPVAL:1, ChangeVal: 11
+checked for close atoms and close atoms are present!!
+
+************************************************************************
+State: GLN, with ID 7 and chain: <Chain id=B> and isRotamer: 0 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 7, 'GLN', 'ac', 0.0], [<Atom NE2>, 7, 'GLN', 'do', 2.2453628], [<Atom N>, 7, 'GLN', 'do', 3.345766]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 7, 'GLN', 'do', 0.0], [<Atom OE1>, 7, 'GLN', 'ac', 2.2453628], [<Atom N>, 7, 'GLN', 'do', 3.8500655], [<Atom O>, 6, 'TRP', 'ac', 3.8752809]] and enSumTotal is: 0.0
+energy sum donor from func:0.0 and enSumTotal:0.0 
+For this state:<Residue GLN het=  resseq=7 icode= > tot energy is: 0.0
+************************************************************************
+************************************************************************
+************************************************************************
+State: GLNR, with ID 7 and chain: <Chain id=B> and isRotamer: 1 
+Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 7, 'GLN', 'ac', 0.0], [<Atom NE2>, 7, 'GLN', 'do', 2.2453628], [<Atom N>, 7, 'GLN', 'do', 3.8500655], [<Atom O>, 6, 'TRP', 'ac', 3.8752809]] and enSumTotal is: 0
+energy sum acceptor from func:0.0 and enSumTotal:0.0
+Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 7, 'GLN', 'do', 0.0], [<Atom OE1>, 7, 'GLN', 'ac', 2.2453628], [<Atom N>, 7, 'GLN', 'do', 3.345766]] and enSumTotal is: 0.0

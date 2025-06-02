@@ -13,14 +13,12 @@ from Bio.PDB import *
 np.set_printoptions(threshold = sys.maxsize)
 
 
-def get_allASPs(structure):
+def get_allASPs(structure, debug=0):
     '''
     objective: Get all ASPs in a given structure
     input: -structure: structure you need the ASP for
-    output: allASPs: all ASP residues in a list data structure
-        
+    output: allASPs: all ASP residues in a list data structure 
     '''
-
     allASPs = []
 
     for res in structure.get_residues():
@@ -29,7 +27,7 @@ def get_allASPs(structure):
 
     return allASPs
 
-def get_allGLUs(structure):
+def get_allGLUs(structure, debug=0):
 
     '''
     objective: Get all GLU in a given structure
@@ -44,7 +42,7 @@ def get_allGLUs(structure):
 
     return allGLUs
 
-def get_allUnknownASP_ODatoms(structure):
+def get_allUnknownASP_ODatoms(structure, debug=0):
     
     '''
     objective: to get all OD1 and OD2 atoms of ASP 
@@ -52,7 +50,7 @@ def get_allUnknownASP_ODatoms(structure):
     output:-OD1OD2_ASPatoms: list of atoms :OD1 and OD2 of all ASPs in a structure
     '''
 
-    allASPs = get_allASPs(structure)
+    allASPs = get_allASPs(structure, debug=0)
     OD1OD2_ASPatoms = []
 
     ##Create allASP atom list for searching nbd!
@@ -63,7 +61,7 @@ def get_allUnknownASP_ODatoms(structure):
     
     return OD1OD2_ASPatoms
 
-def get_allUnknownGLU_OEatoms(structure):
+def get_allUnknownGLU_OEatoms(structure, debug=0):
 
     '''
     objective: to get all OE1 and OE2 atoms of GLU
@@ -72,7 +70,7 @@ def get_allUnknownGLU_OEatoms(structure):
     '''
 
 
-    allGLUs = get_allGLUs(structure)
+    allGLUs = get_allGLUs(structure, debug=0)
     OE1OE2_GLUatoms = []
 
     ##Create allASP atom list for searching nbd!
@@ -93,12 +91,12 @@ def get_allUnknownASP_GLU(structure, resName = 'ASP', debug=0):
           -resName:Name of the unknownn residue that needs to be extracted
 
     output:-unknownASP_GLUatom: list of unknown atoms
-           -unknownASP_GLUatomInfo: additional info including:-atom name, atom id, atom parent id, distance of Oxygen 1 of concern to oxygen in the hbonding diatnce.
+           -unknownASP_GLUatomInfo: additional info including:-atom name, atom id, atom parent id, distance of Oxygen 1 of concern to oxygen in the hbonding disatnce.
     '''
 
-    if(debug ==1):
+    if(debug==1):
         startDebugFile(__name__, sys._getframe().f_code.co_name)
-        fDebugName = get_debugFileName(mc.protID)
+        fDebugName = get_debugFileName(debug=0)
         fd = open(fDebugName, "a")
         fd.write(f"searching for all Unknown res: {resName}\n")    
         fd.flush()
@@ -106,32 +104,31 @@ def get_allUnknownASP_GLU(structure, resName = 'ASP', debug=0):
 
 
 
-    fLogName = get_logFileName(structure.id)
+    fLogName = get_logFileName(debug=0)
     fLog = open(fLogName, "a")
     #Get all the atoms that needs to be searched for an unknown ASP/GLU residue. Also get a list of all ASPs/GLUs to search
     if(resName == 'ASP'):
         fLog.write("\nChecking for unknown ASPs\n")
         fLog.flush()
-        searchASP_GLUatoms = get_allUnknownASP_ODatoms(structure)
-        allASPs_GLUs = get_allASPs(structure)
+        searchASP_GLUatoms = get_allUnknownASP_ODatoms(structure, debug=debug)
+        allASPs_GLUs = get_allASPs(structure, debug=debug)
         oxygenName1 = 'OD1'
         oxygenName2 = 'OD2'
 
     else:
         fLog.write("\nChecking for unknown GLUs\n")
         fLog.flush()
-        searchASP_GLUatoms = get_allUnknownGLU_OEatoms(structure)
-        allASPs_GLUs = get_allGLUs(structure)
+        searchASP_GLUatoms = get_allUnknownGLU_OEatoms(structure, debug=debug)
+        allASPs_GLUs = get_allGLUs(structure, debug=debug)
         oxygenName1 = 'OE1'
         oxygenName2 = 'OE2'
 
-    if(debug ==1):
-
+    if(debug==1):
         for atom in searchASP_GLUatoms:
-            fd.write("search atom: {atom} of {atom.parent} of chain: {atom.parent.parent}\n")
+            fd.write(f"search atom: {atom} of {atom.parent} of chain: {atom.parent.parent}\n")
             fd.flush()
         for res in allASPs_GLUs:
-            fd.write("all ASP/GLU residues include: {res} of chain {res.parent}\n")
+            fd.write(f"all ASP/GLU residues include: {res} of chain {res.parent}\n")
             fd.flush()
 
 
@@ -147,8 +144,8 @@ def get_allUnknownASP_GLU(structure, resName = 'ASP', debug=0):
         ns = Bio.PDB.NeighborSearch(searchASP_GLUatoms)
     
         #use the search object/list  with respect to the two oxygen side chain atoms(OD1/OD2 or OE1/OE2) of the given ASP/GLU
-        potUnknownAtom1 = ns.search(currASP_GLU[oxygenName1].coord,4.0)
-        potUnknownAtom2 = ns.search(currASP_GLU[oxygenName2].coord,4.0)
+        potUnknownAtom1 = ns.search(currASP_GLU[oxygenName1].coord,mc.deltaD)
+        potUnknownAtom2 = ns.search(currASP_GLU[oxygenName2].coord,mc.deltaD)
         
         #if any of the unknown add it to the unknownASP_GLUatom list and collect relevant info
         if(potUnknownAtom1):
@@ -156,7 +153,7 @@ def get_allUnknownASP_GLU(structure, resName = 'ASP', debug=0):
                 unknownASP_GLUatom.append(puat)
                 unknownASP_GLUatomInfo.append([currASP_GLU[oxygenName1],currASP_GLU.id[1], puat, puat.parent.id[1], currASP_GLU[oxygenName1]-puat])
             if(debug==1):
-                fd.write("collecting unknownASP_GLU atom info:{unknownASP_GLUatomInfo}")
+                fd.write(f"collecting unknownASP_GLU atom info:{unknownASP_GLUatomInfo}")
                 fd.flush()
 
         if(potUnknownAtom2):
@@ -164,10 +161,10 @@ def get_allUnknownASP_GLU(structure, resName = 'ASP', debug=0):
                 unknownASP_GLUatom.append(puat2)                
                 unknownASP_GLUatomInfo.append([currASP_GLU[oxygenName2],currASP_GLU.id[1], puat2, puat2.parent.id[1], currASP_GLU[oxygenName2]-puat2])
             if(debug==1):
-                fd.write("collecting unknownASP_GLU atom info:{unknownASP_GLUatomInfo}")
+                fd.write(f"collecting unknownASP_GLU atom info:{unknownASP_GLUatomInfo}")
                 fd.flush()
 
-        #Add the removed atoms back to the search list-This step is kinda redundant as we are not using the search list anywhere else 
+        #Add the removed atoms back to the search list-This step is kinda redundant as we are not using the search list anywhere else  but doing it for completeness 
         searchASP_GLUatoms.append(currASP_GLU[oxygenName1])
         searchASP_GLUatoms.append(currASP_GLU[oxygenName2])
         fLog.write(f"potUnknownAtom1: {potUnknownAtom1}, potunknownAtom2: {potUnknownAtom2}\n")
@@ -184,10 +181,31 @@ def get_allUnknownASP_GLU(structure, resName = 'ASP', debug=0):
     return unknownASP_GLUatom,unknownASP_GLUatomInfo
 
 
-def accomodateForASP_GLUs(structure, unknownASP_GLU, unknownASP_GLU_atomInfo):
+def accomodateForASP_GLUs(structure, unknownASP_GLU, unknownASP_GLU_atomInfo, debug=0):
+
+    '''
+    objective: To account for all ASPs/GLUs in hbonding distance of each other. If there are over 2 ASPs/GLUs in hbonding distance-the user will have to take care of that. The user will receive a warning in info file, log file and debug file.
+    input:-structure: the structure in concern
+          -unknownASP_GLU: the unknown of concern
+          -unknownASP_GLUatomInfo: additional info including:-atom name, atom id, atom parent id, distance of Oxygen 1 of concern to oxygen in the h-bonding disatnce.
+
+
+    output:-structure: updated structures with relevant unknowns marked
+           -uniqueUnknownIDs: unknownIDs of ASPs/GLUs that are in hbonding distance of each other
+           -over2ASP_GLUs=1 if there are more than 2 APSs/GLUs in hbonding distance to each other
+    '''
             
-    fLogName = get_logFileName(structure.id)
+    if(debug==1):
+        startDebugFile( __name__, sys._getframe().f_code.co_name)
+        fDebugName = get_debugFileName(debug=0)
+        fd = open(fDebugName, "a")
+
+
+    fLogName = get_logFileName(debug=0)
     f = open(fLogName, "a")
+
+    fInfoName = get_infoFileName(debug=0)
+    fInfo = open(fInfoName, "a")
 
     unASP_GLU_atomInfoArr = np.array(unknownASP_GLU_atomInfo)
     allUnknownIDs = unASP_GLU_atomInfoArr[:,1]
@@ -200,6 +218,15 @@ def accomodateForASP_GLUs(structure, unknownASP_GLU, unknownASP_GLU_atomInfo):
 
     if(len(uniqueUnknownIDs) > 2):
         f.write(f"\n WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n {uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
+        f.flush()
+
+        fInfo.write(f"\n WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n {uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
+        fInfo.flush()
+        
+        if(debug==1):
+            fd.write(f"\n WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n {uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
+            fd.flush()
+
         over2ASP_GLUs = 1
     else:
         for countASP_GLU in range(len(unknownASP_GLU)):
@@ -217,13 +244,29 @@ def accomodateForASP_GLUs(structure, unknownASP_GLU, unknownASP_GLU_atomInfo):
     f.flush()
     f.close()
 
+    fInfo.write(f"###################################### \n")
+    fInfo.write(f"###################################### \n")
+    fInfo.write(f"\n\nGot unknown ASPs/GLUs: {ASP_GLU_res} with atoms {unknownASP_GLU}.\n And relevant info: {unknownASP_GLU_atomInfo}\n")
+    fInfo.write(f"\n\nGot unknown atoms {unknownASP_GLU}.\n And relevant info:\n {unknownASP_GLU_atomInfo}\n")
+    fInfo.flush()
+    fInfo.close()
+
+    if(debug==1):
+        fd.write(f"###################################### \n")
+        fd.write(f"###################################### \n")
+        fd.write(f"\n\nGot unknown ASPs/GLUs: {ASP_GLU_res} with atoms {unknownASP_GLU}.\n And relevant info: {unknownASP_GLU_atomInfo}\n")
+        fd.write(f"\n\nGot unknown atoms {unknownASP_GLU}.\n And relevant info:\n {unknownASP_GLU_atomInfo}\n")
+        fd.flush() 
+        endDebugFile(__name__,sys._getframe().f_code.co_name, fd) 
+
+
     return structure,uniqueUnknownIDs, over2ASP_GLUs
 
 
 
 
 
-def get_allResidues(structure,  donotIncludeRes = None ):
+def get_allResidues(structure,  donotIncludeRes = None, debug=0 ):
     ''' 
     objective: To get all the aminoacid residues in a given structure, model and chain
     I/P: -Structure:structure in concern
@@ -245,88 +288,11 @@ def get_allResidues(structure,  donotIncludeRes = None ):
 
 
 
-def get_activeAtoms_allInfo(structure):
-
-    ''' 
-        objective: gets all Active atoms (that are either acceptors/donors/both for valid 
-            amino acids (i.e not hetero residue/water) in the chain
-        I/P: -Structure:structure in concern
-         -ModelID:Model in concern
-         -chainID: chain in concern
-
-        O/P:-allActiveAtoms: list of all active atoms and its relevant info including:
-            parent residue id, parent residue name, atom name, atom behavior, atom coords          
-            '''
-
-    allActiveAtoms = []
-
-    for residue in structure.get_residues():
-        r = mra.myResidue(residue)
-        if r.isValidAminoAcid():
-            for atom in residue: 
-                a = mra.myAtom(atom)                
-                if a.get_behavior()[0] != 'XX':
-                    allActiveAtoms.append([r.get_id()[1], r.get_name(), a.get_name(), a.get_behavior().IDval, a.get_behavior().abbrev, a.get_coord()[0], a.get_coord()[1], a.get_coord()[2]])
-    
-    return allActiveAtoms
-
-
-
-
-def get_allActiveAtomsInfo(structure):
-    ''' 
-    objective: To get all active atom(acceptor/donor/both) info for valid amino acid in a separate lists for a given structure
-    I/P: Structure, ModelID, chainID
-    O/P: allActiveAtoms: all active atoms(donor/acceptor/both/TBD)
-         allDonors: donor/both/TBD
-         allAcceptors: acceptor/both/TBD
-         allBoth: list of atoms where atom behave as both-acceptor and donor
-         allTBD:-all To be determined(or unknown) residue atoms
-         allOnlyDonors:-with only donor behavior
-         allOnlyAcceptors:-with only acceptor behavior
-         allOnlyDonorsAcceptors: with donors or acceptors
-         allDonorsAcceptorsBoth: with donors or acceptors or both
-
-            '''
-    allActiveAtoms = []
-    allDonors = []
-    allAcceptors = []
-    allOnlyDonors = []
-    allOnlyAcceptors = []
-    allOnlyDonorsAcceptors = []
-    allDonorsAcceptorsBoth = []
-
-
-    allTBD = []
-    allBoth = []
-    
-    for residue in structure.get_residues():
-
-        r = mra.myResidue(residue)
-
-        if r.isValidAminoAcid():
-            for atom in residue: 
-                a = mra.myAtom(atom)
-                abehav = a.get_behavior()[0] 
-                if( abehav == 'do'):allOnlyDonors.append(atom)
-                if( abehav == 'ac'): allOnlyAcceptors.append(atom)
-                if( abehav == 'do' or abehav == 'bo' or abehav == 'TBD'):allDonors.append(atom)
-                if( abehav == 'ac' or abehav == 'bo' or abehav == 'TBD'): allAcceptors.append(atom)
-                if( abehav == 'do' or abehav == 'ac'):allOnlyDonorsAcceptors.append(atom)
-                if( abehav == 'do' or abehav == 'ac' or abehav == 'bo'):allDonorsAcceptorsBoth.append(atom)
-                if( abehav == 'TBD'): allTBD.append(atom)
-                if( abehav == 'bo'): allBoth.append(atom)
-                if( abehav != 'XX'): allActiveAtoms.append(atom)
-    
-    return allActiveAtoms, allDonors, allAcceptors, allBoth, allTBD, allOnlyDonors, allOnlyAcceptors, allOnlyDonorsAcceptors, allDonorsAcceptorsBoth
-
-
-
-def get_DonorAcceptorList(structure, aaType = 'ALL'):
+def get_DonorAcceptorList(structure, aaType = 'ALL',debug=0):
 
     ''' 
     NOTE: 1. THIS MAY NOT NECESSARILY HAVE KNOWN LIST OF DONOR/ACCEPTORS!
-          2. THIS IS CUZ ASN/GLN MAY HAVE BEHAVIORS BUT STILL UNKNOWN ORIENTATION UNLIKE HIS
+          2. THIS IS BECAUSE ASN/GLN MAY HAVE BEHAVIORS BUT STILL UNKNOWN ORIENTATION UNLIKE HIS
             
     objective: Gets all Active atoms (that are either acceptors/donors/both for valid 
             amino acids (i.e not hetero residue/water) in the chain for a particular behavior.
@@ -370,7 +336,7 @@ def get_DonorAcceptorList(structure, aaType = 'ALL'):
 
 
 
-def get_knownDonorAcceptorListWRTOneAtom(structure, at, aaType = 'ALL'):
+def get_knownDonorAcceptorListWRTOneAtom(structure, at, aaType = 'ALL', debug=0):
 
     ''' 
     objective:  get list of KNOWN donors/Acceptors/BOTH/ALL/TBD WRT to one atom or parent atoms are included as known!
@@ -416,7 +382,7 @@ def get_knownDonorAcceptorListWRTOneAtom(structure, at, aaType = 'ALL'):
     return neededList
 
 
-def get_unknownDonorAcceptorListWRTOneAtom(structure, at, aaType = 'ALL'):
+def get_unknownDonorAcceptorListWRTOneAtom(structure, at, aaType = 'ALL', debug=0):
     ''' 
     NOTE: Currently using it as a hack to check for unknown atoms that DO NOT belong to the parent atoms/backbone, and is unknown
     objective:  get list of UNKNOWN donors/Acceptors/BOTH/ALL/TBD
@@ -458,7 +424,7 @@ def get_unknownDonorAcceptorListWRTOneAtom(structure, at, aaType = 'ALL'):
 
 
 
-def get_unknownResList(structure):
+def get_unknownResList(structure, debug=0):
 
     '''
     objective: Get all the residues of concern or all the unknownRes
@@ -479,27 +445,8 @@ def get_unknownResList(structure):
     return allResUnknown
 
 
-def get_allAminoAcidAtoms(structure):
 
-    '''Objective: Gets all atom info for valid amino acids (i.e not hetero residue/water) in the chain
-       I/P: Structure:structure in concern
-            -ModelID:Model in concern
-            -chainID: chain in concern
-
-        O/P: allAtoms-list of all valid aminoacids
-
-
-    '''
-    allAtoms = []
-
-    for residue in structure.get_residues():
-        r = mra.myResidue(residue)
-        if r.isValidAminoAcid():
-            for atom in residue: 
-                    allAtoms.append(atom)
-    return allAtoms
-
-def get_centroid(structure):
+def get_centroid(structure, debug=0):
 
     '''Objective: Gives the centroid of atoms present in the chain, including waters/small molecules and all chains!!
         I/P: Structure:structure in concern
@@ -523,14 +470,15 @@ def get_centroid(structure):
     numAtoms = count + numAtoms
     xc, yc, zc = sumXYZ/numAtoms
 
-    append2log(f' \n Centroid (sum all coords/N) is: Xc: {xc}, Yc: {yc}, Zc: {zc}  and Total atoms present: {numAtoms} \n')
+    if(debug==1):
+        append2debug(__name__, sys._getframe().f_code.co_name, f' \n Centroid (sum all coords/N) is: Xc: {xc}, Yc: {yc}, Zc: {zc}  and Total atoms present: {numAtoms} \n', debug=0)
 
     return xc, yc, zc
 
 
 
 
-def normalizeAtomCoords(structure):
+def normalizeAtomCoords(structure, debug=0):
     '''
      objective: Normalize atom coords by setting centroid to origin. 
         This is done by computing computing centroid of original coords
@@ -546,14 +494,14 @@ def normalizeAtomCoords(structure):
 
         '''
 # Compute the centroid which will be used to normalize the coordinates 
-    Xc, Yc, Zc = get_centroid(structure)
+    Xc, Yc, Zc = get_centroid(structure,debug=debug)
 
 
     for atom in structure.get_atoms():
         atom.set_coord(atom.get_coord()-(Xc, Yc, Zc) )
 
 
-def createListOfAtomsOfResidueWithoutLP(res):
+def createListOfAtomsOfResidueWithoutLP(res, debug=0):
     '''
     objective: create list of atoms of a residue where lone pair is ignored
     input:res-residue who's atom list is needed without the lone pair
@@ -561,7 +509,6 @@ def createListOfAtomsOfResidueWithoutLP(res):
     '''
     listOfAtoms = []
     for atom in res:
-        #idv = atom.id
         if(atom.id == 'LP1' or atom.id == 'LP2' or atom.id =='LP3' or atom.id =='LP4' or atom.id =='LP5' or atom.id =='LP6'):
             continue
         else:   
@@ -571,7 +518,7 @@ def createListOfAtomsOfResidueWithoutLP(res):
 
 
 
-def detectClashWrtResidue(structure, res2check, withinStructClashDist = mc.btwResClashDist):
+def detectClashWrtResidue(structure, res2check, withinStructClashDist = mc.btwResClashDist, debug=0):
     '''
     objective: To detect if there is a clash with respect to one particular residue in a given structure
     input:Structure:structure in concern
@@ -583,16 +530,16 @@ def detectClashWrtResidue(structure, res2check, withinStructClashDist = mc.btwRe
     '''    
 
     ######get and open log file###############
-    fLogName = get_logFileName(structure.id)
+    fLogName = get_logFileName(debug=0)
     fLog = open(fLogName, "a")
-    outputFolder = get_outputFolderName(structure.id)
+    outputFolder = get_outputFolderName(debug=debug)
     ########################
     ###create the residue search list 
-    resSearchList  = get_allResidues(structure, donotIncludeRes = res2check)
+    resSearchList  = get_allResidues(structure, donotIncludeRes = res2check, debug=debug)
     ##create atom search list based on the residue
     searchListAtoms = []
     for res in resSearchList:
-        searchListAtoms.append(createListOfAtomsOfResidueWithoutLP(res))
+        searchListAtoms.append(createListOfAtomsOfResidueWithoutLP(res, debug=debug))
     ##Flatten it
     searchListAtoms =  [atom for atomlist in searchListAtoms for atom in atomlist]
 
@@ -612,9 +559,8 @@ def detectClashWrtResidue(structure, res2check, withinStructClashDist = mc.btwRe
                 for pcAtom in potClashAtom:
                     fLog.write(f"orignal atom: {atom}, its coord: {atom.coord}, its parent: {atom.parent}  orig atm parent is rotamer: {atom.parent.isRotamer},\n pcAtom:{pcAtom}, coord:{pcAtom.coord} and pc atm parent: {pcAtom.parent}, pc atm parent is rotamer: {pcAtom.parent.isRotamer}\n and distance is: {np.linalg.norm(np.float32(atom.coord)-np.float32(pcAtom.coord))} \n")
     fLog.close()
-##########################################################################################################################
 
-def detectClashWithinStructure(structure,withinStructClashDist = mc.btwResClashDist):
+def detectClashWithinStructure(structure,withinStructClashDist = mc.btwResClashDist, debug=0):
 
     '''
         objective: To find clash within the entire structure by going through all its residues
@@ -625,17 +571,17 @@ def detectClashWithinStructure(structure,withinStructClashDist = mc.btwResClashD
     '''
 
 
-    allRes  = get_allResidues(structure, donotIncludeRes = None)
+    allRes  = get_allResidues(structure, donotIncludeRes = None, debug=debug)
     for res in allRes:
-        detectClashWrtResidue(structure, res, withinStructClashDist = mc.btwResClashDist)
+        detectClashWrtResidue(structure, res, withinStructClashDist = mc.btwResClashDist, debug=debug)
 
    
-    fLogName = get_logFileName(structure.id)
+    fLogName = get_logFileName(debug=0)
     fLog = open(fLogName, "a")
     fLog.write("Looked for clash within the structure\n")
     fLog.close()
 
-def detectClashWithinResidue(res2check, withinResClashDist =mc.withinResClashDist):
+def detectClashWithinResidue(res2check, withinResClashDist =mc.withinResClashDist, debug=0):
 
     '''
     objective: To detect clash within a given residue
@@ -644,13 +590,13 @@ def detectClashWithinResidue(res2check, withinResClashDist =mc.withinResClashDis
     '''
     #########Get Log file and open/append##########
     structure = res2check.parent.parent.parent
-    fLogName = get_logFileName(structure.id)
+    fLogName = get_logFileName(debug=0)
     fLog = open(fLogName, "a")
 
     for atom2check in res2check:
         ##Creating a search list
         if(atom2check.id == 'LP1' or atom2check.id == 'LP2' or atom2check.id =='LP3' or atom2check.id =='LP4' or atom2check.id =='LP5' or atom2check.id =='LP6'): continue
-        searchListAtoms = createListOfAtomsOfResidueWithoutLP(res2check)
+        searchListAtoms = createListOfAtomsOfResidueWithoutLP(res2check, debug=debug)
         searchListAtoms.remove(atom2check)
         ####use the nbd search and create an object ns.
         ns = Bio.PDB.NeighborSearch(searchListAtoms)
@@ -662,20 +608,20 @@ def detectClashWithinResidue(res2check, withinResClashDist =mc.withinResClashDis
                 fLog.write(f"orignal atom: {atom2check}, its parent: {atom2check.parent}, pcAtom:{pcAtom} and parent: {pcAtom.parent} and distance is: {np.linalg.norm(np.float32(atom2check.coord)-np.float32(pcAtom.coord))}\n")
     fLog.close()
 
-def detectClashWithinResidueForAllResidues(structure, withinResClashDist =mc.withinResClashDist): 
+def detectClashWithinResidueForAllResidues(structure, withinResClashDist =mc.withinResClashDist, debug=0): 
     '''
     objective: detect clash within a residue(between atoms of the residue) for all residue in a give structure
     input: structure:-the structure who's residues needs to be checked. 
     output: prints out clash details to screen
     '''
 ######get and open log file###############
-    fLogName = get_logFileName(structure.id)
+    fLogName = get_logFileName(debug=0)
     fLog = open(fLogName, "a")
 
     for res in structure.get_residues():
         r = mra.myResidue(res)
         if r.isValidAminoAcid():
-            detectClashWithinResidue(res, withinResClashDist =mc.withinResClashDist)
+            detectClashWithinResidue(res, withinResClashDist =mc.withinResClashDist, debug=0)
     fLog.write("Looked for clash within all residues\n")
     fLog.close()
 #########################################################################################################################
@@ -696,22 +642,72 @@ def setupStructure(protID, outFolder = '.', fName = None, debug=0):
     structure = parser.get_structure(protID, protPDBfile) 
     return structure
 
+def change_HIDEP_ASH_GLH(structure, debug=0):
+    '''
+        objective: If an HIE/HIP/HID is found, switch its name to HIS. 
+                   If ASH is found, its name is changed to ASP.
+                   IF GLH is found, its name is changed to GLU.
+
+        input: original structure which may have HIE/HID/HIP
+        output: structure: structure with only HIS
+    '''
+
+    if(debug==1):
+        startDebugFile(__name__, sys._getframe().f_code.co_name)
+        fDebugName = get_debugFileName(debug=0)
+        fd = open(fDebugName, "a")
+
+    for res in structure.get_residues():
+        #If residue name is HIE/HID/HIP-then rename it to HIS!
+        if(res.resname == 'HIE' or res.resname == 'HID' or res.resname == 'HIP'):
+            structure[res.parent.parent.id][res.parent.id][res.id].resname = 'HIS'
+            if(debug==1):
+                fd.write(f"setting res: {res} on chain: {res.parent} and model :{res.parent.parent} as HIS \n")
+                fd.flush()
+        #If residue name is ASH-then rename it to ASP!
+        if(res.resname == 'ASH'):
+            structure[res.parent.parent.id][res.parent.id][res.id].resname = 'ASP'
+            if(debug==1):
+                fd.write(f"setting res: {res} on chain: {res.parent} and model :{res.parent.parent} as ASP \n")
+                fd.flush()
+
+        #If residue name is GLH-then rename it to GLU!
+        if(res.resname == 'GLH'):
+            structure[res.parent.parent.id][res.parent.id][res.id].resname = 'GLU'
+            if(debug==1):
+                fd.write(f"setting res: {res} on chain: {res.parent} and model :{res.parent.parent} as GLU \n")
+                fd.flush()
+    
+    if(debug==1):
+        endDebugFile(__name__,sys._getframe().f_code.co_name, fd)
 
 
-def set_initialResSC_hydKnown(structure):
+    return structure
+
+def set_initialResSC_hydKnown(structure, debug=0):
 
     ''' 
     objective: To create the initial set up of defining knowns and rotamers. All residues are not rotamers initially.
     I/P: structure
     O/P: setting knowns and rotamers
     '''
+
+    if(debug==1):
+        startDebugFile(__name__, sys._getframe().f_code.co_name)
+        fDebugName = get_debugFileName(debug=0)
+        fd = open(fDebugName, "a")
     for res in structure.get_residues():
          if(res.resname == 'SER' or res.resname == 'THR' or res.resname == 'LYS' or res.resname == 'TYR'):
              res.isSCHknown = 0
+             if(debug==1):
+                fd.write(f"Setting {res} with chain: {res.parent} as unknown side chain hydrogen since that hydrogen position is not fixed. We need to optimize and find best position. \n")
+                fd.flush()
          else:
              res.isSCHknown = 1
+    if(debug==1):
+        endDebugFile(__name__,sys._getframe().f_code.co_name, fd)
 
-def set_initialKnownAndRotamers(structure,debug=0):
+def set_initialKnownAndRotamers(structure, debug=0):
 
     ''' 
     objective: To create the initial set up of defining knowns and rotamers. All residues are not rotamers initially.
@@ -721,7 +717,7 @@ def set_initialKnownAndRotamers(structure,debug=0):
     '''
     if(debug ==1):
         startDebugFile(__name__, sys._getframe().f_code.co_name)
-        fDebugName = get_debugFileName(mc.protID)
+        fDebugName = get_debugFileName(debug=0)
         fd = open(fDebugName, "a")
     
     for res in structure.get_residues():
@@ -733,17 +729,17 @@ def set_initialKnownAndRotamers(structure,debug=0):
                 fd.write(f"Setting {res} with chain: {res.parent} as unknown\n")
                 fd.flush()
          else:
-            res.isKnown = 1
+            res.isKnown=1
     
     if(debug ==1):
         endDebugFile(__name__,sys._getframe().f_code.co_name, fd)
 
 def startDebugFile(modName, funcName):
         
-    fDebugName = get_debugFileName(mc.protID)
+    fDebugName = get_debugFileName(debug=0)
     fd = open(fDebugName, "a")
     fd.write(f"\n\n###############################################################################\n")    
-    fd.write(f"********************Enter module {modName} at function: {sys._getframe().f_code.co_name} ********************\n")    
+    fd.write(f"********************Enter module {modName} at function: {funcName} ********************\n")    
     fd.flush()
 
 def endDebugFile(modName, funcName, fd):
@@ -754,7 +750,7 @@ def endDebugFile(modName, funcName, fd):
     fd.close()
 
 
-def remove_H(structure):
+def remove_H(structure, debug=0):
     '''
     objective: Removing hydrogen from all the residues in a given structure
     input:-structure: the structure to consider-where in all residues need to have no hydrogen
@@ -805,19 +801,18 @@ def remove_H(structure):
         myRes = mra.myResidue(res)
         if(myRes.isValidAminoAcid()):
             if(res.resname == 'ACE'): 
-                append2log(f"Cannot remove Hydrogen as residue name is: {res.resname}\n")
-                #print(f"Cannot remove Hydrogen as residue name is: {res.resname}")
+                append2log(f"Cannot remove Hydrogen as residue name is: {res.resname}\n", debug=0)
                 continue
             for rmh in removeHdict[res.resname]:
                 try:
                     res.detach_child(rmh)
                 except KeyError:
-                    append2log(f"No Hydrogens were present for: {res.resname} with {res.id[1]} and chain: {res.parent}\n" )
+                    append2log(f"No Hydrogens were present for: {res.resname} with {res.id[1]} and chain: {res.parent}\n", debug=0 )
     return structure
 
 
 
-def remove_H_all(structure):
+def remove_H_all(structure, debug=0):
 
     '''
     objective: Removing hydrogen from all the residues in a given structure
@@ -841,7 +836,7 @@ def remove_H_all(structure):
             
     return structure
 
-def remove_LP(structure):
+def remove_LP(structure, debug=0):
     '''
     objective: Removing lone pair atoms from all the residues in a given structure
     input:-structure: the structure to consider-where in all residues need to have no lone pair atoms 
@@ -892,18 +887,18 @@ def remove_LP(structure):
         if(myRes.isValidAminoAcid()):
             
             if(res.resname == 'NME'): 
-                append2log(f"Cannot remove LP as residue name is: {res.resname} has no LP\n")
+                append2log(f"Cannot remove LP as residue name is: {res.resname} has no LP\n", debug=0)
                 continue
 
             for lp in removeLPdict[res.resname]:
                 try:
                     res.detach_child(lp)
                 except KeyError:
-                    append2log(f"No LP were present for: {res.resname} with {res.id[1]} and chain: {res.parent} \n" )
+                    append2log(f"No LP were present for: {res.resname} with {res.id[1]} and chain: {res.parent} \n", debug=0 )
     return structure
 
 
-def write2PDB(structure, fname, removeHLP = False, removeHall = False):
+def write2PDB(structure, fname, removeHLP = False, removeHall = False, debug=0):
     '''
     objective: write file to .pdb
     input: -structure: structure to write
@@ -912,139 +907,170 @@ def write2PDB(structure, fname, removeHLP = False, removeHall = False):
     output:-file will be written
 
     '''
+    if(debug==1):
+        startDebugFile(__name__, sys._getframe().f_code.co_name)
+        fDebugName = get_debugFileName(debug=0)
+        fd = open(fDebugName, "a")
     if(removeHLP == True):
-        structure= remove_H(structure)
-        structure= remove_LP(structure)
+        structure= remove_H(structure, debug=debug)
+        structure= remove_LP(structure, debug=debug)
+        if(debug==1):
+            fd.write("Removed the HYDROGENS WE ADDED to all the residues\n")
+            fd.write("Removed the LONE PAIRS WE ADDED to all the residues\n")
+            fd.flush()
     if(removeHall ==True):
-        structure = remove_H_all(structure)
+        structure = remove_H_all(structure, debug=debug)
+        if(debug==1):
+            fd.write("removed any hydrogen element present on a residue\n")
+            fd.flush()
 
     io = PDBIO()
     io.set_structure(structure)
-    append2log(f"Writing file at: {fname}  \n")
-    ###CHECK if the file is already present-it will overwrite
+    append2log(f"Writing file at: {fname}  \n", debug=0)
+    if(debug==1):
+        fd.write(f"Writing file at: {fname}  \n")
+        fd.flush()
+    ###check if the file is already present-it will overwrite
     io.save(fname)
+    if(debug==1):
+        endDebugFile(__name__,sys._getframe().f_code.co_name, fd)
 
 
-def get_outputFolderName(structureID, otp_sIDname = False):
 
+
+def get_outputFolderName(debug=0):
     '''
     objective: To return name of the output folder
-    I/P:
-    -structureID: ID of the structure you are working with
-    -otp_sIDname =1 if you want struct ID output name (it is: structID_HLPsp2)
-                 =0 if you only want the output folder name
-
     O/P:
     -outputFolder: name of the output folder
-    -sIDName: structure ID name(structureID_HLPsp2) you want to use in the output folder name
-
     '''
-
-    if(structureID[-6:]=='HLPsp2'):
-        sIDName = structureID
-    else:
-        sIDName = structureID + '_HLPsp2'
-
-    outputFolder = "OUTPUTS_"+sIDName
-
-    if(otp_sIDname ==True):
-        return outputFolder, sIDName
-    else:
-        return outputFolder
+    outputFolder = "outputs_"+mc.protID
 
 
+    return outputFolder
 
-def get_logFileName(structureID):
+
+def get_logFileName(debug=0):
     
     '''
     objective: To get the name of the log file
-    Input:
-    -structureID: ID of the structure you are working with
     Output:
     -fLogName: name of the log file
 
     '''    
 
-    outputFolder, sID = get_outputFolderName(structureID, otp_sIDname = True)
+    outputFolder = get_outputFolderName(debug=debug)
 
     fDest = f'{outputFolder}/'
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-
-    fLogName = f"{fDest}"+f"{sID}.log"
+    fLogName = f"{fDest}"+f"{mc.protID}.log"
     
     return fLogName
 
-def get_infoFileName(structureID):
+
+def get_infoFileName(debug=0):
     
     '''
     objective: To get the name of the info file name
-    Input:
-    -structureID: ID of the structure you are working with
     Output:
     -fInfoName: name of the info file
     '''    
 
-    outputFolder, sID = get_outputFolderName(structureID, otp_sIDname = True)
+    outputFolder = get_outputFolderName(debug=debug)
 
     fDest = f'{outputFolder}/'
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fInfoName = f"{fDest}"+f"{sID}.info"
+    fInfoName = f"{fDest}"+f"{mc.protID}.info"
     
     return fInfoName
 
-def get_debugFileName(structureID):
+
+def get_debugFileName(debug=0):
     
     '''
     objective: To get the name of the info file name
-    Input:
-    -structureID: ID of the structure you are working with
     Output:
     -fDebugName: name of the info file
     '''    
 
-    outputFolder, sID = get_outputFolderName(structureID, otp_sIDname = True)
+    outputFolder = get_outputFolderName(debug=debug)
 
     fDest = f'{outputFolder}/'
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fDebugName = f"{fDest}"+f"{sID}.debug"
+    fDebugName = f"{fDest}"+f"{mc.protID}.debug"
     
     return fDebugName
 
-def get_pdbOutFolder(structureID):
-    
+def get_pdbOutFolder(debug=0):
     '''
     objective: To get the name of the folder where the output pdbs are stored
-    Input:
-    -structureID: ID of the structure you are working with
     Output:
     -foPDB: name of the pdb folder
     '''    
 
-    outputFolder, sID = get_outputFolderName(structureID, otp_sIDname = True)
+    outputFolder = get_outputFolderName(debug=debug)
 
-    foPDB = f'{outputFolder}/PDB_out'
+    foPDB = f'{outputFolder}/pdb_out_{mc.protID}'
     checkFolderPresent = os.path.isdir(foPDB)    
     if not checkFolderPresent: os.makedirs(foPDB)
 
     
     return foPDB
 
-def append2log(MSG):
+def append2log(MSG, debug=0):
+    '''
+    objective: To output a message to log file with 'protID.log' 
+               Note: use this function only after creating the log file
+    Input:-MSG: message to output
+    '''
+        
+    fLogName = get_logFileName(debug=0)
+    fLog = open(fLogName, "a")
+    fLog.write(MSG)
+    fLog.flush()
+    fLog.close()
+
+
+
+def append2debug_lessDetail(MSG, debug=0):
+    '''
+    objective: To output a message to log file with 'protID_HLPsp2.debug' 
+               Note: use this function only after creating the log file
+    Input:-MSG: message to output
+    '''
+       
+    fDebugName = get_debugFileName(debug=0)
+    fd = open(fDebugName, "a")
+    fd.write(MSG)
+    fd.flush()
+
+    fd.close()
+
+
+
+def append2debug(modName, funcName, MSG, debug=0):
     '''
     objective: To output a message to log file with 'protID_HLPsp2.log' 
                Note: use this function only after creating the log file
     Input:-MSG: message to output
     '''
-        
-    fLogName = get_logFileName(mc.protID)
-    fLog = open(fLogName, "a")
-    fLog.write(MSG)
-    fLog.flush()
-    fLog.close()
+    startDebugFile(modName, funcName)
+    fDebugName = get_debugFileName(debug=0)
+    fd = open(fDebugName, "a")
+
+    fd.write("\n")
+    fd.write(MSG)
+    fd.write("\n")
+    fd.flush()
+
+
+    endDebugFile(modName,funcName, fd)
+
+
 

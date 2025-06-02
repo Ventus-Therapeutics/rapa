@@ -6,11 +6,14 @@ from collections import namedtuple
 
 protID = []
 #rotation for LYS and SER/THR while searching for side chain hydrogen
-optRotAngle_LYS = 130
-optRotAngle = 370
+optRotAngle_LYS = 130 #need to keep this as integer as we step through degrees in range function.
+optRotAngle = 370#need to keep this as integer as we step through degrees in range function.
+
+sp3Angle = 109.5
+sp2Angle = 120.0
 
 #search radius
-deltaD = 4 ##Acceptable distance range!
+deltaD = 4.0 ##Acceptable distance range!
 
 withinResClashDist = 0.98
 btwResClashDist = 1.3
@@ -36,18 +39,6 @@ res_of_concern = np.array(['GLN', 'ASN', 'HIS'])
 res_with_OH = np.array(['SER', 'THR', 'TYR'])
 # Note:I am counting Proline's N as part of backbone but while assigning behavior I call it neutral 
 atoms_backbone = np.array([ 'N','CA', 'C', 'O'])###O water will also come if you dont take ONLY VALID AA 
-
-##List of Atoms that are Acceptors, Donors and all Active atoms. Populate during start of code.
-allAcceptors = []
-allDonors = []
-allActiveAtoms = []
-allTBD =[]
-allBoth = []
-allOnlyAcceptors = []
-allOnlyDonors = []
-allOnlyDonorsAcceptors = []
-allDonorsAcceptorsBoth = []
-allUnknowns = []
 
 
 #List of valid residue names

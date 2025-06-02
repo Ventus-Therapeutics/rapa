@@ -1,14 +1,13 @@
-#import sys
 import Bio
 import numpy as np
 import code
 
 from collections import namedtuple
-#from Bio.PDB import *
 
 import setupProt as stp
 import myConstants as mc
 
+##This file contains the two class data structures used widely in the code based on residue and atom. Thus the two classes are: myResidue and myAtom. These are based off the biopython Residue(which is also a class) and biopython Atom(another class)
 ############################################################
 #### MY RESIDUE CLASS!!
 ########################################################################################################################
@@ -23,7 +22,7 @@ class myResidue(Bio.PDB.Residue.Residue):
         Bio.PDB.Residue.Residue.__init__(self, residue.id, residue.resname, residue.segid)
         self.residue = residue
         self.idvalue = residue.id 
-        self.isKnown = 32
+        self.isKnown = 32 #initiates as an integer value 32-therefore not 0 or 1. if 0: its unknown, and if 1-its known
         self.child_list = residue.get_list()
 
     def get_child_list_myatoms(self,residue):
@@ -48,7 +47,6 @@ class myResidue(Bio.PDB.Residue.Residue):
     def isValidAminoAcid(self):
         ''' Defining the valid Amino acids that not the Hetero-residues or water.'''
         return 1 if (self.idvalue[0] == ' ' and self.resname in mc.validResnames) else 0
-        #return 1 if self.idvalue[0] == ' ' else 0
 
 
 ###If you are at any of the residue of concen/unknown residue is used interchangeably in this code
@@ -152,7 +150,6 @@ class myAtom(Bio.PDB.Atom.Atom):
             else:
                 self.atomBehavior = mc.doesNothing
         
-    ######Fix for Histidines, SER, THR, TYR, GLH, ASH . But do we want it here?  
             if (self.name == 'ND1' and atomParentName == 'HIE') or (self.name == 'NE2' and atomParentName == 'HID'):
                 self.atomBehavior = mc.acceptor
 
@@ -194,7 +191,7 @@ class myAtom(Bio.PDB.Atom.Atom):
             LPNames = dict_LPSCName[self.name+'_'+self.parent.resname]
         
         except KeyError:
-            stp.append2log(f"No LP for: {self.name} of {self.parent} and chain: {self.parent.parent}\n" )
+            stp.append2log(f"No LP for: {self.name} of {self.parent} and chain: {self.parent.parent}\n", debug=0)
             LPNames = None
         
         return LPNames
@@ -212,7 +209,7 @@ class myAtom(Bio.PDB.Atom.Atom):
             try:
                 LPAtoms.append(self.parent[name])
             except KeyError:
-                stp.append2log(f"No LP: {name} for: {self.parent} with ID: {self.parent.id[1]} and chain: {self.parent.parent}\n" )
+                stp.append2log(f"No LP: {name} for: {self.parent} with ID: {self.parent.id[1]} and chain: {self.parent.parent}\n", debug=0 )
                 pass
 
         return LPAtoms
@@ -242,7 +239,7 @@ class myAtom(Bio.PDB.Atom.Atom):
             hydNames = dict_HSCName[self.name+'_'+self.parent.resname]
         
         except KeyError:
-            stp.append2log(f"No H for: {self.name} of {self.parent} and chain {self.parent.parent}\n" )
+            stp.append2log(f"No H for: {self.name} of {self.parent} and chain {self.parent.parent}\n", debug=0 )
             hydNames = None
         
         return hydNames

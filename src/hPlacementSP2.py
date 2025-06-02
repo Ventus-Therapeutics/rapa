@@ -25,11 +25,11 @@ def computePlaneCoeffs(heavyAtoms, debug=0):
         -input:heavyAtoms:[[hvyAtm1_x, hvyAtm1_y, hvyAt1_z], [hvyAtm2_x, hvyAtm2_y, hvyAt2_z], [hvyAtm3_x, hvyAtm3_y, hvyAt3_z]]
         -output:coefficient of the plane equation
     '''
-    b = np.array([1, 1, 1])        
-    Sol = np.linalg.solve(heavyAtoms,b)
-    if(debug == True):
-        print(f"The heavy atoms are: {heacyAtoms}, with b={b}, and planar coefficients: {Sol}") 
-    return Sol 
+    b = np.array([1.0, 1.0, 1.0])        
+    sol = np.linalg.solve(heavyAtoms,b)
+    if(debug == 1):
+        stp.append2debug(__name__, sys._getframe().f_code.co_name,f"The heavy atoms are: {heavyAtoms}, with b={b}, and planar coefficients: {sol}\n", debug=0) 
+    return sol 
 
 
 def solveSystem(heavyAtoms, coeffs, theta, debug = 0):
@@ -61,19 +61,12 @@ def solveSystem(heavyAtoms, coeffs, theta, debug = 0):
                -printDetails: get more detailed output
         output: hydrogen coordinates
        '''
-       
+      
     hv1_hv2 = heavyAtoms[2] - heavyAtoms[1] ###r6
 
     hv1_hv2_mod = np.sqrt(hv1_hv2.dot(hv1_hv2))
 
-    if debug == True:
-       print(f"\n############################################## \n")
-       print(f"Exactly solving these equations simultaneously")
-       print(f"Eqn1: {coeffs[0]} x + {coeffs[1]} y + {coeffs[2]} z = 0")
-       print(f"Eqn2: {hv1_hv2[0]} x + {hv1_hv2[1]} y + {hv1_hv2[2]} z = {hv1_hv2_mod}cos(120)")
-       print(f"Eqn3: x^2 + y^2 + z^2 = 1")
-       print(f"\n############################################## \n")
-
+    
     x, y, z = symbols('x, y, z')
     eq1 = Eq(coeffs[0]*x+ coeffs[1]*y+coeffs[2]*z,0)  ##ONLY true if planar
     eq2 = Eq(hv1_hv2[0]*x +hv1_hv2[1]*y+hv1_hv2[2]*z,hv1_hv2_mod*np.cos(math.radians(theta) )) #r6.r5 =cos(120)##Depends on the angle between Hydrogen and the heavy atom
@@ -82,24 +75,30 @@ def solveSystem(heavyAtoms, coeffs, theta, debug = 0):
     
 
     HCoord = sol_exact + heavyAtoms[1]
-
-    if debug ==1:
-       print(f"\n############################################## \n")
-       print(f"H coordinate is: {HCoord}")
-       print(f"SOL in shifted frame: {sol_exact}")
-       print(f"Check solutions, solution 1:")
-       print(f"Eq1: {coeffs[0]*sol_exact[0][0]+ coeffs[1]*sol_exact[0][1] + coeffs[2]*sol_exact[0][2]} = 0?")
-       print(f"Eq2: {hv1_hv2[0]*sol_exact[0][0]+ hv1_hv2[1]*sol_exact[0][1] + hv1_hv2[2]*sol_exact[0][2]} = {hv1_hv2_mod*np.cos(theta*np.pi/180)} ?")
-       print(f"Eq3: {sol_exact[0][0]**2+ sol_exact[0][1]**2 + sol_exact[0][2]**2} = 1 ?")
-#
-       print(f"Check solutions, solution 2:")
-       print(f"Eq1: {coeffs[0]*sol_exact[1][0]+ coeffs[1]*sol_exact[1][1] + coeffs[2]*sol_exact[1][2]} = 0?")
-       print(f"Eq2: {hv1_hv2[0]*sol_exact[1][0]+ hv1_hv2[1]*sol_exact[1][1] + hv1_hv2[2]*sol_exact[1][2]} = {hv1_hv2_mod*np.cos(theta*np.pi/180)} ?")
-       print(f"Eq3: {sol_exact[1][0]**2+ sol_exact[1][1]**2 + sol_exact[1][2]**2} = 1 ?")
+    
+    if(debug==1):
+       stp.append2debug( __name__, sys._getframe().f_code.co_name, f"\n############################################## \n Exactly solving these equations simultaneously\n \
+        Eqn1: {coeffs[0]} x + {coeffs[1]} y + {coeffs[2]} z = 0 \n \
+        Eqn2: {hv1_hv2[0]} x + {hv1_hv2[1]} y + {hv1_hv2[2]} z = {hv1_hv2_mod}cos(120)\n \
+        Eqn3: x^2 + y^2 + z^2 = 1\n \
+\n############################################## \n \
+\n############################################## \n \
+    H coordinate is: {HCoord} \n \
+    SOL in shifted frame: {sol_exact}\n \
+    Check solutions, solution 1:\n \
+    Eq1: {coeffs[0]*sol_exact[0][0]+ coeffs[1]*sol_exact[0][1] + coeffs[2]*sol_exact[0][2]} = 0?\n \
+    Eq2: {hv1_hv2[0]*sol_exact[0][0]+ hv1_hv2[1]*sol_exact[0][1] + hv1_hv2[2]*sol_exact[0][2]} = {hv1_hv2_mod*np.cos(theta*np.pi/180)} ? \n \
+    Eq3: {sol_exact[0][0]**2+ sol_exact[0][1]**2 + sol_exact[0][2]**2} = 1 ?\n \
+    Check solutions, solution 2:\n \
+    Eq1: {coeffs[0]*sol_exact[1][0]+ coeffs[1]*sol_exact[1][1] + coeffs[2]*sol_exact[1][2]} = 0?\n \
+    Eq2: {hv1_hv2[0]*sol_exact[1][0]+ hv1_hv2[1]*sol_exact[1][1] + hv1_hv2[2]*sol_exact[1][2]} = {hv1_hv2_mod*np.cos(theta*np.pi/180)} ?\n \
+    Eq3: {sol_exact[1][0]**2+ sol_exact[1][1]**2 + sol_exact[1][2]**2} = 1 ?\n \
+    \n############################################## \n \
+               ", debug=0)
 
     return HCoord
        
-def eliminateExtraneousSolution(HCoord, vecHeavy, theta, debug = 0):
+def eliminateExtraneousSolution(HCoord, vecHeavy, theta, debug=0):
 
     '''
         objective: Since there is a quadratic involved(bond length/distanc =1)-we get two solutions. Need to pick one.
@@ -138,8 +137,8 @@ def eliminateExtraneousSolution(HCoord, vecHeavy, theta, debug = 0):
 
     HCoordFinal = HCoord[min_diff_ind]
        
-    if debug == True:
-        print(f"\n Diff wrt sol1: {ang_comparison[0]} vs sol2: {ang_comparison[1]}.\n Picking Coord IND {min_diff_ind} as its closest to theta, thus Hydrogen coord is: {HCoordFinal} \n")
+    if(debug ==1):
+        stp.append2debug( __name__, sys._getframe().f_code.co_name, f"\n Diff wrt sol1: {ang_comparison[0]} vs sol2: {ang_comparison[1]}.\n Picking Coord IND {min_diff_ind} as its closest to theta, thus Hydrogen coord is: {HCoordFinal} \n", debug=0)
 
     return HCoordFinal
 
@@ -166,16 +165,20 @@ def computeHydCoordsSp2( heavyAtoms, clashOccurs, debug =0):
     if clashOccurs == 1:
         theta = ((2*np.pi-calc_angle(Vec_heavy0,Vec_heavy1,Vec_heavy2))/2)*180/np.pi ##This should be approximately 120!!
     else:
-        theta = 120.0
+        theta = mc.sp2Angle #120 degrees
     
     vecHeavy = np.array([Vec_heavy0, Vec_heavy1, Vec_heavy2])
     coeffs = computePlaneCoeffs(heavyAtoms, debug=0)
 
-    hCoord =  solveSystem(heavyAtoms, coeffs, theta, debug=0)
+    hCoord =  solveSystem(heavyAtoms, coeffs, theta, debug=debug)
     if clashOccurs == 1: 
-        hCoordFinal = eliminateExtraneousSolution(hCoord, vecHeavy, theta, debug=0)
+        hCoordFinal = eliminateExtraneousSolution(hCoord, vecHeavy, theta, debug=debug)
     else:
         hCoordFinal = hCoord
+
+    if(debug==1):
+        stp.append2debug(__name__, sys._getframe().f_code.co_name, f' \n angle between sp2 atoms should be approximately 120, and it is: {theta}. Note, clash occurs is: {clashOccurs} and final hydrogen coordinates are: {hCoordFinal}\n', debug=0)
+
     return hCoordFinal
 
 #    ###################################################################################################################
@@ -195,16 +198,13 @@ def addLPtoRes(res, LPname, lpCoords, countSerial, LPcoordsInfo, debug=0):
 
     '''
     for i in range(len(LPname)):
-        countSerial+=1
-
+        countSerial+=1 
         res.add(Atom.Atom(name = LPname[i], coord=lpCoords[i], bfactor=0., occupancy=1., altloc=' ', fullname=LPname[i], serial_number=countSerial, element='LP'))
         LPcoordsInfo.append([countSerial, i, res, lpCoords])
 
-
         if debug ==1: 
-            print(f"{lastSerial+i}, {i}, {res.id}, {res.resname}, {lpCoords} ")
-            print(f"Lonepair placed, for {res}, chain:{res.parent} with LPname: {LPname}, with s.no now at: {countSerial} !")
-       
+            stp.append2debug_lessDetail( f"{countSerial}, {i}, {res.id}, {res.resname}, with LPname: {LPname[i]}, lone pair coordinates: {lpCoords[i]}\n  Lonepair placed, for {res}, chain:{res.parent} with LPname: {LPname[i]}, with s.no now at: {countSerial} !\n", debug=0 )
+      
     return countSerial, LPcoordsInfo
 
 
@@ -246,13 +246,12 @@ def placeLP_BB(structure, lastSerial, debug = 0):
                         heavy0 = res['CA'].coord
                         heavy1 = res['O'].coord
                         heavy2 = res['C'].coord
-                        lpCoordBB = computeHydCoordsSp2( np.array([heavy0, heavy1, heavy2]),  clashOccurs=0, debug =0) 
+                        lpCoordBB = computeHydCoordsSp2( np.array([heavy0, heavy1, heavy2]),  clashOccurs=0, debug=debug) 
                         LPname = ['LP1', 'LP2'] 
-                        countSerial, bbLPcoordsInfo = addLPtoRes(res, LPname, lpCoordBB, countSerial, bbLPcoordsInfo)
+                        countSerial, bbLPcoordsInfo = addLPtoRes(res, LPname, lpCoordBB, countSerial, bbLPcoordsInfo, debug=debug)
     return countSerial, bbLPcoordsInfo
 
-##############################################################################################################
-def placeLP(res,lastSerial, hvys, LPnameAll, debug = 0):
+def placeLP(res,lastSerial, hvys, LPnameAll, debug=0):
     ''' 
         Adding lonepair for a given residue
         input:-res: residue to which the lone pair is associated with
@@ -268,15 +267,17 @@ def placeLP(res,lastSerial, hvys, LPnameAll, debug = 0):
     
     countSerial = lastSerial
     LPcoordsInfo = []
-   
+    if(debug==1):
+        stp.append2debug_lessDetail(f"Now placing LPs: {LPnameAll} for {res} with chain: {res.parent}.\n", debug=0 )
+
     for i in range(np.shape(hvys)[0]):
             heavy0 = res[hvys[i][0]].coord
             heavy1 = res[hvys[i][1]].coord
             heavy2 = res[hvys[i][2]].coord
 
-            lpCoord = computeHydCoordsSp2( np.array([heavy0, heavy1, heavy2]),  clashOccurs=0, debug =0) 
+            lpCoord = computeHydCoordsSp2( np.array([heavy0, heavy1, heavy2]),  clashOccurs=0, debug=debug) 
             LPname = LPnameAll[i]
-            countSerial, LPcoords = addLPtoRes(res, LPname, lpCoord, countSerial, LPcoordsInfo)
+            countSerial, LPcoords = addLPtoRes(res, LPname, lpCoord, countSerial, LPcoordsInfo, debug=debug)
        
     return countSerial, LPcoordsInfo
 
@@ -295,7 +296,11 @@ def placeHydrogens_BB(structure, lastSerial, debug = 0):
             bbHcoordsInfo: backbone hydrogen coords Information regarding the H-atom coordinates that are added, including:
                countSerial, number, residue, H-atom coords 
         '''
-    
+    if(debug==1):
+        stp.startDebugFile( __name__, sys._getframe().f_code.co_name)
+        fDebugName = stp.get_debugFileName(debug=0)
+        fd = open(fDebugName, "a")
+
     for model in structure.child_list:
         for chain in model.child_list:
             
@@ -316,7 +321,12 @@ def placeHydrogens_BB(structure, lastSerial, debug = 0):
                     if(a.get_name() == 'C'):
                         carbonList.append(a)
 
-            stp.append2log(f"I have collected atoms for chain: {chain} and now I will fix backbone  H \n")
+            stp.append2log(f"Collected atoms for chain: {chain} and now I will fix backbone H \n", debug=0)
+            if(debug==1):
+                fd.write(f"Collected atoms for chain: {chain} and now I will fix backbone  H \n")
+                fd.flush()
+
+
             bbHcoordsInfo =[]
             firstResACE = 0
             if((not carbonList) or (not carbonAlphaList) or (not nitrogenList) ): continue
@@ -337,19 +347,24 @@ def placeHydrogens_BB(structure, lastSerial, debug = 0):
                     heavy2 = carbonAlphaList[i].coord
                     res = nitrogenList[i].parent
 
-               hCoordBB = computeHydCoordsSp2( np.array([heavy0, heavy1, heavy2]),  clashOccurs=1, debug=0) 
+               hCoordBB = computeHydCoordsSp2( np.array([heavy0, heavy1, heavy2]),  clashOccurs=1, debug=debug) 
              
                if(res.resname)== 'PRO': continue
 
                res.add(Atom.Atom(name='H', coord=hCoordBB, bfactor=0., occupancy=1., altloc=' ', fullname='H', serial_number=lastSerial+i,element='H'))
                bbHcoordsInfo.append([lastSerial+i, i, res, hCoordBB])
                
-               if debug ==1: print(f"{lastSerial+i}, {i}, {res.id}, {res.resname}, {hCoordBB} ")
-               
+               if debug ==1: 
+                    fd.write(f"For serial number: {lastSerial+i}, i: {i}, res:{res}, and backbone hydrogen coords: {hCoordBB}\n")
+                    fd.flush()
+
+    if(debug ==1):
+        stp.endDebugFile(__name__,sys._getframe().f_code.co_name, fd)         
+
     return lastSerial+i, bbHcoordsInfo
 
 
-def placeHydrogens_ARG(res, lastSerial, debug = 0):
+def placeHydrogens_ARG(res, lastSerial, debug=0):
 
     ''' objective: Placing side chain hydrogen for Arginine(ARG)
         input:-res: Arginine residue considered (who's side chain hydrogen(s) needs to be added)
@@ -365,9 +380,9 @@ def placeHydrogens_ARG(res, lastSerial, debug = 0):
     NH1Coord = res['NH1'].coord
     NH2Coord = res['NH2'].coord
 
-    hydCoords.append(computeHydCoordsSp2( np.array([ CDCoord, NECoord, CZCoord]), clashOccurs=1, debug =0))
-    hydCoords.append(computeHydCoordsSp2( np.array([NH2Coord, NH1Coord, CZCoord]), clashOccurs=0, debug =0))
-    hydCoords.append(computeHydCoordsSp2( np.array([NH1Coord, NH2Coord, CZCoord]), clashOccurs=0, debug=0))
+    hydCoords.append(computeHydCoordsSp2( np.array([ CDCoord, NECoord, CZCoord]), clashOccurs=1, debug=debug))
+    hydCoords.append(computeHydCoordsSp2( np.array([NH2Coord, NH1Coord, CZCoord]), clashOccurs=0, debug=debug))
+    hydCoords.append(computeHydCoordsSp2( np.array([NH1Coord, NH2Coord, CZCoord]), clashOccurs=0, debug=debug))
 
     lastSerial = lastSerial+1
     
@@ -378,7 +393,7 @@ def placeHydrogens_ARG(res, lastSerial, debug = 0):
        res.add(Bio.PDB.Atom.Atom(name=names[i], coord=hCoords[i], bfactor=0., occupancy=1., altloc=' ', fullname=names[i], serial_number=lastSerial+i,element='H'))
 
     if(debug ==1):
-        angle = calc_angle(res['CD'].get_vector(), res['NE'].get_vector(), res['HE'].get_vector())*180/3.14
+        angle1 = calc_angle(res['CD'].get_vector(), res['NE'].get_vector(), res['HE'].get_vector())*180/3.14
         angle2 = calc_angle(res['CZ'].get_vector(), res['NE'].get_vector(), res['HE'].get_vector())*180/3.14
 
         angle3 = calc_angle(res['CZ'].get_vector(), res['NH1'].get_vector(), res['HH11'].get_vector())*180/3.14
@@ -390,23 +405,23 @@ def placeHydrogens_ARG(res, lastSerial, debug = 0):
         angle8 = calc_angle(res['HH21'].get_vector(), res['NH2'].get_vector(), res['HH22'].get_vector())*180/3.14
 
 
-        print(f"angle1: CD-NE-HE :{angle1} ")
-        print(f"angle2: CZ-NE-HE :{angle2} ")
-
-        print(f"angle3: CZ-NH1-HH11 :{angle3} ")
-        print(f"angle4: CZ-NH1-HH12 :{angle4} ")
-        print(f"angle5: HH11-NH1-HH12 :{angle5} ")
-
-        print(f"angle6: CZ-NH2-HH21 :{angle6} ")
-        print(f"angle7: CZ-NH2-HH22 :{angle7} ")
-        print(f"angle8: HH21-NH2-HH22 :{angle8} ")
+        stp.append2debug( __name__, sys._getframe().f_code.co_name, f"Side chain hydrogens placed for residue: {res}, belonging to chain:{res.parent} .\n. Tha angle values in degrees are:\
+                angle1: CD-NE-HE :{angle1}\n \
+                angle2: CZ-NE-HE :{angle2}\n \
+                angle3: CZ-NH1-HH11 :{angle3}\n \
+                angle4: CZ-NH1-HH12 :{angle4}\n \
+                angle5: HH11-NH1-HH12 :{angle5}\n \
+                angle6: CZ-NH2-HH21 :{angle6}\n \
+                angle7: CZ-NH2-HH22 :{angle7}\n \
+                angle8: HH21-NH2-HH22 :{angle8}\n \
+                ", debug=0 )
 
     return lastSerial+i, hydCoords
 
 
 
 
-def placeHydrogens_ASN(res, lastSerial, debug = 0):
+def placeHydrogens_ASN(res, lastSerial, debug=0):
 
     ''' 
         objective: Placing side chain hydrogen for Aspargine(ASN)
@@ -417,7 +432,7 @@ def placeHydrogens_ASN(res, lastSerial, debug = 0):
     ''' 
 
     hvys = np.array([res['OD1'].coord, res['ND2'].coord, res['CG'].coord  ])
-    hd2Coords = computeHydCoordsSp2( hvys, clashOccurs=0, debug = 0)
+    hd2Coords = computeHydCoordsSp2( hvys, clashOccurs=0, debug=debug)
 
     
     names = ['HD21','HD22']
@@ -426,7 +441,8 @@ def placeHydrogens_ASN(res, lastSerial, debug = 0):
     for i in range(len(names)):
         res.add(Bio.PDB.Atom.Atom(name=names[i], coord=hd2Coords[i], bfactor=0., occupancy=1., altloc=' ', fullname=names[i], serial_number=lastSerial+i,element='H'))
 
-    if(debug==1):print(f"Side chain hydrogen placed, for {res}, added {len(names)} Hs, with s.no now at: {lastSerial+i} !")
+    if(debug==1):
+        stp.append2debug( __name__, sys._getframe().f_code.co_name, f"Side chain hydrogen placed, for {res}, added {len(names)} Hs, with s.no now at: {lastSerial+i} !", debug=0)
   
     return lastSerial+i, hd2Coords
 
@@ -443,19 +459,22 @@ def placeHydrogens_GLN(res, lastSerial, debug = 0):
 
     hvys = np.array([res['OE1'].coord, res['NE2'].coord, res['CD'].coord  ])
 
-    he2Coords = computeHydCoordsSp2(hvys, clashOccurs=0, debug =0)
+    he2Coords = computeHydCoordsSp2(hvys, clashOccurs=0, debug=debug)
     
     names = ['HE21','HE22']
     lastSerial = lastSerial+1
 
     for i in range(len(names)):
         res.add(Bio.PDB.Atom.Atom(name=names[i], coord=he2Coords[i], bfactor=0., occupancy=1., altloc=' ', fullname=names[i], serial_number=lastSerial+i,element='H'))
+    
+    if(debug==1):
+        stp.append2debug( __name__, sys._getframe().f_code.co_name, f"Side chain hydrogen placed, for {res}, added {len(names)} Hs, with s.no now at: {lastSerial+i} !", debug=0)
+  
 
-    if(debug==1):print(f"Side chain hydrogen placed, for {res}, added {len(names)} Hs, with s.no now at: {lastSerial+i} !")
     return lastSerial+i, he2Coords
 
 
-def defaultHH_LPCoordLoc(hhCoords,reason, debug =0):
+def defaultHH_LPCoordLoc(hhCoords,reason,debug =0):
     '''
         objective: To provide a default value of hydrogen (HH) coordinates for Tyrosine for appropriate conditions(such as no surrounding close atoms)
         input:-hhCoords: the two possible hydrogen coordinates
@@ -466,10 +485,12 @@ def defaultHH_LPCoordLoc(hhCoords,reason, debug =0):
     
     hhCoord = hhCoords[0]
     LPCoord = hhCoords[1]
-    if(debug==1): print(f"Going to default as: {reason} to eliminate the two solutions of TYR. Taking the first coordinate computed: {hhCoord} and second coordinate as LP coord: {LPCoord}")
+
+    if(debug==1):
+        stp.append2debug( __name__, sys._getframe().f_code.co_name, f"Going to default as: {reason} to eliminate the two solutions of TYR. Taking the first coordinate computed: {hhCoord} and second coordinate as LP coord: {LPCoord}", debug=0)
     return hhCoord, LPCoord
 
-def setHHCoordsAndLPCoordsTYR(aboveSp2, sp2, hhCoords, debug =0):
+def setHHCoordsAndLPCoordsTYR(aboveSp2, sp2, hhCoords, debug=0):
     '''
     objective: -To set side chain hydrogen(HH) and lone pair attached to oxygen(OH) on Tyrosine
                -Need to figure out which coordinate is assigned to hydrogen and which one for lone pair
@@ -480,34 +501,43 @@ def setHHCoordsAndLPCoordsTYR(aboveSp2, sp2, hhCoords, debug =0):
     output:-hhCoord: Coordinate for hydrogen(HH)
            -LPCoord: Coordinate for the lone pair on OH oxygen
     '''
+    
+    if(debug==1):
+        stp.startDebugFile( __name__, sys._getframe().f_code.co_name)
+        fDebugName = stp.get_debugFileName(debug=0)
+        fd = open(fDebugName, "a")
 
     res = sp2.parent
     structure = res.parent.parent.parent
     
     #get all donor acceptor list
-    customListAll = stp.get_DonorAcceptorList(structure, aaType = 'DONOR_ACCEPTOR_BOTH_TBD')
+    customListAll = stp.get_DonorAcceptorList(structure, aaType = 'DONOR_ACCEPTOR_BOTH_TBD', debug=debug)
 
     #get only donor acceptor list that are known wrt to self atom(backbones are known and self atom behaviors are known)
-    customList = stp.get_knownDonorAcceptorListWRTOneAtom(structure, sp2, aaType = 'DONOR_ACCEPTOR')
-    allCloseAtoms_DoAcBoT = cats.get_allCloseAtomInfoForOneAtom(sp2, customListAll, debug = 0)
+    customList = stp.get_knownDonorAcceptorListWRTOneAtom(structure, sp2, aaType = 'DONOR_ACCEPTOR', debug=debug)
+    allCloseAtoms_DoAcBoT = cats.get_allCloseAtomInfoForOneAtom(sp2, customListAll, debug=debug)
     
     #If there are no known donor/acceptor/both or TBD atom-it can pick up default value
     if(not allCloseAtoms_DoAcBoT):
-        hhCoord, LPCoord = defaultHH_LPCoordLoc(hhCoords, reason=f'No Close Atoms of any behaviors found for {res}, {res.id}')
+        hhCoord, LPCoord = defaultHH_LPCoordLoc(hhCoords, reason=f'No Close Atoms of any behaviors found for {res}, {res.id}', debug=debug)
         return hhCoord,LPCoord
 
     #If there are no known donor/acceptor then do not assign coordinate values for hydrogen and lone pairs!
     if(not customList):
-        if(debug==1):print(f"NO KNOWN CLOSE ATOMS FOUND for {res}, {res.id}")
+
+        if(debug==1):
+            fd.write(f"\n NO KNOWN CLOSE ATOMS FOUND for {res}, {res.id}\n")
+            fd.flush()
+
         hCoord = []
         LPCoord = []
         return hCoord, LPCoord
 
     ##Get a list of all close Atoms (which are donor, acceptor, and both) for the given hvy atom
-    allCloseAtoms = cats.get_allCloseAtomInfoForOneAtom(sp2, customList, debug = 0) 
+    allCloseAtoms = cats.get_allCloseAtomInfoForOneAtom(sp2, customList, debug=debug) 
     ##if there are absolutely no close atoms-then pick up default values
     if(np.shape(allCloseAtoms)[0]<2):
-        hhCoord, LPCoord = defaultHH_LPCoordLoc(hhCoords, reason=f'No Close Atoms found for {res}, {res.id}', debug =0)
+        hhCoord, LPCoord = defaultHH_LPCoordLoc(hhCoords, reason=f'No Close Atoms found for {res}, {res.id}', debug=debug)
         return hhCoord,LPCoord
      
     mySp2 = mra.myAtom(sp2)
@@ -525,7 +555,8 @@ def setHHCoordsAndLPCoordsTYR(aboveSp2, sp2, hhCoords, debug =0):
 
         enSum = 0
         if(debug ==1): 
-            print(f"close Atom now: {allCloseAtoms}") 
+            fd.write(f"close Atom now: {allCloseAtoms}\n")
+            fd.flush()
         #Loop over all the close atoms to find energy interaction with OH-HH/OH-LP
         for i in range(1, np.shape(allCloseAtoms)[0]):
 
@@ -535,33 +566,44 @@ def setHHCoordsAndLPCoordsTYR(aboveSp2, sp2, hhCoords, debug =0):
             enValAcc = 0
 
             if(myCloseAt.get_behavior().abbrev == 'ac'):
-                ##LOOKING AT DONOR PART OF reference atom
-                enValDon, enSumDon = cats.computeEnergyAsDonor(closeAt, hhCoords[j], sp2, attractive = 1, atype='SP2',  chV_levelVal ='level_00_chV_00_sNum_00', debug =0 )
+                if(debug==1):fd.close()
+                ##Considering donor atom associated with reference atom
+                enValDon, enSumDon = cats.computeEnergyAsDonor(closeAt, hhCoords[j], sp2, attractive = 1, atype='SP2',  chV_levelVal = 'level_00_chV_00_structureNum_00', debug=debug )
+                if(debug==1):fd = open(fDebugName, "a")
                 if(enValDon == []):
-                    print(f"I am DONOR and I will continue as no energyVal found")
+                    if(debug==1):
+                        fd.write(f"\n I am DONOR and I will continue as no energyVal found\n")
+                        fd.flush()
                     continue 
                 enSum = enSum + enSumDon
-                ##LOOKING AT ACCEPTOR PART OF reference atom
-                enValAcc, enSumAcc = cats.computeEnergyAsAcceptor(sp2, lp_vec, closeAt,attractive = 0, atype = 'SP2',  chV_levelVal ='level_00_chV_00_sNum_00', debug =0)
+                if(debug==1):fd.close()
+                #Considering acceptor atom associated with reference atom
+                enValAcc, enSumAcc = cats.computeEnergyAsAcceptor(sp2, lp_vec, closeAt,attractive = 0, atype = 'SP2',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
+                if(debug==1):fd = open(fDebugName, "a")
                 enSum = enSum + enSumAcc
 
             if(myCloseAt.get_behavior().abbrev == 'do'):
-                ##LOOKING AT ACCEPTOR PART OF reference atom
-                enValAcc, enSumAcc = cats.computeEnergyAsAcceptor(sp2, lp_vec, closeAt, attractive = 1, atype='SP2',  chV_levelVal ='level_00_chV_00_sNum_00', debug = 0)
+                ##Considering acceptor atom associated with reference atom
+                if(debug==1):fd.close()
+                enValAcc, enSumAcc = cats.computeEnergyAsAcceptor(sp2, lp_vec, closeAt, attractive = 1, atype='SP2',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug)
+                if(debug==1):fd = open(fDebugName, "a")
                 if not enValAcc:
-                    print(f"I am ACC and will continue as no energyVal found")
+                    if(debug==1):
+                        fd.write(f"\n I am ACC and will continue as no energyVal found \n")
                     continue
                 enSum = enSum + enSumAcc
-                ##LOOKING AT DONOR PART OF reference atom
-                enValDon, enSumDon = cats.computeEnergyAsDonor(closeAt, hhCoords[j], sp2, attractive =0, atype = 'SP2',  chV_levelVal ='level_00_chV_00_sNum_00', debug = 0)
+                ##Considering donor atom associated with reference atom
+                if(debug==1):fd.close()
+                enValDon, enSumDon = cats.computeEnergyAsDonor(closeAt, hhCoords[j], sp2, attractive =0, atype = 'SP2',  chV_levelVal ='level_00_chV_00_structureNum_00', debug =debug)
+                if(debug==1):fd = open(fDebugName, "a")
                 enSum = enSum + enSumDon
         enSumList.append([hhCoords[j], enSum])
         
     #Array of hydrogen coordinates and energy sum
-    enValArr = np.array(enSumList)
+    enValArr = np.array(enSumList, dtype=object)
     #If no ener
     if not enValArr[:,-1].all():
-        hhCoord, LPCoord = defaultHH_LPCoordLoc(hhCoords, reason='All energy value = 0! Asumming no interaction-picking default', debug =0 )
+        hhCoord, LPCoord = defaultHH_LPCoordLoc(hhCoords, reason='All energy value = 0! Asumming no interaction-picking default', debug=debug )
         return hhCoord,LPCoord
 
 #   ##MinInd for the energy val index
@@ -569,16 +611,20 @@ def setHHCoordsAndLPCoordsTYR(aboveSp2, sp2, hhCoords, debug =0):
     ##pick up the hydrogen coordinate corresponding to that
     hhCoord = enValArr[minInd, -2]
 
-    cats.checkEnergyInRange(enValArr[minInd, -1], stateSet = False)
+    cats.checkEnergyInRange(enValArr[minInd, -1], stateSet = False, debug=debug)
 
     #Fix the lone pair coordinate(by elimination of the hydrogen coordinate)
     if(all(abs(hhCoords[0]-hhCoord))<0.0001 ):
         LPCoord = hhCoords[1]
     else:
         LPCoord = hhCoords[0]
+
+    if(debug==1):
+        stp.endDebugFile(__name__,sys._getframe().f_code.co_name, fd) 
+
     return hhCoord,LPCoord  
 #
-def placeHydrogens_TYR(res, lastSerial, debug =0):
+def placeHydrogens_TYR(res, lastSerial, debug=0):
            
     ''' objective: Placing side chain hydrogen for Tyrosine(TYR)
         input:-res: the Tyrosine residue considered (who's side chain hydrogen(s) needs to be added)
@@ -589,12 +635,13 @@ def placeHydrogens_TYR(res, lastSerial, debug =0):
     ''' 
     
     hvys = np.array([res['CE1'].coord, res['OH'].coord, res['CZ'].coord  ])
-    hhCoords = computeHydCoordsSp2( hvys, clashOccurs=0, debug=0)
+    hhCoords = computeHydCoordsSp2(hvys, clashOccurs=0, debug=debug)
     ##eliminate on of the hydrogens based off the energy calc
-    hhCoord, LPCoord = setHHCoordsAndLPCoordsTYR(res['CZ'], res['OH'], hhCoords)
+    hhCoord, LPCoord = setHHCoordsAndLPCoordsTYR(res['CZ'], res['OH'], hhCoords, debug=debug)
     
     if(not any(hhCoord)):
-        if(debug==1):print(f"NO CLOSE ATOMS FOUND for {res}, {res.id}")
+        if(debug==1):
+            stp.append2debug( __name__, sys._getframe().f_code.co_name, f"NO CLOSE ATOMS FOUND for {res}, {res.id}", debug=0)
         hCoord = []
         return lastSerial, hCoord
 
@@ -605,13 +652,13 @@ def placeHydrogens_TYR(res, lastSerial, debug =0):
         hhLP= [hhCoord, LPCoord]
         hLPCoords = np.reshape(hhLP,(2,3))
 
-        if(debug==1):print(f"Side chain hydrogen placed, for {res}, added {1} Hs, with s.no now at: {lastSerial+1} !")
-    
+        if(debug==1):
+            stp.append2debug_lessDetail(f"Side chain hydrogen placed, for {res}, added HH hydrogen and LP3 lone pair, with s.no now at: {lastSerial+1} !", debug=0)
         ##To make it more like the SP3-SER/THR otherwise keep hhCoord because thats how we are treating it in the main loop
         return lastSerial+2, hLPCoords
 
 
-def placeHydrogens_TRP(res, lastSerial, debug = 0):
+def placeHydrogens_TRP(res, lastSerial, debug=0):
     ''' objective: Placing side chain hydrogen for Tryptophan (TYR)
         
         input:-res: the Tryptophan residue considered (who's side chain hydrogen(s) needs to be added)
@@ -622,10 +669,11 @@ def placeHydrogens_TRP(res, lastSerial, debug = 0):
     
     hvys = np.array([res['CD1'].coord, res['NE1'].coord, res['CE2'].coord  ])
 
-    he1Coord = computeHydCoordsSp2( hvys, clashOccurs=1, debug=0)
+    he1Coord = computeHydCoordsSp2(hvys, clashOccurs=1, debug=debug)
     res.add(Bio.PDB.Atom.Atom(name='HE1', coord=he1Coord, bfactor=0., occupancy=1., altloc=' ', fullname='HE1', serial_number=lastSerial+1,element='H'))
 
-    if(debug==1):print(f"Side chain hydrogen placed, for {res}, added {1} Hs, with s.no now at: {lastSerial+1} !")
+    if(debug==1):
+        stp.append2debug( __name__, sys._getframe().f_code.co_name, f"Side chain hydrogen placed, for {res}, added HE1 hydrogen and LP3 lone pair, with s.no now at: {lastSerial+1} !", debug=0)
 
     return lastSerial+1, he1Coord
 
@@ -643,12 +691,15 @@ def placeHydrogens_HID(res, lastSerial, debug = 0):
 
     hvys = np.array([res['CG'].coord, res['ND1'].coord, res['CE1'].coord  ])
 
-    hd1Coord = computeHydCoordsSp2( hvys, clashOccurs=1, debug =0)
+    hd1Coord = computeHydCoordsSp2(hvys, clashOccurs=1, debug=debug)
     res.add(Bio.PDB.Atom.Atom(name='HD1', coord=hd1Coord, bfactor=0., occupancy=1., altloc=' ', fullname='HD1', serial_number=lastSerial+1,element='H'))
+    
+    if(debug==1):
+        stp.append2debug( __name__, sys._getframe().f_code.co_name, f"Side chain hydrogen placed, for {res}, added HD1 hydrogen, with s.no now at: {lastSerial+1} !", debug=0)
 
     return lastSerial+1, hd1Coord
 
-def placeHydrogens_HIE(res, lastSerial,debug =0):
+def placeHydrogens_HIE(res, lastSerial, debug=0):
          
     '''objective: Placing side chain hydrogen for Histidine (HIE)
        input:-res: the HIE residue considered (who's side chain hydrogen(s) needs to be added)
@@ -658,9 +709,13 @@ def placeHydrogens_HIE(res, lastSerial,debug =0):
                -he2Coords: coordinates of the hydrogen atom(s) added
     ''' 
     hvys = np.array([res['CD2'].coord, res['NE2'].coord, res['CE1'].coord  ])
-    he2Coord = computeHydCoordsSp2( hvys, clashOccurs=1, debug=0)
+    he2Coord = computeHydCoordsSp2(hvys, clashOccurs=1, debug=debug)
 
     res.add(Bio.PDB.Atom.Atom(name='HE2', coord=he2Coord, bfactor=0., occupancy=1., altloc=' ', fullname='HE2', serial_number=lastSerial+1,element='H'))
+
+    if(debug==1):
+        stp.append2debug( __name__, sys._getframe().f_code.co_name, f"Side chain hydrogen placed, for {res}, added HE2 hydrogen, with s.no now at: {lastSerial+1} !", debug=0)
+
    
     return lastSerial+1, he2Coord
 
@@ -675,8 +730,8 @@ def placeHydrogens_HIP(res, lastSerial, debug = 0):
                -hipCoords: coordinates of the hydrogen atom(s) added
 
         '''  
-    lastSerial, hCoord_HID= placeHydrogens_HID(res, lastSerial) 
-    lastSerial, hCoord_HIE= placeHydrogens_HIE(res, lastSerial)
+    lastSerial, hCoord_HID= placeHydrogens_HID(res, lastSerial, debug=debug) 
+    lastSerial, hCoord_HIE= placeHydrogens_HIE(res, lastSerial, debug=debug)
 
     hipCoords = np.array([hCoord_HID, hCoord_HIE]) 
 
@@ -702,10 +757,10 @@ def addSP2SideChainHydrogens(structure,lastSerial, debug =0):
     for res in structure.get_residues():
         if(res.resname =='TYR'): continue 
         try:
-            lastSerial, hCoord = res_dict[res.resname](res, lastSerial, debug = 0)
+            lastSerial, hCoord = res_dict[res.resname](res, lastSerial, debug=debug)
         except KeyError:
-            stp.append2log(f"No Side chain Hydrogens for: {res.resname} with {res.id[1]} and chain: {res.parent}. Adding Side chain hydrogen only for: ARG, ASN, GLN, TYR, TRP, HID, HIE, HIP.\n" )
-            #print(f"No Hydrogens for: {res.resname} with {res.id[1]}" )
+            if(debug==1):
+                stp.append2debug_lessDetail(f"No Side chain Hydrogens for: {res.resname} with {res.id[1]} and chain: {res.parent}. Adding Side chain hydrogen only for: ARG, ASN, GLN, TYR, TRP, HID, HIE, HIP.\n", debug=0 )
             pass
     return lastSerial, hCoord 
              
@@ -723,7 +778,6 @@ def addSP2SideChainLPs(structure, lastSerial, debug =0):
 
         '''
 
-
     LP_dict = {'ASP': [mc.hvysForLPsASP, mc.LPSCnamesASP], 'GLU': [mc.hvysForLPsGLU, mc.LPSCnamesGLU],
                 'ASN': [mc.hvysForLPsASN, mc.LPSCnamesASN], 'GLN': [mc.hvysForLPsGLN, mc.LPSCnamesGLN],
                 'HIE': [mc.hvysForLPsHIE, mc.LPSCnamesHIE], 'HID': [mc.hvysForLPsHID, mc.LPSCnamesHID]
@@ -734,9 +788,10 @@ def addSP2SideChainLPs(structure, lastSerial, debug =0):
         try:
             hvys = LP_dict[res.resname][0]
             LPnameAll = LP_dict[res.resname][1]
-            lastSerial, lpCoord = placeLP(res, lastSerial, hvys, LPnameAll, debug = 0)
+            lastSerial, lpCoord = placeLP(res, lastSerial, hvys, LPnameAll, debug=debug)
         except KeyError:
-            stp.append2log(f"No Lone pairs for: {res.resname} with {res.id[1]} and chain: {res.parent}. Adding side chain lone pairs only for: ASP, GLU, ASN, GLN, HIE, HID.\n" )
+            if(debug==1):
+                stp.append2debug_lessDetail(f"No Lone pairs for: {res.resname} with {res.id[1]} and chain: {res.parent}. Adding side chain lone pairs only for: ASP, GLU, ASN, GLN, HIE, HID.\n", debug=0 )
             pass
 
     return lastSerial, lpCoord

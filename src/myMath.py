@@ -1,6 +1,6 @@
 import numpy as np
 
-def mod(x): 
+def mod(x, debug=0): 
     
     ''' objective: modulus of a vector is computed. Use this for computing distances
         input:x: numpy array/vector
@@ -11,7 +11,7 @@ def mod(x):
     return mod_val
 
 
-def unitVec(x):
+def unitVec(x, debug=0):
 
     '''objective: Finding a unit vector by dividing with the modulus of the vector 
        input:x-a vector you want to normalize
@@ -20,7 +20,7 @@ def unitVec(x):
 
     return  x/mod(x)
 
-def rotMatrix(theta):
+def rotMatrix(theta, debug=0):
 
     '''objecitve: rotation about Z axis. Provide theta input in degrees
        input: theta is the degree about which we rotate about Z axis. (Provide input in degrees)
@@ -34,7 +34,7 @@ def rotMatrix(theta):
 
     return rotMat
 
-def rotMatrixAboutY(theta):
+def rotMatrixAboutY(theta, debug=0):
 
     '''objecitve: rotation about Y axis. Provide theta input in degrees
        input: theta is the degree about which we rotate about Z axis (Provide input in degrees)
@@ -53,7 +53,7 @@ def rotMatrixAboutY(theta):
     return rotMatY
 
 
-def translateCoord( B, A):
+def translateCoord( B, A, debug=0):
 
     ''' objective: Translating coords of points from A to B 
         input:-B:coords of point B (by which you want to shift all points A)

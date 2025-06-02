@@ -1,5 +1,6 @@
 import os
 import sys
+import csv
 import Bio
 import numpy as np
 import code
@@ -82,8 +83,7 @@ def get_closeAtomList(targAtom, givenList, debug=0):
     '''
     
     if(not givenList): 
-        #print("No search List provided!!-STOP!")
-        stp.append2log("No search List provided!!-STOP! \n")
+        stp.append2log("No search List provided!!-STOP! \n", debug=0)
         os._exit(0)
 
 
@@ -95,7 +95,6 @@ def get_closeAtomList(targAtom, givenList, debug=0):
         close_atoms.append(targAtom)
     #
     return close_atoms
-
 
 
 def get_closeAtomDistInfo(atomCurr, close_atoms, debug = 0):
@@ -130,10 +129,10 @@ def get_allCloseAtomInfoForOneAtom(aCurr, givenList, debug =0 ):
         All atoms within the DeltaD radius is listed in the next few rows, with the closest
         atom being on row 1. The atoms are listed in closest to farthest order.        
        '''
-    close_atoms = get_closeAtomList(aCurr, givenList, debug=0)
+    close_atoms = get_closeAtomList(aCurr, givenList, debug=debug)
 
     if np.shape(close_atoms)[0] > 0:
-        distInfo = get_closeAtomDistInfo(aCurr, close_atoms, debug = 0)
+        distInfo = get_closeAtomDistInfo(aCurr, close_atoms, debug=debug)
     else:
         return []
 
@@ -173,10 +172,10 @@ def get_listOfCloseAtomsForListOfAtoms(listOfInputAtoms,  aaType, debug = 0):
         ##provide the type of active atoms you need in this function and it will generate a custom list of 
         #all those possible atoms##This funct: get_DonorAcceptor has both known and unknown atoms-
 
-        customList = stp.get_DonorAcceptorList(struct, aaType)
+        customList = stp.get_DonorAcceptorList(struct, aaType,debug=debug)
 
         #Get all the close atoms with the given custom list           
-        allCloseAtoms = get_allCloseAtomInfoForOneAtom(at, customList, debug=0)
+        allCloseAtoms = get_allCloseAtomInfoForOneAtom(at, customList, debug=debug)
         
         #Append to the List of close atoms
         LOCA.append(allCloseAtoms)
@@ -188,7 +187,7 @@ def get_listOfCloseAtomsForListOfAtoms(listOfInputAtoms,  aaType, debug = 0):
 
 
 
-def get_connectedToDonor_BB(atomDonor,debug = 0):
+def get_connectedToDonor_BB(atomDonor, debug=0):
 
     '''
     objective: get the hydrogen connected to donor atom for the backbone atom. 
@@ -209,7 +208,7 @@ def get_connectedToDonor_BB(atomDonor,debug = 0):
 
 
 
-def get_connectedToDonor_ARG(atomDonor, debug = 0):
+def get_connectedToDonor_ARG(atomDonor, debug=0):
 
     '''
     objective: get the atom3(hydrogen connected to donor atom) for Arginine 
@@ -241,7 +240,7 @@ def get_connectedToDonor_ARG(atomDonor, debug = 0):
 
 
 
-def get_connectedToDonor_ASH(atomDonor, debug = 0):
+def get_connectedToDonor_ASH(atomDonor, debug=0):
 
     '''
     objective: get the atom3(hydrogen connected to donor atom) for ASH
@@ -260,7 +259,7 @@ def get_connectedToDonor_ASH(atomDonor, debug = 0):
 
 
 
-def get_connectedToDonor_GLH(atomDonor, debug = 0):
+def get_connectedToDonor_GLH(atomDonor, debug=0):
 
     '''
     objective: get the atom3 (atom connected to donor atom) for GLH
@@ -279,7 +278,7 @@ def get_connectedToDonor_GLH(atomDonor, debug = 0):
 
 
 
-def get_connectedToDonor_ASN(atomDonor, debug = 0):
+def get_connectedToDonor_ASN(atomDonor, debug=0):
 
     '''
     objective: get the atom3( hydrogen connected to donor atom) for ASN
@@ -300,7 +299,7 @@ def get_connectedToDonor_ASN(atomDonor, debug = 0):
 
 
      
-def get_connectedToDonor_GLN(atomDonor, debug = 0):
+def get_connectedToDonor_GLN(atomDonor, debug=0):
 
     '''
     objective: get the atom3(hydrogen atom connected to donor atom) for GLN
@@ -321,7 +320,7 @@ def get_connectedToDonor_GLN(atomDonor, debug = 0):
 
      
 
-def get_connectedToDonor_TYR(atomDonor, debug = 0):
+def get_connectedToDonor_TYR(atomDonor, debug=0):
 
     '''
     objective: get the atom3(hydrogen atom connected to donor atom)for TYR
@@ -340,7 +339,7 @@ def get_connectedToDonor_TYR(atomDonor, debug = 0):
 
 
 
-def get_connectedToDonor_TRP(atomDonor, debug = 0):
+def get_connectedToDonor_TRP(atomDonor, debug=0):
 
     '''
     objective: get the atom3 (hydrogen atom connected to donor atom) for TRP
@@ -356,7 +355,7 @@ def get_connectedToDonor_TRP(atomDonor, debug = 0):
     return atom3
 
 
-def get_connectedToDonor_HID(atomDonor, debug = 0):
+def get_connectedToDonor_HID(atomDonor, debug=0):
     '''
     objective: get the atom3(hydrogen connected to donor atom) for HID
                Atom donor in this case can be: ND1
@@ -371,7 +370,7 @@ def get_connectedToDonor_HID(atomDonor, debug = 0):
     return atom3
 
 
-def get_connectedToDonor_HIE(atomDonor, debug = 0):
+def get_connectedToDonor_HIE(atomDonor, debug=0):
 
     '''
     objective: get the atom3(hydrogen atom connected to donor atom) for HIE
@@ -387,7 +386,7 @@ def get_connectedToDonor_HIE(atomDonor, debug = 0):
     return atom3
 
 
-def get_connectedToDonor_HIP(atomDonor, debug = 0):
+def get_connectedToDonor_HIP(atomDonor, debug=0):
     '''
     objective: get the atom3(hydrogen connected to the donor atom) for HIP
 
@@ -399,16 +398,16 @@ def get_connectedToDonor_HIP(atomDonor, debug = 0):
     Output:  -atom3: is the hydrogen connected to the donor atom(HE1/HE2)
     ''' 
     if(atomDonor.name == 'ND1'):
-        atom3 = get_connectedToDonor_HID(atomDonor)
+        atom3 = get_connectedToDonor_HID(atomDonor, debug=debug)
     
     if(atomDonor.name == 'NE2'):
-        atom3 = get_connectedToDonor_HIE(atomDonor)
+        atom3 = get_connectedToDonor_HIE(atomDonor, debug=debug)
          
     return atom3
 
 
 ############################################SP3###################################################################3
-def get_connectedToDonor_LYS(atomDonor, debug = 0):
+def get_connectedToDonor_LYS(atomDonor, debug=0):
 
     '''
     objective: get the atom3(hydrogen atom connected to donor atom)for LYS
@@ -428,7 +427,7 @@ def get_connectedToDonor_LYS(atomDonor, debug = 0):
     return atom3
 
 
-def get_connectedToDonor_SER(atomDonor, debug = 0):
+def get_connectedToDonor_SER(atomDonor, debug=0):
 
     '''
     objective: get the atom3(hydrogen atom connected to donor)for SER
@@ -445,7 +444,7 @@ def get_connectedToDonor_SER(atomDonor, debug = 0):
     return atom3
 
      
-def get_connectedToDonor_THR(atomDonor, debug = 0):
+def get_connectedToDonor_THR(atomDonor, debug=0):
 
     '''
     objective: get the atom3(hydrogen atom connected to donor atom) for THR
@@ -461,12 +460,13 @@ def get_connectedToDonor_THR(atomDonor, debug = 0):
     return atom3
 
 
-def get_r_theta(atom1, atom2, atom3, hydNotAtom = 0, debug = 0):
+
+def get_r_theta(atom1, atom2, atom3, hydNotAtom=0, debug=0):
 
     '''
     objective: To get r and theta(bond angle) 
                 
-    Input:  atom1, atom2 and atom 3 all are atom type
+    Input:  atom1, atom2 and atom3 all are atom type
             -hydNotAtom: is a flag that allows hydrogen to be treated as coords(list:[x,y,z]) and not atom!
             NOTE: -r is distance between atom 1 and atom2
                   -theta: is bond angle between atom1-atom2-atom3
@@ -491,7 +491,7 @@ def get_r_theta(atom1, atom2, atom3, hydNotAtom = 0, debug = 0):
 
 
 
-def get_gamma(donorAt_vec, acceptorAt_vec, lp_vec, debug = 0): 
+def get_gamma(donorAt_vec, acceptorAt_vec, lp_vec, debug=0): 
     '''
     objective: to compute angle related to the lone pair: angle between acceptor-donor vec and lone pair-acceptor vec
     input: donorAt_vec: donor atom coord as a vector
@@ -505,7 +505,7 @@ def get_gamma(donorAt_vec, acceptorAt_vec, lp_vec, debug = 0):
     gamma = np.rad2deg(np.arccos(cosGamma))
     return gamma
 
-def checkEnergyInRange(energy, stateSet = False):
+def checkEnergyInRange(energy, stateSet = False, debug=0):
     '''
     objective: to keep energy value in check
     Input: -energy : value of the energy computed
@@ -513,13 +513,13 @@ def checkEnergyInRange(energy, stateSet = False):
     Output:Exit if the energy value is above and state is being set. Else just give a warning!
     '''    
     if(abs(energy)>10):
-        stp.append2log(f"Energy value: {energy} is out of range.\n")
+        stp.append2log(f"Energy value found: {energy} is out of range. But the state is not yet set!\n", debug=0)
         if(stateSet ==True): 
-            stp.append2log(f"Energy value: {energy} is out of range. Human intervention IS required. Exiting code \n")
+            stp.append2log(f"Energy value: {energy} is out of range. Human intervention IS required. Exiting code \n", debug=0)
             os._exit(0)
 
 
-def get_atomH_energy(atomDonor,  debug = 0):
+def get_atomH_energy(atomDonor,  debug=0):
     '''
     objective: To get connected(/bonded) atoms of a donor. Specifically- the hydrogen atom, and the other connected atom 
     Input:-atomDonor: The donor atom
@@ -527,7 +527,7 @@ def get_atomH_energy(atomDonor,  debug = 0):
     ''' 
     ##check for the backbone nitrogen as a donor-else look into side chain atoms
     if(atomDonor.name == 'N'):
-       atom3 = get_connectedToDonor_BB(atomDonor, debug = 0)
+       atom3 = get_connectedToDonor_BB(atomDonor, debug=debug)
        return atom3
     else: 
         get_connectedAtmsForDonor = {'ARG': get_connectedToDonor_ARG,
@@ -543,14 +543,15 @@ def get_atomH_energy(atomDonor,  debug = 0):
 
 
         try:
-          atom3 =  get_connectedAtmsForDonor[atomDonor.parent.resname](atomDonor, debug = 0)
+          atom3 =  get_connectedAtmsForDonor[atomDonor.parent.resname](atomDonor, debug=0)
         except KeyError:
-          stp.append2log(f"No ATOM3 for: {atomDonor.parent.resname} and {atomDonor.parent.id[1]} reason: either insufficent atoms or not found in dict \n" )
+          stp.append2log(f"No ATOM3 for: {atomDonor.parent.resname} and {atomDonor.parent.id[1]} reason: either insufficent atoms or not found in dict \n", debug=0 )
           atom3 =[]
     return atom3
 
-#########################################################################################################################
-def computeEnergyAsAcceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype = 'SP3',chV_levelVal ='level_00_chV_00_sNum_00', debug = 0 ):
+
+
+def computeEnergyAsAcceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype = 'SP3',chV_levelVal ='level_00_chV_00_structureNum_00', debug=0 ):
 
     ''' 
     objective: To compute energy for an acceptor atom
@@ -565,15 +566,29 @@ def computeEnergyAsAcceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype =
             -enSumAcc: sum of all energies associated with the acceptor atom
     '''
 
-    enValAcc = []
-    enSumAcc = 0
     struct = acceptorAt.parent.parent.parent.parent
 
+    param = []
+
+    if(debug==1):
+        #write impt data to a file
+        outputFolder = stp.get_outputFolderName(debug=debug)
+        opFolder = f"./{outputFolder}/energyInfo_{mc.protID}/data_{chV_levelVal}"
+        checkFolderPresent = os.path.isdir(opFolder)
+        if not checkFolderPresent: os.makedirs(opFolder)
+        accFname = f'{opFolder}/{acceptorAt.parent.id[1]}_{acceptorAt.parent.resname}_chain_{acceptorAt.parent.parent.id}.csv'
+        fe = exists(accFname)
+        if(fe ==False):
+            param.append([ 'refAtom', 'refParent', 'atm1Parent', 'atm2Parent', 'atm1', 'atm1Coord', 'atm2', 'atm2Coord', 'atm3', 'atm3Coord','LP','LPCoord', 'r','theta','gamma', 'energy', 'attractive', 'atype', 'allCloseAtoms', 'CloseAtoms:unknownRes', 'refAtom:Rotamer'])#
+     
+    enValAcc = []
+    enSumAcc = 0
+
     ##Only known atoms are picked up here
-    customList = stp.get_knownDonorAcceptorListWRTOneAtom(struct, acceptorAt, aaType = 'DONOR_ACCEPTOR_BOTH')
-    allCloseAtoms = get_allCloseAtomInfoForOneAtom(acceptorAt, customList, debug = 0)
+    customList = stp.get_knownDonorAcceptorListWRTOneAtom(struct, acceptorAt, aaType = 'DONOR_ACCEPTOR_BOTH', debug=debug)
+    allCloseAtoms = get_allCloseAtomInfoForOneAtom(acceptorAt, customList, debug=debug)
     ##ONLY UNKNOWN LIST are picked up here!!ONLY to write2file!
-    closeAtmsTBDList= stp.get_unknownDonorAcceptorListWRTOneAtom(struct, acceptorAt, aaType = 'DONOR_ACCEPTOR_BOTH_TBD')
+    closeAtmsTBDList= stp.get_unknownDonorAcceptorListWRTOneAtom(struct, acceptorAt, aaType = 'DONOR_ACCEPTOR_BOTH_TBD',debug=debug)
 
     #close atoms that are not fixed yet
     if(closeAtmsTBDList):
@@ -585,9 +600,8 @@ def computeEnergyAsAcceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype =
     atom1 = acceptorAt
     atom2 = donorAt
     
-    param = []
 
-    gamma = get_gamma(donorAt_vec, acceptorAt.get_vector(), lp_vec, debug = 0)
+    gamma = get_gamma(donorAt_vec, acceptorAt.get_vector(), lp_vec, debug=debug)
 
 ##############################COMPUTE ENERGY################################################################
     if(attractive==1):
@@ -601,27 +615,27 @@ def computeEnergyAsAcceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype =
                     break
 
         if(hPresent == -1): 
-            stp.append2log(f"Donor atom:{atom2} belongs to res {atom2.parent} of chain: {atom2.parent.parent} has no hydrogen present \n")
+            stp.append2log(f"Donor atom:{atom2} belongs to res {atom2.parent} of chain: {atom2.parent.parent} has no hydrogen present \n", debug=0)
 
         else:
-            atom3 = get_atomH_energy(atom2, debug = 0) 
+            atom3 = get_atomH_energy(atom2, debug=debug) 
             #for various hydrogen atoms sticking out of donor (theta will change)
             try: atom3
             except NameError:
-                stp.append2log(f"Insufficent atoms/PSEUDO LPs or info not found in any funcs \n")
+                stp.append2log(f"Insufficent atoms/PSEUDO LPs or info not found in any funcs \n", debug=0)
 
             for at in range(np.shape(atom3)[0]):
 
-                r, theta = get_r_theta(atom1, atom2, [atom3[at]], debug = 0)
+                r, theta = get_r_theta(atom1, atom2, [atom3[at]], debug=debug)
                 energy = hbond_energy(r, theta, gamma, attractive)
-                checkEnergyInRange(energy)
+                checkEnergyInRange(energy, debug=debug)
 
                 param.append([ acceptorAt, acceptorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, atom3[at], atom3[at].coord,lp_vec,lp_vec, r,theta, gamma, energy, attractive, atype, allCloseAtoms, closeAtmsTBD, acceptorAt.parent.isRotamer])
 
                 enValAcc.append([energy])
                 enSumAcc = enSumAcc+energy                    
     else:
-        #Repulsion:for going over multiple Lone pairs(behaving as hydrogens) sticking out of close atom acceptor (theta will change). fake hydrogens coords change-theta changes. Iterate over multiple LPs(acting as Hydrogens for computation). These LPs stick out of close atom acceptor. Close atom acceptor is the fake donor!
+        #Repulsion:for going over multiple Lone pairs(behaving as hydrogen) sticking out of close atom acceptor (theta will change). Fake hydrogen coordinates change-theta changes. Iterate over multiple LPs(acting as hydrogen for computation). These LPs stick out of close atom acceptor. Close atom acceptor is the fake donor!
         #For atom3: get LP names,iterate over for energy calc.Closest atom is a fake DONOR but actually is an acceptor 
     #    #print(f"I am an ACCEPTOR being repulsive: {acceptorAt}, fake donor: {donorAt}, attractive :{attractive}")
         ##"donorAT" will be an actual acceptor atom-pretending to be a donor! This pretend donor atom is called pseudo acceptor as it is an acceptor atom pretending to be donor. The "atom3"/Hydrogen attached to this will be corresponding to the lone pair attached to this pretend donor atom.
@@ -643,25 +657,34 @@ def computeEnergyAsAcceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype =
                 LPNames.remove(lp)
     
         if(not LPNames):
-            stp.append2log(f"##################################In computeEnergyAsAcceptor, NO LPs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and psAcceptor atom: {myPsAcceptor} of {myPsAcceptor.parent}, as attractive:{attractive} #################################") 
+            stp.append2log(f"##################################In computeEnergyAsAcceptor, NO LPs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and psAcceptor atom: {myPsAcceptor} of {myPsAcceptor.parent}, as attractive:{attractive} #################################", debug=0) 
             param.append([ acceptorAt, acceptorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, 'LPNames[k]', 'atom3Coord', 'lp_vec', 'lp_vec',  'r', 'theta', 'gamma', 'energy', attractive, atype, allCloseAtoms,closeAtmsTBD, acceptorAt.parent.isRotamer]) 
             
         else:
             for k in range(len(LPNames)):
                 atom3Coord = donorAt.parent[LPNames[k]].coord
                 #Atom3 is pretend donor
-                r, theta = get_r_theta(atom1, atom2, atom3Coord,  hydNotAtom = 1, debug = 0)
+                r, theta = get_r_theta(atom1, atom2, atom3Coord,  hydNotAtom = 1, debug=debug)
                 energy = hbond_energy(r, theta, gamma, attractive)
-                checkEnergyInRange(energy)
+                checkEnergyInRange(energy, debug=debug)
                 param.append([ acceptorAt, acceptorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, LPNames[k], atom3Coord, lp_vec, lp_vec,  r, theta, gamma, energy, attractive, atype, allCloseAtoms,closeAtmsTBD, acceptorAt.parent.isRotamer]) #removing phi
 
                 enValAcc.append([energy])
                 enSumAcc = enSumAcc+energy    
 
+
+    if(debug==1):
+        fileAcceptor = open(accFname,"a")    
+        writerAcceptor = csv.writer(fileAcceptor)
+        for row in param:
+            writerAcceptor.writerow(row)
+        fileAcceptor.close()
+
+
     return enValAcc, enSumAcc
 
 
-def computeEnergyAsDonor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 'SP3', hName = 'H', chV_levelVal ='level_00_chV_00_sNum_00', debug =0):
+def computeEnergyAsDonor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 'SP3', hName = 'H', chV_levelVal ='level_00_chV_00_structureNum_00', debug =0):
    
     ''' 
     objective: To compute energy for a donor atom
@@ -676,23 +699,36 @@ def computeEnergyAsDonor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 
     output: - enValAcc: each energy value computed for the given acceptor(multiple lone pairs/ multiple hydrogens)
             -enSumAcc: sum of all energies associated with the acceptor atom
     '''
+   
+    
+    struct = donorAt.parent.parent.parent.parent
+    param = []
+    if(debug==1):
+        outputFolder = stp.get_outputFolderName(debug=debug)
+        opFolder = f"./{outputFolder}/energyInfo_{mc.protID}/data_{chV_levelVal}"
+        checkFolderPresent = os.path.isdir(opFolder)
+        if not checkFolderPresent: os.makedirs(opFolder)
+        donorFname = f'{opFolder}/{donorAt.parent.id[1]}_{donorAt.parent.resname}_chain_{donorAt.parent.parent.id}.csv'
 
+        fe = exists(donorFname)
+        if (fe ==False):
+            param.append([ 'refAtom', 'refParent', 'atm1Parent', 'atm2Parent', 'atm1', 'atm1Coord', 'atm2', 'atm2Coord', 'atm3', 'atm3Coord','LP','LPCoord', 'r','theta', 'gamma', 'energy', 'attractive', 'atype','allCloseAtoms', 'CloseAtoms:unknownRes', 'refAtom:Rotamer'])
+##
     #collect energy values for the donor atom            
     enValDon = []
     enSumDon = 0
 
-    struct = donorAt.parent.parent.parent.parent
 
     ##Only known atoms are picked up here
-    customList = stp.get_knownDonorAcceptorListWRTOneAtom(struct,  donorAt, aaType = 'DONOR_ACCEPTOR_BOTH')
-    allCloseAtoms = get_allCloseAtomInfoForOneAtom(donorAt, customList, debug = 0)
+    customList = stp.get_knownDonorAcceptorListWRTOneAtom(struct,  donorAt, aaType = 'DONOR_ACCEPTOR_BOTH', debug=debug)
+    allCloseAtoms = get_allCloseAtomInfoForOneAtom(donorAt, customList, debug=debug)
 
     ##ONLY UNKNOWN LIST to write2file!##WRTOneAtom allows the atoms of self residues to be considerd as known
-    closeAtmsTBDList = stp.get_unknownDonorAcceptorListWRTOneAtom(struct, donorAt, aaType = 'DONOR_ACCEPTOR_BOTH_TBD')
+    closeAtmsTBDList = stp.get_unknownDonorAcceptorListWRTOneAtom(struct, donorAt, aaType = 'DONOR_ACCEPTOR_BOTH_TBD', debug=debug)
     
     #close atoms that are not fixed yet
     if(closeAtmsTBDList):
-        closeAtmsTBD = get_allCloseAtomInfoForOneAtom(donorAt, closeAtmsTBDList, debug =0)
+        closeAtmsTBD = get_allCloseAtomInfoForOneAtom(donorAt, closeAtmsTBDList, debug=debug)
     else:
         closeAtmsTBD = "NONE"
 
@@ -703,9 +739,8 @@ def computeEnergyAsDonor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 
     atom2 = donorAt
     atom3 = hh_coord
     #now only need gamma-can be multiple depending on surrounding lone pairs! 
-    r, theta = get_r_theta(atom1, atom2, atom3, hydNotAtom = 1, debug = 0)
+    r, theta = get_r_theta(atom1, atom2, atom3, hydNotAtom=1, debug=debug)
     enSumDon = 0
-    param = []
 
 ########################### Compute Gamma and then energy!######################################################
     if(attractive ==1):
@@ -724,17 +759,16 @@ def computeEnergyAsDonor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 
     
         #If no LPNames are present-skip the computation.
         if(not LPNames):
-            stp.append2log(f"##########################In computeEnergyAsDonor: NO LPs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and donor atom: {donorAt} of {donorAt.parent} as attractive:{attractive} ################################")
+            stp.append2log(f"##########################In computeEnergyAsDonor: NO LPs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and donor atom: {donorAt} of {donorAt.parent} as attractive:{attractive} ################################", debug=0)
             param.append([donorAt, donorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, hName, atom3,'LPNames[k]','LP_coord',r,theta, 'gamma', 'energy', attractive, atype, allCloseAtoms, closeAtmsTBD, donorAt.parent.isRotamer])
         else:
             ##you need to check before computing hbond_energy-figure out if the information is sufficient. if not-put 0.0!!
             for k in range(len(LPNames)):
-                #print(f"k:{k}, acceptorAtom: {acceptorAt}, LP: {LPNames[k]}, acceptor atom parent:{acceptorAt.parent}")
                 LP_coord = acceptorAt.parent[LPNames[k]].coord
                 LP_vec = Vector(LP_coord)
-                gamma = get_gamma(donorAt.get_vector(), acceptorAt_vec, LP_vec, debug = 0)
+                gamma = get_gamma(donorAt.get_vector(), acceptorAt_vec, LP_vec, debug=debug)
                 energy = hbond_energy(r, theta, gamma, attractive=True)
-                checkEnergyInRange(energy)
+                checkEnergyInRange(energy, debug=debug)
                 enValDon.append([energy])
                 enSumDon = enSumDon+energy 
                 param.append([donorAt, donorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, hName, atom3,LPNames[k],LP_coord, r,theta, gamma, energy, attractive, atype, allCloseAtoms, closeAtmsTBD, donorAt.parent.isRotamer]) 
@@ -751,28 +785,36 @@ def computeEnergyAsDonor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 
                     break
 
         if(hPresent ==-1):            
-            stp.append2log(f"PS Donor(or acceptor) atom:{atom1} belongs res {atom1.parent} of its chain: {atom1.parent.parent} has NO hydrogen present")
+            stp.append2log(f"PS Donor(or acceptor) atom:{atom1} belongs res {atom1.parent} of its chain: {atom1.parent.parent} has NO hydrogen present", debug=0)
         else:
-            ps_atom3 = get_atomH_energy(atom1, debug = 0)
+            ps_atom3 = get_atomH_energy(atom1, debug=debug)
 
             try: ps_atom3
             except NameError:
-                stp.append2log(f"Insufficent atoms/Pseudo LPs or info not found in any funcs \n")
+                stp.append2log(f"Insufficent atoms/Pseudo LPs or info not found in any funcs \n", debug=0)
             
             #iterate over multiple hydrogens (acting as LPs for computation)!
             for at in range(np.shape(ps_atom3)[0]):
 
                 LP_coord = ps_atom3[at].coord 
                 LP_vec = Vector(LP_coord)
-                gamma = get_gamma(donorAt.get_vector(), acceptorAt_vec, LP_vec, debug = 0)
+                gamma = get_gamma(donorAt.get_vector(), acceptorAt_vec, LP_vec, debug=debug)
                 energy = hbond_energy(r, theta, gamma, attractive)
-                checkEnergyInRange(energy)
+                checkEnergyInRange(energy, debug=debug)
                 
                 
                 param.append([donorAt, donorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, hName, atom3,ps_atom3[at],LP_coord,  r,theta, gamma, energy, attractive, atype, allCloseAtoms, closeAtmsTBD, donorAt.parent.isRotamer])
                            
                 enValDon.append([energy])
                 enSumDon = enSumDon+energy
+
+    if(debug==1):
+        fileDonor = open(donorFname,"a")    
+        writerDonor = csv.writer(fileDonor)
+        for row in param:
+            #print(row)
+            writerDonor.writerow(row)
+        fileDonor.close()
 
 
     return enValDon, enSumDon
