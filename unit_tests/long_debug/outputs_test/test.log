@@ -1,7 +1,0 @@
-Evaluate given residue state, hvyAt: <Atom OE1> and All close atoms: [[<Atom OE1>, 33, 'GLN', 'ac', 0.0], [<Atom NE2>, 33, 'GLN', 'do', 2.18841], [<Atom N>, 33, 'GLN', 'do', 3.1485236], [<Atom N>, 32, 'HIS', 'do', 3.6802633]] and enSumTotal is: 0
-energy sum acceptor from func:0.0 and enSumTotal:0.0
-Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 33, 'GLN', 'do', 0.0], [<Atom OE1>, 33, 'GLN', 'ac', 2.18841], [<Atom OG1>, 202, 'THR', 'bo', 3.160901], [<Atom N>, 32, 'HIS', 'do', 3.7356086]] and enSumTotal is: 0.0
-
-***********************************************************************************************
-
-Place hydrogen for for <Residue THR het=  resseq=202 icode= >, 202 of chain: <Chain id=A> 
