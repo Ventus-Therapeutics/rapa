@@ -45,9 +45,9 @@ if __name__ == "__main__":
 
     parser.add_argument( '-o', '--out_name', type = str, metavar= '', help='Prefix of output file name. It is an optional argument of data type string. If not provided, it will use the default value as "[pID]_out". ')
     
-    parser.add_argument( '-s', '--single_pdb_out', help='A integer flag with value 0 or 1. This flag requests the program to provide a single output pdb file. It is done by removing the cut off value that defines degeneracy of unknown residues.',action="store_true")
+    parser.add_argument( '-s', '--single_pdb_out', help='This flag requests the program to provide a single output pdb file. It is done by setting the cut off that defines degeneracy of unknown residues to zero.',action="store_true")
 
-    parser.add_argument( '-l', '--log_file', help='Log flag creates a .log_file file which contains details of the run. It is an optional argument.', action="store_true")
+    parser.add_argument( '-l', '--log_file', help='Log flag creates a .log file which contains details of the run. It is an optional argument.', action="store_true")
 
     parser.add_argument( '-d', '--debug', help='Debug flag creates a .debug file which contains additional details of the run. It is an optional argument.', action="store_true")
 
@@ -55,14 +55,11 @@ if __name__ == "__main__":
 
     parser.add_argument( '-hlp', '--HLPsp2_known', help='A flag to indicate if the additional PDB (having suffix "_HLPsp2.pdb"), with SP2 hydrogen and lone pair coordinates exist. This can occur if the user requested the program to generate this additional PDB by providing "-k_hlp" as a flag in the previous run for the same PDB. Note, it is assumed RAPA for the given PDB is needed to run twice. During the first run the user provided the "-k_hlp" flag and generated the additional PDB (with suffix "_HLPsp2.pdb"). This was then used in the second run by providing "-hlp" in the second run. This two step approach is recommended for debugging as it stores an intermediate calculation and saves computational time.', action="store_true")
 
-    parser.add_argument( '-v', '--version', action='version', version='%(prog)s 1.0 ')
+    parser.add_argument( '-v', '--version', action='version', version='%(prog)s 1.1.1 ')
 
     args = parser.parse_args()
     #Protein id
-    #if(args.protein_id):
-    #    protID = args.protein_id
     if(args.protein_id):
-        #protID = args.protein_id
         protID, _ = os.path.splitext(args.protein_id)
     else:
         protID = ''
@@ -205,7 +202,6 @@ if __name__ == "__main__":
     if(debug):
         outputFolder= stp.get_output_folder_name()
         opFolder = f"./{outputFolder}/debug/energyInfo_{mc.protID}/"
-        #opFolder = f"./{outputFolder}/energyInfo_{mc.protID}/"
         checkFolderPresent = os.path.isdir(opFolder)
         if checkFolderPresent: 
             shutil.rmtree(opFolder)
