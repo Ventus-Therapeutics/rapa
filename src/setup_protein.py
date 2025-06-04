@@ -44,7 +44,9 @@ def get_output_folder_name():
     O/P:
     -outputFolder: name of the output folder
     """
-    outputFolder = "outputs_"+mc.protID
+    #outputFolder = "outputs_"+mc.protID
+
+    outputFolder = mc.out_name+"_outputs"
 
     return outputFolder
 
@@ -59,11 +61,13 @@ def get_log_file_name():
 
     outputFolder = get_output_folder_name()
 
-    fDest = f'{outputFolder}/'
+    fDest = f'{outputFolder}/log/'
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fLogName = f"{fDest}"+f"{mc.protID}.log"
+    #fLogName = f"{fDest}"+f"{mc.protID}.log"
+
+    fLogName = f"{fDest}"+f"{mc.out_name}.log"
     
     return fLogName
 
@@ -81,7 +85,9 @@ def get_info_file_name():
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fInfoName = f"{fDest}"+f"{mc.protID}.info"
+    #fInfoName = f"{fDest}"+f"{mc.protID}.info"
+
+    fInfoName = f"{fDest}"+f"{mc.out_name}.info"
     
     return fInfoName
 
@@ -95,32 +101,36 @@ def get_debug_file_name():
 
     outputFolder = get_output_folder_name()
 
-    fDest = f'{outputFolder}/'
+    #fDest = f'{outputFolder}/'
+
+    fDest = f'{outputFolder}/debug/'
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fDebugName = f"{fDest}"+f"{mc.protID}.debug"
+    #fDebugName = f"{fDest}"+f"{mc.protID}.debug"
+
+    fDebugName = f"{fDest}"+f"{mc.out_name}.debug"
     
     return fDebugName
 
 
-def get_pdb_out_folder():
-    
-    """
-    objective: To get the name of the folder where the output PDBs are stored
-    Output:
-    -foPDB: name of the pdb folder
-    """
-        
-
-    outputFolder = get_output_folder_name()
-
-    foPDB = f'{outputFolder}/pdb_out_{mc.protID}'
-    checkFolderPresent = os.path.isdir(foPDB)    
-    if not checkFolderPresent: os.makedirs(foPDB)
-
-    
-    return foPDB
+#def get_pdb_out_folder():
+#    
+#    """
+#    objective: To get the name of the folder where the output PDBs are stored
+#    Output:
+#    -foPDB: name of the pdb folder
+#    """
+#        
+#
+#    outputFolder = get_output_folder_name()
+#
+#    foPDB = f'{outputFolder}/pdb_out_{mc.protID}'
+#    checkFolderPresent = os.path.isdir(foPDB)    
+#    if not checkFolderPresent: os.makedirs(foPDB)
+#
+#    
+#    return foPDB
 
 
 def append_to_log(MSG):
