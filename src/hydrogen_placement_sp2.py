@@ -99,8 +99,11 @@ def solve_system(heavyAtoms, coeffs, theta, debug = 0):
     eq1 = Eq(coeffs[0]*x+ coeffs[1]*y+coeffs[2]*z,0)  ##since it is planar
     eq2 = Eq(hv1_hv2[0]*x +hv1_hv2[1]*y+hv1_hv2[2]*z,hv1_hv2_mod*np.cos(math.radians(theta) )) #r6.r5 =cos(120)##Depends on the angle between Hydrogen and the heavy atom
     eq3 = Eq(x**2+y**2+z**2,1)
-    sol_exact = solve([eq1, eq2, eq3], [x,y,z])
     
+    try:
+        sol_exact = solve([eq1, eq2, eq3], [x,y,z])
+    except: 
+        sol_exact = nsolve([eq1, eq2, eq3], [x,y,z],[1,1,1])
 
     HCoord = sol_exact + heavyAtoms[1]
     
