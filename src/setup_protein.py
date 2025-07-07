@@ -283,9 +283,8 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP', log_file=0, debug=0):
    
     all_ASP_GLUs=[]
 
-    ##check if any or only a single asp/glu is present. If not exit:
+    ##check if only a single ASP/GLU is present. If yes exit:
     for residue in structure.get_residues():
-        #code.interact(local=locals())
         if(residue.resname==resName):
             all_ASP_GLUs.append(residue)
 
