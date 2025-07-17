@@ -634,7 +634,8 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
 
     if(debug):
         outputFolder = stp.get_output_folder_name()
-        opFolder = f"./{outputFolder}/energyInfo_{mc.protID}/data_{chV_levelVal}"
+        #opFolder = f"./{outputFolder}/energyInfo_{mc.protID}/data_{chV_levelVal}"
+        opFolder = f"./{outputFolder}/debug/energyInfo_{mc.protID}/data_{chV_levelVal}"
         checkFolderPresent = os.path.isdir(opFolder)
         if not checkFolderPresent: os.makedirs(opFolder)
         accFname = f'{opFolder}/{acceptorAt.parent.id[1]}_{acceptorAt.parent.resname}_chain_{acceptorAt.parent.parent.id}.csv'
@@ -754,7 +755,8 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
     param = []
     if(debug):
         outputFolder = stp.get_output_folder_name()
-        opFolder = f"./{outputFolder}/energyInfo_{mc.protID}/data_{chV_levelVal}"
+        #opFolder = f"./{outputFolder}/energyInfo_{mc.protID}/data_{chV_levelVal}"
+        opFolder = f"./{outputFolder}/debug/energyInfo_{mc.protID}/data_{chV_levelVal}"
         checkFolderPresent = os.path.isdir(opFolder)
         if not checkFolderPresent: os.makedirs(opFolder)
         donorFname = f'{opFolder}/{donorAt.parent.id[1]}_{donorAt.parent.resname}_chain_{donorAt.parent.parent.id}.csv'

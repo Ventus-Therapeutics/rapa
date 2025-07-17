@@ -29,12 +29,11 @@ Minimum of Python 3.6 is required.
 RAPA is executed with a PDB file as input. For instance, to run RAPA on the PDB file `1xl2_noH.pdb` ( **having no gaps, no steric clashes, no hydrogen atoms and has all residue names in AMBER format**) in the examples folder, the following steps can be executed:
 ``` bash
 $cd <path to rapa folder>/examples/
-$<path to rapa folder>/src/rapa.py -pID [input_pdb_name] -o [out_name]   
-$<path to rapa folder>/src/rapa.py -pID '1xl2_noH' -o '1xl2_out'  
+$<path to rapa folder>/src/rapa.py -pID [input_pdb_name.pdb] -o [out_name]   
+$<path to rapa folder>/src/rapa.py -pID '1xl2_noH.pdb' -o '1xl2_out'  
 ```
 ##### Notes
-1. The input argument is the name of input PDB file **without** the extension **.pdb**
-2. The provided PDBs in the example folder have **no gaps, no steric clashes, no hydrogen atoms and has all residue names in AMBER format**, hence meeting the conditions to run RAPA on it.
+1. The provided PDBs in the example folder have **no gaps, no steric clashes, no hydrogen atoms and has all residue names in AMBER format**, hence meeting the conditions to run RAPA on it.
 
 #### Command-Line Arguments  
 
@@ -44,7 +43,7 @@ $<path to rapa folder>/src/rapa.py -pID '1xl2_noH' -o '1xl2_out'
 - **Example:**  
   ```bash 
   $cd <path to rapa folder>/examples/
-  $<path to rapa folder>/src/rapa.py -pID '1bcd_noH'  
+  $<path to rapa folder>/src/rapa.py -pID '1bcd_noH.pdb'  
   ```
 
 ##### `-o` or `--out_name` (Optional)  
@@ -54,7 +53,7 @@ $<path to rapa folder>/src/rapa.py -pID '1xl2_noH' -o '1xl2_out'
 - **Example:**  
   ```bash  
   $cd <path to rapa folder>/examples/
-  $<path to rapa folder>/src/rapa.py -pID '1bcd_noH' -o '1bcd_o'  
+  $<path to rapa folder>/src/rapa.py -pID '1bcd_noH.pdb' -o '1bcd_o'  
   ```  
   This will generate output files: `1bcd_o_0.pdb`, `1bcd_o_1.pdb`, etc.  
   If omitted, RAPA defaults to `1bcd_noH_out_0.pdb`, `1bcd_noH_out_1.pdb`, etc.  
@@ -62,7 +61,7 @@ $<path to rapa folder>/src/rapa.py -pID '1xl2_noH' -o '1xl2_out'
 Since `-o` is optional, the following command will also run RAPA:  
 ```bash  
 $cd <path to rapa folder>/examples/
-$<path to rapa folder>/src/rapa.py -pID '1xl2_noH'  
+$<path to rapa folder>/src/rapa.py -pID '1xl2_noH.pdb'  
 ```
 
 ##### Listing Available Options  

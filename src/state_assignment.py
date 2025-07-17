@@ -1955,7 +1955,7 @@ def resolve_residue_ambiguities_in_structure(structure,fOutName = 'out', maxLeve
     filesGen=[]
 
     pdbFileNum=0
-    pdbOutFolder = stp.get_pdb_out_folder()
+    #pdbOutFolder = stp.get_pdb_out_folder()
 
     if(log_file):
         fLogName = stp.get_log_file_name()
@@ -2123,7 +2123,11 @@ f"\n###########################################################\n ##############
                            break###Breaking out of chValMax for loop
                         else:
                             ###If there are no more unknown residue, pls WRITE2PDB
-                            fPDBfullPath = os.getcwd()+f"/{pdbOutFolder}/{fOutName}_{pdbFileNum}.pdb"
+                            #fPDBfullPath = os.getcwd()+f"/{pdbOutFolder}/{fOutName}_{pdbFileNum}.pdb"
+                            fout=stp.get_output_folder_name()
+                            #import code
+                            #code.interact(local=locals())
+                            fPDBfullPath = os.getcwd()+f"/{fout}/{fOutName}_{pdbFileNum}.pdb"
                             fPDBname = f"{fOutName}_{pdbFileNum}.pdb"
                             
                             if(log_file):
