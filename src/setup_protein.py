@@ -34,7 +34,7 @@ import my_residue_atom as mra
 import my_constants as mc
 
 from Bio.PDB import *
-
+import code
 
 
 def get_output_folder_name():
@@ -44,7 +44,9 @@ def get_output_folder_name():
     O/P:
     -outputFolder: name of the output folder
     """
-    outputFolder = "outputs_"+mc.protID
+    #outputFolder = "outputs_"+mc.protID
+
+    outputFolder = mc.out_name+"_outputs"
 
     return outputFolder
 
@@ -59,11 +61,13 @@ def get_log_file_name():
 
     outputFolder = get_output_folder_name()
 
-    fDest = f'{outputFolder}/'
+    fDest = f'{outputFolder}/log/'
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fLogName = f"{fDest}"+f"{mc.protID}.log"
+    #fLogName = f"{fDest}"+f"{mc.protID}.log"
+
+    fLogName = f"{fDest}"+f"{mc.out_name}.log"
     
     return fLogName
 
@@ -81,7 +85,9 @@ def get_info_file_name():
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fInfoName = f"{fDest}"+f"{mc.protID}.info"
+    #fInfoName = f"{fDest}"+f"{mc.protID}.info"
+
+    fInfoName = f"{fDest}"+f"{mc.out_name}.info"
     
     return fInfoName
 
@@ -95,32 +101,36 @@ def get_debug_file_name():
 
     outputFolder = get_output_folder_name()
 
-    fDest = f'{outputFolder}/'
+    #fDest = f'{outputFolder}/'
+
+    fDest = f'{outputFolder}/debug/'
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fDebugName = f"{fDest}"+f"{mc.protID}.debug"
+    #fDebugName = f"{fDest}"+f"{mc.protID}.debug"
+
+    fDebugName = f"{fDest}"+f"{mc.out_name}.debug"
     
     return fDebugName
 
 
-def get_pdb_out_folder():
-    
-    """
-    objective: To get the name of the folder where the output PDBs are stored
-    Output:
-    -foPDB: name of the pdb folder
-    """
-        
-
-    outputFolder = get_output_folder_name()
-
-    foPDB = f'{outputFolder}/pdb_out_{mc.protID}'
-    checkFolderPresent = os.path.isdir(foPDB)    
-    if not checkFolderPresent: os.makedirs(foPDB)
-
-    
-    return foPDB
+#def get_pdb_out_folder():
+#    
+#    """
+#    objective: To get the name of the folder where the output PDBs are stored
+#    Output:
+#    -foPDB: name of the pdb folder
+#    """
+#        
+#
+#    outputFolder = get_output_folder_name()
+#
+#    foPDB = f'{outputFolder}/pdb_out_{mc.protID}'
+#    checkFolderPresent = os.path.isdir(foPDB)    
+#    if not checkFolderPresent: os.makedirs(foPDB)
+#
+#    
+#    return foPDB
 
 
 def append_to_log(MSG):
@@ -268,6 +278,9 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP', log_file=0, debug=0):
            -unknownASP_GLUatomInfo: additional info including:-atom name, atom id, atom parent id, distance of Oxygen 1 of concern to oxygen in the h-bonding distance.
     """
     
+    #create a list of atom to populate upon hitting an unknown residue with OD/OE atoms
+    unknownASP_GLUatom = []
+    unknownASP_GLUatomInfo = []
 
     if(debug):
         start_debug_file(__name__, sys._getframe().f_code.co_name)
@@ -278,7 +291,21 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP', log_file=0, debug=0):
 
     if(log_file):
         fLogName = get_log_file_name()
+   
+    all_ASP_GLUs=[]
+    ##check if any asp/glu is present. If not exit:
+    for residue in structure.get_residues():
+        #code.interact(local=locals())
+        if(residue.resname==resName):
+            all_ASP_GLUs.append(residue)
 
+    if(len(all_ASP_GLUs)==1 or len(all_ASP_GLUs)==0):
+        if(debug):
+            with open(fDebugName, "a") as fd:
+                fd.write(f"Looking for unknown ASPs/GLUs. However all ASPs/GLUs found are: {all_ASP_GLUs}\n")
+                fd.flush()
+
+        return unknownASP_GLUatom,unknownASP_GLUatomInfo
     #Get all the atoms that needs to be searched for an unknown ASP/GLU residue. Also get a list of all ASPs/GLUs to search
     if(resName == 'ASP'):
         if(log_file):
@@ -312,14 +339,21 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP', log_file=0, debug=0):
                 fd.flush()
 
 
-    #create a list of atom to populate upon hitting an unknown residue with OD/OE atoms
-    unknownASP_GLUatom = []
-    unknownASP_GLUatomInfo = []
-    
+        
     for currASP_GLU in allASPs_GLUs:
         #remove side chain oxygen atoms of self residue so it is not counted within h-bond distance
         searchASP_GLUatoms.remove(currASP_GLU[oxygenName1])
         searchASP_GLUatoms.remove(currASP_GLU[oxygenName2])
+
+        #incase the search list is empty. A special case when only one ASP/GLU is present in the entire PDB.
+        if(searchASP_GLUatoms==[]):
+            if(debug):
+                with open(fDebugName, "a") as fd:
+                    fd.write(f"Looking for unknown ASPs/GLUs. However search list is empty.\n")
+                    fd.flush()
+
+            return unknownASP_GLUatom,unknownASP_GLUatomInfo
+
         #create the search list consisting of all unknown ASPs/GLUs
         ns = Bio.PDB.NeighborSearch(searchASP_GLUatoms)
     
