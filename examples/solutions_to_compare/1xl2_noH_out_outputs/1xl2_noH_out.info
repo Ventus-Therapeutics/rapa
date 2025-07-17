@@ -18,6 +18,6 @@ Got unknown atoms [<Atom OD2>, <Atom OD2>].
 ###############################################################
 
 
-The time taken is :164.3928105410887 second or 2.7398801756848115 mins or  0.04566466959474686 hours
+The time taken is :162.17263278202154 second or 2.7028772130336924 mins or  0.045047953550561536 hours
 Number of files generated: 3 and files generated:
-['/home/pgera/Scripts/all_rapa_scripts/rapa_for_public_release/rapa_version1.0/tests/outputs_1xl2_noH/pdb_out_1xl2_noH/1xl2_noH_out_0.pdb', '/home/pgera/Scripts/all_rapa_scripts/rapa_for_public_release/rapa_version1.0/tests/outputs_1xl2_noH/pdb_out_1xl2_noH/1xl2_noH_out_1.pdb', '/home/pgera/Scripts/all_rapa_scripts/rapa_for_public_release/rapa_version1.0/tests/outputs_1xl2_noH/pdb_out_1xl2_noH/1xl2_noH_out_2.pdb']
+['/home/pgera/Scripts/ventus-repo/rapa_v1.0_fix/rapa/examples/1xl2_noH_out_outputs/1xl2_noH_out_0.pdb', '/home/pgera/Scripts/ventus-repo/rapa_v1.0_fix/rapa/examples/1xl2_noH_out_outputs/1xl2_noH_out_1.pdb', '/home/pgera/Scripts/ventus-repo/rapa_v1.0_fix/rapa/examples/1xl2_noH_out_outputs/1xl2_noH_out_2.pdb']

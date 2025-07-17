@@ -31,6 +31,7 @@ yc_orig=0
 zc_orig=0
 
 protID = []
+out_name = '' 
 #rotation for LYS and SER/THR while searching for side chain hydrogen
 optRotAngle_LYS = 130
 optRotAngle = 360

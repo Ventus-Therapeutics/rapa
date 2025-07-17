@@ -34,7 +34,7 @@ import my_residue_atom as mra
 import my_constants as mc
 
 from Bio.PDB import *
-
+import code
 
 
 def get_output_folder_name():
@@ -44,7 +44,9 @@ def get_output_folder_name():
     O/P:
     -outputFolder: name of the output folder
     """
-    outputFolder = "outputs_"+mc.protID
+    #outputFolder = "outputs_"+mc.protID
+
+    outputFolder = mc.out_name+"_outputs"
 
     return outputFolder
 
@@ -59,11 +61,13 @@ def get_log_file_name():
 
     outputFolder = get_output_folder_name()
 
-    fDest = f'{outputFolder}/'
+    fDest = f'{outputFolder}/log/'
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fLogName = f"{fDest}"+f"{mc.protID}.log"
+    #fLogName = f"{fDest}"+f"{mc.protID}.log"
+
+    fLogName = f"{fDest}"+f"{mc.out_name}.log"
     
     return fLogName
 
@@ -81,7 +85,9 @@ def get_info_file_name():
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fInfoName = f"{fDest}"+f"{mc.protID}.info"
+    #fInfoName = f"{fDest}"+f"{mc.protID}.info"
+
+    fInfoName = f"{fDest}"+f"{mc.out_name}.info"
     
     return fInfoName
 
@@ -95,32 +101,36 @@ def get_debug_file_name():
 
     outputFolder = get_output_folder_name()
 
-    fDest = f'{outputFolder}/'
+    #fDest = f'{outputFolder}/'
+
+    fDest = f'{outputFolder}/debug/'
     checkFolderPresent = os.path.isdir(fDest)    
     if not checkFolderPresent: os.makedirs(fDest)
 
-    fDebugName = f"{fDest}"+f"{mc.protID}.debug"
+    #fDebugName = f"{fDest}"+f"{mc.protID}.debug"
+
+    fDebugName = f"{fDest}"+f"{mc.out_name}.debug"
     
     return fDebugName
 
 
-def get_pdb_out_folder():
-    
-    """
-    objective: To get the name of the folder where the output PDBs are stored
-    Output:
-    -foPDB: name of the pdb folder
-    """
-        
-
-    outputFolder = get_output_folder_name()
-
-    foPDB = f'{outputFolder}/pdb_out_{mc.protID}'
-    checkFolderPresent = os.path.isdir(foPDB)    
-    if not checkFolderPresent: os.makedirs(foPDB)
-
-    
-    return foPDB
+#def get_pdb_out_folder():
+#    
+#    """
+#    objective: To get the name of the folder where the output PDBs are stored
+#    Output:
+#    -foPDB: name of the pdb folder
+#    """
+#        
+#
+#    outputFolder = get_output_folder_name()
+#
+#    foPDB = f'{outputFolder}/pdb_out_{mc.protID}'
+#    checkFolderPresent = os.path.isdir(foPDB)    
+#    if not checkFolderPresent: os.makedirs(foPDB)
+#
+#    
+#    return foPDB
 
 
 def append_to_log(MSG):
@@ -282,9 +292,9 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP', log_file=0, debug=0):
         fLogName = get_log_file_name()
    
     all_ASP_GLUs=[]
-
-    ##check if only a single ASP/GLU is present. If yes exit:
+    ##check if any asp/glu is present. If not exit:
     for residue in structure.get_residues():
+        #code.interact(local=locals())
         if(residue.resname==resName):
             all_ASP_GLUs.append(residue)
 
@@ -1008,7 +1018,7 @@ def remove_added_hydrogens(structure, log_file=0):
     removeHdict = {'ARG':ARG_H, 'ASH':ASH_H, 'ASP':ASP_H, 'ASN':ASN_H,'GLH':GLH_H,'GLU':GLU_H, 'GLN':GLN_H, 
                     'HIS':HIS_H,'HIE':HIE_H, 'HID':HID_H, 'HIP':HIP_H, 'LYS':LYS_H, 'PRO':PRO_H,
                     'SER':SER_H, 'THR':THR_H, 'TYR':TYR_H, 'TRP':TRP_H,
-                    'ALA':ALA_H, 'CYS':CYS_H, 'CYX':CYS_H, 'GLY':GLY_H, 'ILE':ILE_H, 'LEU': LEU_H,
+                    'ALA':ALA_H, 'CYS':CYS_H, 'CYX':CYS_H, 'CYM':CYS_H, 'GLY':GLY_H, 'ILE':ILE_H, 'LEU': LEU_H,
                     'MET': MET_H, 'PHE':PHE_H,'VAL':VAL_H, 'NME':NME_H}
 
     for res in structure.get_residues():
@@ -1096,7 +1106,7 @@ def remove_lonepair(structure, log_file=0):
                     'GLH':GLH_LP,'GLU':GLU_LP, 'GLN':GLN_LP, 
                     'HIS':HIS_LP,'HIE':HIE_LP, 'HID':HID_LP, 'HIP':HIP_LP, 'LYS':LYS_LP, 'PRO':PRO_LP,
                     'SER':SER_LP, 'THR':THR_LP, 'TYR':TYR_LP, 'TRP':TRP_LP,
-                    'ALA':ALA_LP, 'CYS':CYS_LP, 'CYX':CYS_LP, 'GLY':GLY_LP, 'ILE':ILE_LP , 'LEU': LEU_LP,
+                    'ALA':ALA_LP, 'CYS':CYS_LP, 'CYX':CYS_LP, 'CYM':CYS_LP, 'GLY':GLY_LP, 'ILE':ILE_LP , 'LEU': LEU_LP,
                     'MET': MET_LP, 'PHE':PHE_LP,'VAL':VAL_LP}
 
     for res in structure.get_residues():
