@@ -1018,7 +1018,7 @@ def remove_added_hydrogens(structure, log_file=0):
     removeHdict = {'ARG':ARG_H, 'ASH':ASH_H, 'ASP':ASP_H, 'ASN':ASN_H,'GLH':GLH_H,'GLU':GLU_H, 'GLN':GLN_H, 
                     'HIS':HIS_H,'HIE':HIE_H, 'HID':HID_H, 'HIP':HIP_H, 'LYS':LYS_H, 'PRO':PRO_H,
                     'SER':SER_H, 'THR':THR_H, 'TYR':TYR_H, 'TRP':TRP_H,
-                    'ALA':ALA_H, 'CYS':CYS_H, 'CYX':CYS_H, 'GLY':GLY_H, 'ILE':ILE_H, 'LEU': LEU_H,
+                    'ALA':ALA_H, 'CYS':CYS_H, 'CYX':CYS_H, 'CYM':CYS_H, 'GLY':GLY_H, 'ILE':ILE_H, 'LEU': LEU_H,
                     'MET': MET_H, 'PHE':PHE_H,'VAL':VAL_H, 'NME':NME_H}
 
     for res in structure.get_residues():
@@ -1106,7 +1106,7 @@ def remove_lonepair(structure, log_file=0):
                     'GLH':GLH_LP,'GLU':GLU_LP, 'GLN':GLN_LP, 
                     'HIS':HIS_LP,'HIE':HIE_LP, 'HID':HID_LP, 'HIP':HIP_LP, 'LYS':LYS_LP, 'PRO':PRO_LP,
                     'SER':SER_LP, 'THR':THR_LP, 'TYR':TYR_LP, 'TRP':TRP_LP,
-                    'ALA':ALA_LP, 'CYS':CYS_LP, 'CYX':CYS_LP, 'GLY':GLY_LP, 'ILE':ILE_LP , 'LEU': LEU_LP,
+                    'ALA':ALA_LP, 'CYS':CYS_LP, 'CYX':CYS_LP, 'CYM':CYS_LP, 'GLY':GLY_LP, 'ILE':ILE_LP , 'LEU': LEU_LP,
                     'MET': MET_LP, 'PHE':PHE_LP,'VAL':VAL_LP}
 
     for res in structure.get_residues():
