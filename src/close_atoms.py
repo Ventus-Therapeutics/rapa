@@ -109,7 +109,7 @@ def get_close_atom_list(targAtom, givenList, log_file=0):
     
     if(not givenList): 
         if(log_file):
-            stp.append_to_log_file("No search List provided!! \n")
+            stp.append_to_log("No search List provided!! \n")
         os._exit(0)
 
 
@@ -548,7 +548,7 @@ def check_energy_range(energy, stateSet = False, log_file=0):
     if(abs(energy)>10):
         if(log_file):stp.append_to_log(f"Energy value found: {energy} is out of range. But the state is not yet set!\n")
         if(stateSet ==True ):
-            if(log_file):stp.append_to_log_file(f"Energy value: {energy} is out of range. Human intervention IS required. Exiting code \n")
+            if(log_file):stp.append_to_log(f"Energy value: {energy} is out of range. Human intervention IS required. Exiting code \n")
             os._exit(0)
 
 
@@ -580,7 +580,7 @@ def get_hydrogen_connected_to_donor(atomDonor, log_file=0):
         try:
           atom3 =  get_connectedAtmsForDonor[atomDonor.parent.resname](atomDonor)
         except KeyError:
-          if(log_file):stp.append_to_log_file(f"No ATOM3 for: {atomDonor.parent.resname} and {atomDonor.parent.id[1]} reason: either insufficent atoms or not found in dict \n")
+          if(log_file):stp.append_to_log(f"No ATOM3 for: {atomDonor.parent.resname} and {atomDonor.parent.id[1]} reason: either insufficent atoms or not found in dict \n")
           atom3 =[]
     return atom3
 
@@ -670,14 +670,14 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
                     break
 
         if(hPresent == -1): 
-            if(log_file): stp.append_to_log_file(f"Donor atom:{atom2} belongs to res {atom2.parent} of chain: {atom2.parent.parent} has no hydrogen present \n")
+            if(log_file): stp.append_to_log(f"Donor atom:{atom2} belongs to res {atom2.parent} of chain: {atom2.parent.parent} has no hydrogen present \n")
 
         else:
             atom3 = get_hydrogen_connected_to_donor(atom2)
             #for various hydrogen atoms bonded to donor (theta will change)
             try: atom3
             except NameError:
-                if(log_file):stp.append_to_log_file(f"Insufficient atoms/pseudo LPs or info not found in any funcs \n")
+                if(log_file):stp.append_to_log(f"Insufficient atoms/pseudo LPs or info not found in any funcs \n")
 
             for at in range(np.shape(atom3)[0]):
 
@@ -708,7 +708,7 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
                 LPNames.remove(lp)
     
         if(not LPNames):
-            if(log_file): stp.append_to_log_file(f"##################################In compute_energy_as_acceptor, No Lone Pairs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and psAcceptor atom: {myPsAcceptor} of {myPsAcceptor.parent}, as attractive:{attractive} #################################")
+            if(log_file): stp.append_to_log(f"##################################In compute_energy_as_acceptor, No Lone Pairs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and psAcceptor atom: {myPsAcceptor} of {myPsAcceptor.parent}, as attractive:{attractive} #################################")
             param.append([ acceptorAt, acceptorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, 'LPNames[k]', 'atom3Coord', 'lp_vec', 'lp_vec',  'r', 'theta', 'gamma', 'energy', attractive, atype, allCloseAtoms,closeAtmsTBD, acceptorAt.parent.isRotamer]) 
             
         else:
@@ -800,7 +800,7 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
                 LPNames.remove(lp)
     
         if(not LPNames):
-            if(log_file): stp.append_to_log_file(f"##########################In compute_energy_as_donor: No Lone Pairs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and donor atom: {donorAt} of {donorAt.parent} as attractive:{attractive} ################################")
+            if(log_file): stp.append_to_log(f"##########################In compute_energy_as_donor: No Lone Pairs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and donor atom: {donorAt} of {donorAt.parent} as attractive:{attractive} ################################")
             param.append([donorAt, donorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, hName, atom3,'LPNames[k]','LP_coord',r,theta, 'gamma', 'energy', attractive, atype, allCloseAtoms, closeAtmsTBD, donorAt.parent.isRotamer])
         else:
             for k in range(len(LPNames)):
@@ -823,13 +823,13 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
                     break
 
         if(hPresent ==-1):            
-            if(log_file):stp.append_to_log_file(f"Pseudo Donor(or acceptor) atom:{atom1} belongs residue {atom1.parent} of its chain: {atom1.parent.parent} has NO hydrogen present")
+            if(log_file):stp.append_to_log(f"Pseudo Donor(or acceptor) atom:{atom1} belongs residue {atom1.parent} of its chain: {atom1.parent.parent} has NO hydrogen present")
         else:
             ps_atom3 = get_hydrogen_connected_to_donor(atom1)
 
             try: ps_atom3
             except NameError:
-                if(log_file):stp.append_to_log_file(f"Insufficient atoms/Pseudo LPs or info not found in any funcs \n")
+                if(log_file):stp.append_to_log(f"Insufficient atoms/Pseudo LPs or info not found in any funcs \n")
             
             #iterate over multiple hydrogen (acting as LPs for computation)
             for at in range(np.shape(ps_atom3)[0]):
