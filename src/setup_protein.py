@@ -908,7 +908,7 @@ def set_initial_residue_side_chain_hydrogen_unknown(structure, debug=0):
         fDebugName = get_debug_file_name()
 
     for res in structure.get_residues():
-         if(res.resname == 'SER' or res.resname == 'THR' or res.resname == 'LYS' or res.resname == 'TYR'):
+         if res.resname in ['SER', 'THR', 'LYS', 'LYN', 'TYR']:
              res.isSCHknown = 0
              if(debug):
                 with open(fDebugName, "a") as fd:
@@ -1016,7 +1016,7 @@ def remove_added_hydrogens(structure, log_file=0):
     NME_H = ['H']
 
     removeHdict = {'ARG':ARG_H, 'ASH':ASH_H, 'ASP':ASP_H, 'ASN':ASN_H,'GLH':GLH_H,'GLU':GLU_H, 'GLN':GLN_H, 
-                    'HIS':HIS_H,'HIE':HIE_H, 'HID':HID_H, 'HIP':HIP_H, 'LYS':LYS_H, 'PRO':PRO_H,
+                    'HIS':HIS_H,'HIE':HIE_H, 'HID':HID_H, 'HIP':HIP_H, 'LYS':LYS_H, 'LYN': LYS_H, 'PRO':PRO_H,
                     'SER':SER_H, 'THR':THR_H, 'TYR':TYR_H, 'TRP':TRP_H,
                     'ALA':ALA_H, 'CYS':CYS_H, 'CYX':CYS_H, 'CYM':CYS_H, 'GLY':GLY_H, 'ILE':ILE_H, 'LEU': LEU_H,
                     'MET': MET_H, 'PHE':PHE_H,'VAL':VAL_H, 'NME':NME_H}
@@ -1104,7 +1104,7 @@ def remove_lonepair(structure, log_file=0):
 
     removeLPdict = {'ACE':ACE_LP,'ARG':ARG_LP, 'ASH':ASH_LP, 'ASP':ASP_LP, 'ASN':ASN_LP,
                     'GLH':GLH_LP,'GLU':GLU_LP, 'GLN':GLN_LP, 
-                    'HIS':HIS_LP,'HIE':HIE_LP, 'HID':HID_LP, 'HIP':HIP_LP, 'LYS':LYS_LP, 'PRO':PRO_LP,
+                    'HIS':HIS_LP,'HIE':HIE_LP, 'HID':HID_LP, 'HIP':HIP_LP, 'LYS':LYS_LP, 'LYN': LYS_LP,  'PRO':PRO_LP,
                     'SER':SER_LP, 'THR':THR_LP, 'TYR':TYR_LP, 'TRP':TRP_LP,
                     'ALA':ALA_LP, 'CYS':CYS_LP, 'CYX':CYS_LP, 'CYM':CYS_LP, 'GLY':GLY_LP, 'ILE':ILE_LP , 'LEU': LEU_LP,
                     'MET': MET_LP, 'PHE':PHE_LP,'VAL':VAL_LP}

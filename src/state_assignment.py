@@ -817,7 +817,7 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level, log_fil
 
                 hvyAt.parent.isKnown = 0
 
-            elif(currCloseRes.resname == 'LYS'):
+            elif(currCloseRes.resname in ['LYS', 'LYN']):
                 lastSerial, hLPCoords = hsp3.place_hydrogens_lonepairs_LYS(currCloseAtom.parent, lastSerial, log_file=log_file, debug=debug)
                 if np.size(hLPCoords) == 0:
                     currCloseRes.isSCHknown = 0
@@ -946,7 +946,7 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, chV_level, log_
                 else:
                     currCloseRes.isSCHknown=1
 
-            elif(currCloseRes.resname=='LYS'):
+            elif(currCloseRes.resname in ['LYS', 'LYN']):
                 lastSerial, hLPCoords=hsp3.place_hydrogens_lonepairs_LYS(currCloseAtom.parent, lastSerial, log_file=log_file, debug=debug)
                 if np.size(hLPCoords) == 0:
                     currCloseRes.isSCHknown=0

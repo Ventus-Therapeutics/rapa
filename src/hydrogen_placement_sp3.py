@@ -238,7 +238,7 @@ def get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, a
             ##Assume the first to be the Hydrogen atom (the others can be either two hydrogen-LYS or two lone pairs-SER/THR)
             aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
 
-            if(sp3.parent.resname == 'LYS'):
+            if(sp3.parent.resname in ['LYS', 'LYN']):
                 #For the case of two hydrogen:
                 aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3,  attractive=1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
                 aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3,  attractive=1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
@@ -254,7 +254,7 @@ def get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, a
             ##Assume the first to be the hydrogen atom (the others can be either two hydrogen-LYS or two lone pairs-SER/THR)
             aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=0, atype= 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
 
-            if(sp3.parent.resname == 'LYS'):
+            if(sp3.parent.resname in ['LYS', 'LYN']):
                 #For the case of two hydrogen:
                 aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3, attractive =0, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
                 aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3, attractive =0, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
@@ -294,7 +294,7 @@ def optimize_connected_atoms_by_rotation_in_plane(sp3, aboveSp3, aatPrime,allClo
     aatPrimeMat = []
 
     #end angle for LYS: 120, and end angle for SER/THR: 360
-    endAng = mc.optRotAngle_LYS if(sp3.parent.resname == 'LYS') else mc.optRotAngle
+    endAng = mc.optRotAngle_LYS if(sp3.parent.resname in ['LYS', 'LYN']) else mc.optRotAngle
     
    #precomputing to reduce time
     pre_cal_acceptor_donor_info= {'sp3': cats.get_info_for_acceptorAt_donorAt(sp3)}
@@ -612,7 +612,7 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=0, deb
          #since LYS has 3 attached hydrogen that need to be checked, else only one hydrogen is in SER/THR.
          #so all the hydrogen needs to be checked for  the clash. Lone pairs are only pseudo atoms-so we do not check that
 
-         hMax=3 if sp3.parent.resname == 'LYS' else 1
+         hMax=3 if sp3.parent.resname in ['LYS', 'LYN'] else 1
         
 
          for j in range(hMax):
@@ -673,7 +673,7 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms, log_file=0, deb
                     allAAt = np.append(allAAt, AAtInOriginal, axis=0)
                     allAAtInOriginal = np.append(allAAtInOriginal, [AAtInOriginal], axis =0)
                     if(debug):
-                        if(sp3.parent.resname=='LYS'): 
+                        if(sp3.parent.resname in ['LYS', 'LYN']): 
                             aroundSp3 ='Hydrogen/Hydrogen/Hydrogen'
                         else:
                             aroundSp3 ='Hydrogen/lone pair/lone pair'

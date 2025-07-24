@@ -573,6 +573,7 @@ def get_hydrogen_connected_to_donor(atomDonor, log_file=0):
                                     'HIE': get_hydrogen_connected_to_donor_HIE, 'HIER': get_hydrogen_connected_to_donor_HIE,
                                     'HIP': get_hydrogen_connected_to_donor_HIP, 'HIPR': get_hydrogen_connected_to_donor_HIP,
                                     'LYS': get_hydrogen_connected_to_donor_LYS, 'SER': get_hydrogen_connected_to_donor_SER,
+                                    'LYN': get_hydrogen_connected_to_donor_LYS,
                                     'THR':get_hydrogen_connected_to_donor_THR, 'ASH':get_hydrogen_connected_to_donor_ASH,
                                     'GLH':get_hydrogen_connected_to_donor_GLH}
 
