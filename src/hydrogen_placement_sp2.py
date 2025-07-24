@@ -41,94 +41,6 @@ import setup_protein as stp
 import close_atoms as cats
 
 
-def compute_plane_parameters(heavyAtoms, debug=0):
-
-    """
-     objective: computing the coefficients of the plane
-        Plane is defined as: ax+by+cz =d.
-        Divide entire equation with d and solve for: Ax+By+Cz =1.
-        -input:heavyAtoms:[[hvyAtm1_x, hvyAtm1_y, hvyAt1_z],
-                           [hvyAtm2_x, hvyAtm2_y, hvyAt2_z], [hvyAtm3_x, hvyAtm3_y, hvyAt3_z]]
-        -output:coefficient of the plane equation
-    """
-    b = np.array([1.0, 1.0, 1.0])        
-    sol = np.linalg.solve(heavyAtoms,b)
-    if(debug == 1):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"The heavy atoms are: {heavyAtoms}, with b={b}, and planar coefficients: {sol}\n")
-    return sol 
-
-
-def solve_system(heavyAtoms, coeffs, theta, debug = 0):
-    
-    """
-        objective: To find hydrogen coordinate for the SP2 atom attached to hydrogen. 
-        3 variables:coordinates of hydrogen atom: x,y,z
-        3 conditions:1)bond length=1, 2)Planar 3) angle btw appropriate vectors=120
-       Hydrogen will sit on this plane therefore satisfying,
-       A*x0+B*y_0+C*z_0=1.  We then subtract A*x1+B*y1+C*z1 =1
-       So we get: A*(x0-x1)+B*(y0-y1)+C*(z0-z1) = 0.
-       
-       Redefining: x =x0-x1, y=y0-y1, z=z0-z1. 
-       We will look for (x0,y0,z0) at the end by adding N_bb coords/(heavyAtom[1]).
-       
-       Angle btw Hydrogen, Heavy1(Nitrogen) & Heavy2(CA) = 120 degrees
-        r5 dot r6 = mod(r5)*mod(r6)*cos(120) 
-       mod(r5)=1 as bond length of N-H=1 
-       r5 = vector from bb Nitrogen--> Hydrogen (Heavy 1 to H)
-       r6 = vector from Nitrogen bb  --> CA (Heavy 1 to Heavy 2)
-       First compute r6
-       Note: In above condition only Heavy-1, Heavy 2 are involved.
-       Heavy0 (heavy connected to prev res) is NOT involved.
-    
-       input:  -heavyatoms: the coordinates of heavy atoms involved in the system
-                            1)directly connected to hyd 2)atom connected to heavy1
-                            3)third atom in plane typically the other atom connected to heavy1
-
-               -coeffs: coefficients of the plane in which the heavy atoms lie
-               -theta: angle btw two vectors: 120 degrees (as it is SP2) case
-
-        output: hydrogen coordinates
-    """
-      
-    hv1_hv2 = heavyAtoms[2] - heavyAtoms[1] ###r6
-
-    hv1_hv2_mod = np.sqrt(hv1_hv2.dot(hv1_hv2))
-
-    
-    x, y, z = symbols('x, y, z')
-    eq1 = Eq(coeffs[0]*x+ coeffs[1]*y+coeffs[2]*z,0)  ##since it is planar
-    eq2 = Eq(hv1_hv2[0]*x +hv1_hv2[1]*y+hv1_hv2[2]*z,hv1_hv2_mod*np.cos(math.radians(theta) )) #r6.r5 =cos(120)##Depends on the angle between Hydrogen and the heavy atom
-    eq3 = Eq(x**2+y**2+z**2,1)
-    
-    try:
-        sol_exact = solve([eq1, eq2, eq3], [x,y,z])
-    except: 
-        sol_exact = nsolve([eq1, eq2, eq3], [x,y,z],[1,1,1])
-
-    HCoord = sol_exact + heavyAtoms[1]
-    
-    if(debug):
-       stp.append_to_debug( __name__, sys._getframe().f_code.co_name, f"\n############################################## \n Exactly solving these equations simultaneously\n \
-        Eqn1: {coeffs[0]} x + {coeffs[1]} y + {coeffs[2]} z = 0 \n \
-        Eqn2: {hv1_hv2[0]} x + {hv1_hv2[1]} y + {hv1_hv2[2]} z = {hv1_hv2_mod}cos(120)\n \
-        Eqn3: x^2 + y^2 + z^2 = 1\n \
-\n############################################## \n \
-\n############################################## \n \
-    H coordinate is: {HCoord} \n \
-    SOL in shifted frame: {sol_exact}\n \
-    Check solutions, solution 1:\n \
-    Eq1: {coeffs[0]*sol_exact[0][0]+ coeffs[1]*sol_exact[0][1] + coeffs[2]*sol_exact[0][2]} = 0?\n \
-    Eq2: {hv1_hv2[0]*sol_exact[0][0]+ hv1_hv2[1]*sol_exact[0][1] + hv1_hv2[2]*sol_exact[0][2]} = {hv1_hv2_mod*np.cos(theta*np.pi/180)} ? \n \
-    Eq3: {sol_exact[0][0]**2+ sol_exact[0][1]**2 + sol_exact[0][2]**2} = 1 ?\n \
-    Check solutions, solution 2:\n \
-    Eq1: {coeffs[0]*sol_exact[1][0]+ coeffs[1]*sol_exact[1][1] + coeffs[2]*sol_exact[1][2]} = 0?\n \
-    Eq2: {hv1_hv2[0]*sol_exact[1][0]+ hv1_hv2[1]*sol_exact[1][1] + hv1_hv2[2]*sol_exact[1][2]} = {hv1_hv2_mod*np.cos(theta*np.pi/180)} ?\n \
-    Eq3: {sol_exact[1][0]**2+ sol_exact[1][1]**2 + sol_exact[1][2]**2} = 1 ?\n \
-    \n############################################## \n \
-               ")
-
-    return HCoord
-       
 def eliminate_extraneous_solution(HCoord, vecHeavy, theta, debug=0):
 
     """
@@ -174,6 +86,14 @@ def eliminate_extraneous_solution(HCoord, vecHeavy, theta, debug=0):
 
     return HCoordFinal
 
+def rotate_vector(v, axis, angle_rad):
+    """
+    rotate the vector given the axis and angle (in radian)
+    """
+    axis = axis / np.linalg.norm(axis)
+    return (v * np.cos(angle_rad) +
+            np.cross(axis, v) * np.sin(angle_rad) +
+            axis * np.dot(axis, v) * (1 - np.cos(angle_rad)))
 
 def compute_hydrogen_coords_sp2( heavyAtoms, clashOccurs, debug =0):
 
@@ -188,26 +108,38 @@ def compute_hydrogen_coords_sp2( heavyAtoms, clashOccurs, debug =0):
 
     """
    
-    Vec_heavy0  = Vector(heavyAtoms[0])
-    Vec_heavy1 = Vector(heavyAtoms[1])
-    Vec_heavy2 = Vector(heavyAtoms[2])
+    Vec_heavy0  = Vector(heavyAtoms[0]) #CA
+    Vec_heavy1 = Vector(heavyAtoms[1]) # O
+    Vec_heavy2 = Vector(heavyAtoms[2]) # C
+
+    # angle in radian
+    if clashOccurs == 1:
+        theta = ((2*np.pi-calc_angle(Vec_heavy0,Vec_heavy1,Vec_heavy2))/2) ##This should be approximately 120
+    else:
+        theta = mc.sp2Angle_rad #120 degrees
+
+
+    v1 = heavyAtoms[0] - heavyAtoms[1]
+    v2 = heavyAtoms[2] - heavyAtoms[1]
+    plane = np.cross(v1, v2)
+    plane = plane / np.linalg.norm(plane)
+
+    # bond length =1
+    v2 = v2 / np.linalg.norm(v2)
+    v3 = rotate_vector(v2, plane, theta)
+    lp1 = heavyAtoms[1] + v3
+    v3 = rotate_vector(v2, -plane, theta)
+    lp2 = heavyAtoms[1] + v3
+    hCoord = np.array([lp1, lp2])
     
     if clashOccurs == 1:
-        theta = ((2*np.pi-calc_angle(Vec_heavy0,Vec_heavy1,Vec_heavy2))/2)*180/np.pi ##This should be approximately 120
-    else:
-        theta = mc.sp2Angle #120 degrees
-    
-    vecHeavy = np.array([Vec_heavy0, Vec_heavy1, Vec_heavy2])
-    coeffs = compute_plane_parameters(heavyAtoms, debug=0)
-
-    hCoord = solve_system(heavyAtoms, coeffs, theta, debug=debug)
-    if clashOccurs == 1: 
-        hCoordFinal = eliminate_extraneous_solution(hCoord, vecHeavy, theta, debug=debug)
+        vecHeavy = np.array([Vec_heavy0, Vec_heavy1, Vec_heavy2])
+        hCoordFinal = eliminate_extraneous_solution(hCoord, vecHeavy, theta*mc.rad_to_deg, debug=debug)
     else:
         hCoordFinal = hCoord
 
     if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f' \n angle between sp2 atoms should be approximately 120, and it is: {theta}. Note, clash occurs is: {clashOccurs} and final hydrogen coordinates are: {hCoordFinal}\n')
+        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f' \n angle between sp2 atoms should be approximately 120, and it is: {theta*mc.rad_to_deg}. Note, clash occurs is: {clashOccurs} and final hydrogen coordinates are: {hCoordFinal}\n')
 
     return hCoordFinal
 
@@ -826,3 +758,95 @@ def add_sp2_sidechain_lonepairs(structure, lastSerial, debug =0):
 
     return lastSerial, lpCoord
 
+
+#########################################
+# obsolete stuff from Prerna's version
+
+def compute_plane_parameters(heavyAtoms, debug=0):
+
+    """
+     objective: computing the coefficients of the plane
+        Plane is defined as: ax+by+cz =d.
+        Divide entire equation with d and solve for: Ax+By+Cz =1.
+        -input:heavyAtoms:[[hvyAtm1_x, hvyAtm1_y, hvyAt1_z],
+                           [hvyAtm2_x, hvyAtm2_y, hvyAt2_z], [hvyAtm3_x, hvyAtm3_y, hvyAt3_z]]
+        -output:coefficient of the plane equation
+    """
+    b = np.array([1.0, 1.0, 1.0])        
+    sol = np.linalg.solve(heavyAtoms,b)
+    if(debug == 1):
+        stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"The heavy atoms are: {heavyAtoms}, with b={b}, and planar coefficients: {sol}\n")
+    return sol 
+
+
+def solve_system(heavyAtoms, coeffs, theta, debug = 0):
+    
+    """
+        objective: To find hydrogen coordinate for the SP2 atom attached to hydrogen. 
+        3 variables:coordinates of hydrogen atom: x,y,z
+        3 conditions:1)bond length=1, 2)Planar 3) angle btw appropriate vectors=120
+       Hydrogen will sit on this plane therefore satisfying,
+       A*x0+B*y_0+C*z_0=1.  We then subtract A*x1+B*y1+C*z1 =1
+       So we get: A*(x0-x1)+B*(y0-y1)+C*(z0-z1) = 0.
+       
+       Redefining: x =x0-x1, y=y0-y1, z=z0-z1. 
+       We will look for (x0,y0,z0) at the end by adding N_bb coords/(heavyAtom[1]).
+       
+       Angle btw Hydrogen, Heavy1(Nitrogen) & Heavy2(CA) = 120 degrees
+        r5 dot r6 = mod(r5)*mod(r6)*cos(120) 
+       mod(r5)=1 as bond length of N-H=1 
+       r5 = vector from bb Nitrogen--> Hydrogen (Heavy 1 to H)
+       r6 = vector from Nitrogen bb  --> CA (Heavy 1 to Heavy 2)
+       First compute r6
+       Note: In above condition only Heavy-1, Heavy 2 are involved.
+       Heavy0 (heavy connected to prev res) is NOT involved.
+    
+       input:  -heavyatoms: the coordinates of heavy atoms involved in the system
+                            1)directly connected to hyd 2)atom connected to heavy1
+                            3)third atom in plane typically the other atom connected to heavy1
+
+               -coeffs: coefficients of the plane in which the heavy atoms lie
+               -theta: angle btw two vectors: 120 degrees (as it is SP2) case
+
+        output: hydrogen coordinates
+    """
+      
+    hv1_hv2 = heavyAtoms[2] - heavyAtoms[1] ###r6
+
+    hv1_hv2_mod = np.sqrt(hv1_hv2.dot(hv1_hv2))
+
+    
+    x, y, z = symbols('x, y, z')
+    eq1 = Eq(coeffs[0]*x+ coeffs[1]*y+coeffs[2]*z,0)  ##since it is planar
+    eq2 = Eq(hv1_hv2[0]*x +hv1_hv2[1]*y+hv1_hv2[2]*z,hv1_hv2_mod*np.cos(math.radians(theta) )) #r6.r5 =cos(120)##Depends on the angle between Hydrogen and the heavy atom
+    eq3 = Eq(x**2+y**2+z**2,1)
+    
+    try:
+        sol_exact = solve([eq1, eq2, eq3], [x,y,z])
+    except: 
+        sol_exact = nsolve([eq1, eq2, eq3], [x,y,z],[1,1,1])
+
+    HCoord = sol_exact + heavyAtoms[1]
+    
+    if(debug):
+       stp.append_to_debug( __name__, sys._getframe().f_code.co_name, f"\n############################################## \n Exactly solving these equations simultaneously\n \
+        Eqn1: {coeffs[0]} x + {coeffs[1]} y + {coeffs[2]} z = 0 \n \
+        Eqn2: {hv1_hv2[0]} x + {hv1_hv2[1]} y + {hv1_hv2[2]} z = {hv1_hv2_mod}cos(120)\n \
+        Eqn3: x^2 + y^2 + z^2 = 1\n \
+\n############################################## \n \
+\n############################################## \n \
+    H coordinate is: {HCoord} \n \
+    SOL in shifted frame: {sol_exact}\n \
+    Check solutions, solution 1:\n \
+    Eq1: {coeffs[0]*sol_exact[0][0]+ coeffs[1]*sol_exact[0][1] + coeffs[2]*sol_exact[0][2]} = 0?\n \
+    Eq2: {hv1_hv2[0]*sol_exact[0][0]+ hv1_hv2[1]*sol_exact[0][1] + hv1_hv2[2]*sol_exact[0][2]} = {hv1_hv2_mod*np.cos(theta*np.pi/180)} ? \n \
+    Eq3: {sol_exact[0][0]**2+ sol_exact[0][1]**2 + sol_exact[0][2]**2} = 1 ?\n \
+    Check solutions, solution 2:\n \
+    Eq1: {coeffs[0]*sol_exact[1][0]+ coeffs[1]*sol_exact[1][1] + coeffs[2]*sol_exact[1][2]} = 0?\n \
+    Eq2: {hv1_hv2[0]*sol_exact[1][0]+ hv1_hv2[1]*sol_exact[1][1] + hv1_hv2[2]*sol_exact[1][2]} = {hv1_hv2_mod*np.cos(theta*np.pi/180)} ?\n \
+    Eq3: {sol_exact[1][0]**2+ sol_exact[1][1]**2 + sol_exact[1][2]**2} = 1 ?\n \
+    \n############################################## \n \
+               ")
+
+    return HCoord
+       

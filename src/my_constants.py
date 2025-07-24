@@ -37,6 +37,8 @@ optRotAngle_LYS = 130
 optRotAngle = 360
 sp3Angle = 109.5
 sp2Angle = 120.0
+sp2Angle_rad = 120.0/180.0*np.pi
+rad_to_deg = 180.0/np.pi
 
 #search radius
 deltaD = 4.0 ##Acceptable distance range!
