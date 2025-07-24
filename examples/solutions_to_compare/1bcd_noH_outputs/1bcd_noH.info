@@ -7,17 +7,17 @@ Chains: 1: [<Chain id=A>]
 
 
 Got unknown ASPs/GLUs: [<Residue ASP het=  resseq=110 icode= >, <Residue ASP het=  resseq=34 icode= >] with atoms [<Atom OD1>, <Atom OD1>].
- And relevant info: [[<Atom OD1>, 34, <Atom OD1>, 110, 3.7638721], [<Atom OD1>, 110, <Atom OD1>, 34, 3.7638721]]
+ And relevant info: [[<Atom OD1>, 34, <Atom OD1>, 110, np.float32(3.7638721)], [<Atom OD1>, 110, <Atom OD1>, 34, np.float32(3.7638721)]]
 
 
 Got unknown atoms [<Atom OD1>, <Atom OD1>].
  And relevant info:
- [[<Atom OD1>, 34, <Atom OD1>, 110, 3.7638721], [<Atom OD1>, 110, <Atom OD1>, 34, 3.7638721]]
+ [[<Atom OD1>, 34, <Atom OD1>, 110, np.float32(3.7638721)], [<Atom OD1>, 110, <Atom OD1>, 34, np.float32(3.7638721)]]
 ###############################################################
 ###############################################################
 ###############################################################
 
 
-The time taken is :270.3748952948954 second or 4.506248254914923 mins or  0.07510413758191539 hours
+The time taken is :47.79978437535465 second or 0.7966630729225774 mins or  0.013277717882042957 hours
 Number of files generated: 2 and files generated:
-['/home/pgera/Scripts/ventus-repo/rapa_v1.0_fix/rapa/examples/1bcd_noH_out_outputs/1bcd_noH_out_0.pdb', '/home/pgera/Scripts/ventus-repo/rapa_v1.0_fix/rapa/examples/1bcd_noH_out_outputs/1bcd_noH_out_1.pdb']
+['/data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_0.pdb', '/data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_1.pdb']
