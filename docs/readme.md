@@ -1,6 +1,6 @@
 # 1. Overview
 RAPA (Rotamer And Protonation Assignment) is a command line tool that aids in protein preparation by assigning various protonation and rotamer states of unassigned amino-acids of the given structure and outputs all the models that are energetically accessible. Details of the algorithm can be found in the following manuscript:
-https://chemrxiv.org/engage/chemrxiv/article-details/675c85b2085116a13353ce8b 
+DOI: 10.1021/acs.jcim.5c00859
 
 Copyright (c) 2025 Ventus Therapeutics U.S., Inc.
 
