@@ -42,6 +42,9 @@ rad_to_deg = 180.0/np.pi
 
 #search radius
 deltaD = 4.0 ##Acceptable distance range!
+hbond_d = 3.4 # hydrogen bond range
+r_power = 6 # use r^6 to mimic the repulsive wall when close
+repulsive_k = 9*(2.9**6) # use coloumn potential the constant is being set so that the energy at 2.9 ang is 9
 
 withinResClashDist = 0.98
 btwResClashDist = 1.3
