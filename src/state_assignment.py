@@ -1030,13 +1030,12 @@ def compute_energy_for_given_atoms(resState, givenAtoms, chV_level, log_file=0, 
         #create a custom list to find all close atoms
         customList = stp.get_known_donor_acceptor_list_for_one_atom(struct, hvyAt, aaType = 'DONOR_ACCEPTOR_BOTH')
         ##Get a list of all close Atoms (which are donor, acceptor, and both) for the given hvy atom
-        allCloseAtoms = cats.get_all_close_atom_info_for_one_atom(hvyAt, customList)
+        allCloseAtoms = cats.get_all_close_atom_info_for_one_atom(hvyAt, customList, dist_cutoff=mc.hbond_d)
         
         if(log_file):
             with open(fLogName, "a") as fLog:
-                fLog.write(f"Evaluate given residue state, hvyAt: {hvyAt} and All close atoms: {allCloseAtoms} and enSumTotal is: {enSumTotal}\n")
+                fLog.write(f"Evaluate given residue state, hvyAt: {hvyAt} and All close atoms: {allCloseAtoms}\n")
                 fLog.flush()
-    
 
         if(myHvyAtBehav == 'do'):
             #If the heavy atom is a donor the compute energy for all close atoms
@@ -1044,7 +1043,8 @@ def compute_energy_for_given_atoms(resState, givenAtoms, chV_level, log_file=0, 
             enSumTotal = enSumTotal + enSumTotalDonor
             if(log_file):
                 with open(fLogName, "a") as fLog:
-                    fLog.write(f"energy sum donor from func:{enSumTotalDonor} and enSumTotal:{enSumTotal} \n")
+                    fLog.write(f"energy sum donor from func:{enSumTotalDonor} and current enSumTotal:{enSumTotal} \n")
+                    fLog.write(str(enValList)+'\n')
                     fLog.flush()
         elif(myHvyAtBehav == 'ac'):
             #If heavyAtom is acceptor-compute energy for all its close atom.
@@ -1052,7 +1052,9 @@ def compute_energy_for_given_atoms(resState, givenAtoms, chV_level, log_file=0, 
             enSumTotal = enSumTotal + enSumTotalAcceptor
             if(log_file):
                 with open(fLogName, "a") as fLog:
-                    fLog.write(f"energy sum acceptor from func:{enSumTotalAcceptor} and enSumTotal:{enSumTotal}\n")
+                    fLog.write(f"energy sum acceptor from func:{enSumTotalAcceptor} and current enSumTotal"
+                               f":{enSumTotal}\n")
+                    fLog.write(str(enValList)+'\n')
                     fLog.flush()
                 
         else:
