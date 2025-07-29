@@ -25,7 +25,7 @@ SOFTWARE.
 
 
 
-import os
+import os, sys
 import csv
 import Bio
 import numpy as np
@@ -76,51 +76,9 @@ def hbond_energy(r, theta, gamma, attractive=True,
             else:
                 return u
         else:
-            step_size = 0.001
-            derivative = (morse(r+step_size, theta, gamma) - morse(r-step_size, theta, gamma)) / (2*step_size)
-            if derivative < 0.0:
-                steps = np.arange(1.5,4.0,0.01)
-                alt_u = -1*morse(steps, theta, gamma)
-                if max(alt_u) < 0:
-                    return 0.0
-                else:
-                    return max(alt_u)
-            else:
-                if u > 0 and morse(r, 0.0, 0.0) < 0:
-                    return 0
-                else:
-                    return -1*u
+            return mc.repulsive_k/(r**(mc.r_power))
     else:
         return 0.0
-
-
-def get_close_atom_list(targAtom, givenList, log_file=0):
-
-    """
-    objective: Get a list of close atom for a target atom
-    Input:
-        -targAtom: Target atom which is a my_atom type object.
-        -givenList: provide the appropriate list of atoms that need to be considered in the search
-
-    O/P: A List of atoms that in the radius of: myConstants.deltaD
-         The output is a list of atom objects.
-
-    """
-    
-    if(not givenList): 
-        if(log_file):
-            stp.append_to_log("No search List provided!! \n")
-        os._exit(0)
-
-
-    ns = Bio.PDB.NeighborSearch(givenList)
-    close_atoms = ns.search(targAtom.coord, mc.deltaD) ##distance cut off is defined by mc.deltaD
-    
-
-    if(targAtom not in close_atoms):
-        close_atoms.append(targAtom)
-    #
-    return close_atoms
 
 
 def get_close_atom_distance_info(atomCurr, close_atoms):
@@ -148,7 +106,7 @@ def get_close_atom_distance_info(atomCurr, close_atoms):
    
     return distInfo
 
-def get_all_close_atom_info_for_one_atom(aCurr, givenList):
+def get_all_close_atom_info_for_one_atom(aCurr, givenList, dist_cutoff=mc.deltaD):
 
     """
         I/P: 
@@ -159,8 +117,16 @@ def get_all_close_atom_info_for_one_atom(aCurr, givenList):
         All atoms within the DeltaD radius is listed in the next few rows, with the closest
         atom being on row 1. The atoms are listed in closest to farthest order.        
     """
+    
+    if(not givenList): 
+        sys.exit("No search list provided for getting close atoms")
 
-    close_atoms = get_close_atom_list(aCurr, givenList)
+    ns = Bio.PDB.NeighborSearch(givenList)
+    close_atoms = ns.search(aCurr.coord, dist_cutoff) ##distance cut off is defined by mc.deltaD
+    
+
+    if(aCurr not in close_atoms):
+        close_atoms.append(aCurr)
 
     if np.shape(close_atoms)[0] > 0:
         distInfo = get_close_atom_distance_info(aCurr, close_atoms)
@@ -838,7 +804,7 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
                 LP_coord = ps_atom3[at].coord 
                 LP_vec = Vector(LP_coord)
                 gamma = get_gamma(donorAt.get_vector(), acceptorAt_vec, LP_vec)
-                energy = hbond_energy(r, theta, gamma, attractive)
+                energy = hbond_energy(r, theta, gamma, bool(attractive))
                 check_energy_range(energy, log_file=log_file)
                 
                 
