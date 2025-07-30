@@ -1180,7 +1180,7 @@ def branch_structure(unknownRes, structure, log_file=0, debug=0):
 
 
 
-def set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, collectData, branchedS, MSG, log_file=0, debug=0):
+def set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, branchedS, MSG, log_file=0, debug=0):
 
     """
     objective: To set the state in the given structure by converting it to known and removing it from the list of unknowns
@@ -1203,8 +1203,7 @@ def set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, coll
         with open(fLogName, "a") as fLog:
             fLog.write(MSG+"\n")
             fLog.flush()
-    
-    collectData.append([unknownRes, res2keep, unknownRes.parent.id, MSG ]) 
+
     changeVal+=1
     
     modelID = unknownRes.parent.parent.id
@@ -1233,7 +1232,7 @@ def set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, coll
                  message to print:{MSG}\n ")
 
 
-    return structure, unknownResMod, changeVal, collectData
+    return structure, unknownResMod, changeVal
 
 
 def get_structure_name(res, moreInfo=None):
@@ -1311,7 +1310,7 @@ The energies for the rotamer state are the following.\n \
 
 
 
-def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArray, unknownResMod, changeVal, skipVal, collectData, skipResInfo, log_file=0, debug = 0):
+def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArray, unknownResMod, changeVal, skipVal, skipResInfo, log_file=0, debug = 0):
 
 
     """
@@ -1389,12 +1388,11 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
                     fLog.write(MSG+"\n")
                     fLog.flush()
 
-            collectData.append([unknownRes, res2keep, unknownRes.parent.id, MSG ]) 
             unknownResMod.remove(unknownRes)
             unknownResMod.remove(unknownASP_GLUpair)
             structure = copy.deepcopy(struct)  
             changeVal +=1
-            return structure, unknownResMod, changeVal, skipVal, collectData, skipResInfo
+            return structure, unknownResMod, changeVal, skipVal, skipResInfo
 
         nameOfS2keep = 'struct'+str(unknownRes.id[1])+nameOfRes2keep
         res2keep= S[nameOfS2keep][modelID][chainID][unknownRes.id]
@@ -1408,7 +1406,7 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
 
         msg2Usr = f"{condStr}, Saving residue: {res2keep} to residue state corresponding to minimum energy  i.e {enValPick} and isRotamer:{res2keep.isRotamer}"
         ###Setting the state-change value and skip values are updated in the function (set_state)
-        structure, unknownResMod, changeVal, collectData = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, collectData, S, msg2Usr, log_file=log_file, debug=debug)
+        structure, unknownResMod, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, S, msg2Usr, log_file=log_file, debug=debug)
 
         del S
 
@@ -1425,7 +1423,7 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
          condStr = "Smallest Energy is zero and the next one is either pos or zero!"
          msg2Usr = f"{condStr},Saving residue: {res2keep} to residue state corresponding to minimum energy  i.e {enValPick} and isRotamer:{res2keep.isRotamer} (specifically:smallest: {sortedEnArray[0,1]} and next smallest:{sortedEnArray[1,1]})"
          ###Setting the state-change value and skip values are updated in the function (set_state)
-         structure, unknownResMod, changeVal, collectData = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, collectData, S, msg2Usr, log_file=log_file, debug=debug)
+         structure, unknownResMod, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, S, msg2Usr, log_file=log_file, debug=debug)
 
          del S
 
@@ -1445,7 +1443,7 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
 
             msg2Usr = f"{condStr}, Saving residue: {res2keep} to residue state corresponding to minimum energy  i.e {enValPick} and isRotamer:{res2keep.isRotamer}, (specifically:smallest: {sortedEnArray[0,1]} and next smallest:{sortedEnArray[1,1]})"
             ###Setting the state-change value and skip values are updated in the function (set_state)
-            structure, unknownResMod, changeVal, collectData = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod,changeVal, collectData, S, msg2Usr, log_file=log_file, debug=debug)
+            structure, unknownResMod, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod,changeVal, S, msg2Usr, log_file=log_file, debug=debug)
 
             del S
         else:
@@ -1470,8 +1468,6 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
             ##c=2 always(as it is res, energyVal)#b= number of degen cases#a=1
             degenInfo = degenInfo.reshape(a*b,c)
 
-            #store info in collectData
-            collectData.append([unknownRes, unknownRes, unknownRes.parent.id,'Skip Less Than ECutoff, degen Info: '+str(degenInfo)+ ' with diff: ' +str(EnDiffWithMin[indDegen])+'<'+str(mc.ECutOff) ])
             skipVal+=1
             #store the struct name
             degenStructNames = get_degenerate_structure_names(degenInfo)
@@ -1505,9 +1501,6 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
             degenNames = sortedResNamesArr[indDegen]
             #create the degenArray using the index where diff of energy<1Kcal in the sortedEnArray
             degenArray = sortedEnArray[indDegen]
-            #updating the collect data
-            collectData.append([unknownRes, unknownRes, chainID,'Skip: Energy difference less Than ECutoff, difference: '+str(degenArray)+' with diff: '+str(EnDiffWithMin)+'<'+str(mc.ECutOff) ])
-
 
             skipVal+=1
             #getting the degenerate structure names
@@ -1534,10 +1527,10 @@ def evaluate_degenerate_cases( unknownRes,structure, S, energyArray, sortedEnArr
            os.exit()
            
     
-    return structure, unknownResMod,changeVal, skipVal, collectData, skipResInfo
+    return structure, unknownResMod,changeVal, skipVal, skipResInfo
 
 
-def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipVal, collectData, skipResInfo, chV_level, log_file=0, debug =0) :
+def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipVal, skipResInfo, chV_level, log_file=0, debug =0) :
     """
     objective: To investigate the HIS could be HIP/HIP rotamer
     I/P:-unknownRes: the unknown HIS to investigate
@@ -1603,7 +1596,8 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
 
           #check the degenerate cases
           skipValb4check = skipVal
-          structure, unknownResMod,changeVal, skipVal, collectData, skipResInfo = evaluate_degenerate_cases( unknownRes, structure, S, energyArray, sortedEnArray, unknownResMod, changeVal, skipVal, collectData, skipResInfo, log_file=log_file, debug=debug)
+          structure, unknownResMod,changeVal, skipVal, skipResInfo = evaluate_degenerate_cases( unknownRes,
+                                                                                                structure, S, energyArray, sortedEnArray, unknownResMod, changeVal, skipVal, skipResInfo, log_file=log_file, debug=debug)
           if(abs(skipValb4check - skipVal)==0):
               HIPdegen =0
           else:
@@ -1613,7 +1607,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
               del S['struct'+str(unknownRes.id[1])+'HID' ]
               del S['struct'+str(unknownRes.id[1])+'HIDR' ]
 
-          return structure, unknownResMod, changeVal, skipVal, collectData, skipResInfo, S, HIPset, HIPdegen
+          return structure, unknownResMod, changeVal, skipVal, skipResInfo, S, HIPset, HIPdegen
 
     elif(enSumTotND1< -1*mc.ECutOff and enSumTotNE2< -1*mc.ECutOff):
         ##check if the original state is a possibility
@@ -1670,7 +1664,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
                 res2keep = resHIP
                 nameOfS2keep = sHIP
                 saveText = f"Saving residue: {res2keep.resname} to residue state corresponding to minimum energy i.e ND1Ro: {enSumTotND1} + NE2Ro: {enSumTotNE2} isRotamer:{res2keep.isRotamer}"
-                structure, unknownResMod, changeVal, collectData = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, collectData, S, saveText, log_file=log_file, debug=debug)
+                structure, unknownResMod, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, S, saveText, log_file=log_file, debug=debug)
                 HIPset = 1 
 
                 del S['struct'+str(unknownRes.id[1])+'HIE' ]
@@ -1746,7 +1740,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
                 res2keep = resHIPR
                 nameOfS2keep = sHIPR
                 saveText = f"Saving residue: {res2keep.resname} to residue state corresponding to minimum energy i.e ND1Ro: {enSumTotND1Ro} + NE2Ro: {enSumTotNE2Ro} isRotamer:{res2keep.isRotamer}"
-                structure, unknownResMod, changeVal, collectData = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, collectData, S, saveText, log_file=log_file, debug=debug)
+                structure, unknownResMod, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, S, saveText, log_file=log_file, debug=debug)
                 HIPset = 1 
 
                 del S['struct'+str(unknownRes.id[1])+'HIE' ]
@@ -1768,7 +1762,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, unknownResMod, changeVal, skipV
         del S['struct'+str(unknownRes.id[1])+'HIP' ]
         del S['struct'+str(unknownRes.id[1])+'HIPR' ]
 
-    return structure, unknownResMod, changeVal, skipVal, collectData, skipResInfo, S, HIPset, HIPdegen
+    return structure, unknownResMod, changeVal, skipVal, skipResInfo, S, HIPset, HIPdegen
 
 
 def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level, numCount=1, log_file=0, debug=0):
@@ -1791,7 +1785,6 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
     skipVal = 0
     changeVal =0 
 
-    collectData = []
     skipResInfo = []
 
     unknownResIter = stp.get_unknown_residue_list(structure)
@@ -1854,8 +1847,6 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
             
             if(unknownRes.resname=='HIS'):  dictStructHIE = setup_HIS(unknownRes, structure, 'HIE', log_file=log_file, debug=debug)
 
-            collectData.append([unknownRes, dictStructHIE[modelID][chainID][unknownRes.id],chainID,'DONE: No Close Atoms Found'])
-
             structure[modelID][chainID][unknownRes.id].isKnown = 1 
             unknownRes.isKnown = 1
             changeVal +=1
@@ -1880,7 +1871,8 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
 
             if(unknownRes.resname == 'HIS' and not(allEnergyZero)): 
                 #If HIS and all energy values are not zero-test the possibility of HIP:
-                structure, unknownResMod, changeVal, skipVal, collectData, skipResInfo, S, HIPset, HIPdegen = evaluate_HIP_cases(unknownRes, structure, S,  unknownResMod, changeVal, skipVal, collectData, skipResInfo, chV_level, log_file=log_file, debug=debug)
+                structure, unknownResMod, changeVal, skipVal, skipResInfo, S, HIPset, HIPdegen = evaluate_HIP_cases(
+                    unknownRes, structure, S,  unknownResMod, changeVal, skipVal, skipResInfo, chV_level, log_file=log_file, debug=debug)
 
                 if(HIPdegen==1 or HIPset==1):
                     if(log_file):
@@ -1918,7 +1910,7 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
 ###################################IF DEGENERATE ###############################################################
             if(degenFound):
                 #if smallest two energies are less than ECutOff then explore the possibility of degeneracy 
-                structure, unknownResMod,changeVal, skipVal, collectData, skipResInfo = evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArray, unknownResMod, changeVal, skipVal, collectData, skipResInfo, log_file=log_file, debug=debug) 
+                structure, unknownResMod,changeVal, skipVal, skipResInfo = evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArray, unknownResMod, changeVal, skipVal, skipResInfo, log_file=log_file, debug=debug)
             else:
                 ##If not degenerate, pick the state with the smallest energy value:
                 res2keep = sortedEnArray[0,0] ##Picking the smallest
@@ -1929,7 +1921,7 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
                 enValPick =sortedEnArray[ind][1]
                 saveText = f"State Set! The energies of :{sortedEnArray[0,0]} is {sortedEnArray[0,1]} and {sortedEnArray[0,0]} is {sortedEnArray[1,1]}, Saving residue: {res2keep.resname} to residue state corresponding to minimum energy  i.e {enValPick} and isRotamer:{res2keep.isRotamer}"
 
-                structure, unknownResMod, changeVal, collectData = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, collectData, S, saveText, log_file=log_file, debug=debug)
+                structure, unknownResMod, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, unknownResMod, changeVal, S, saveText, log_file=log_file, debug=debug)
                 del S
 
    
