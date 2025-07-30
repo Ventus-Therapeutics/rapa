@@ -81,7 +81,7 @@ def hbond_energy(r, theta, gamma, attractive=True,
         return 0.0
 
 
-def get_close_atom_distance_info(atomCurr, close_atoms):
+def get_close_atom_distance_info(atomCurr, close_atoms, include_self=True):
 
     """
         objective: To provide a list and information regarding close atoms,
@@ -90,14 +90,20 @@ def get_close_atom_distance_info(atomCurr, close_atoms):
         I/P:
              atomCurr: Current Atom,
              close_atoms: the list of close atoms you want information about
+             include_self: whether to include the atoms in the same residue as atomCurr
         O/P: Distance information in ascending order
     """
 
     distInfo = []
+    if not include_self:
+        target_resid = atomCurr.get_parent().id[1]
 
     for atomClose in close_atoms:
        aClose = mra.my_atom(atomClose)
        dist = atomClose-atomCurr
+       resid = atomClose.get_parent().id[1]
+       if not include_self and resid == target_resid:
+           continue
        distInfo.append([atomClose, atomClose.get_parent().id[1],atomClose.get_parent().resname, aClose.get_behavior().abbrev, dist])
 
     
@@ -106,13 +112,14 @@ def get_close_atom_distance_info(atomCurr, close_atoms):
    
     return distInfo
 
-def get_all_close_atom_info_for_one_atom(aCurr, givenList, dist_cutoff=mc.deltaD):
+def get_all_close_atom_info_for_one_atom(target_atom, givenList, dist_cutoff=mc.deltaD, include_self=True):
 
     """
         I/P: 
             -aCurr: current atom
             -searchListName: search list 
             -givenList
+            include_self: whether to include the atoms in the same residue as target_atom
         O/P: A close atom matrix has first row as an active atom and its related info in the columns
         All atoms within the DeltaD radius is listed in the next few rows, with the closest
         atom being on row 1. The atoms are listed in closest to farthest order.        
@@ -122,21 +129,21 @@ def get_all_close_atom_info_for_one_atom(aCurr, givenList, dist_cutoff=mc.deltaD
         sys.exit("No search list provided for getting close atoms")
 
     ns = Bio.PDB.NeighborSearch(givenList)
-    close_atoms = ns.search(aCurr.coord, dist_cutoff) ##distance cut off is defined by mc.deltaD
+    close_atoms = ns.search(target_atom.coord, dist_cutoff) ##distance cut off is defined by mc.deltaD
     
-
-    if(aCurr not in close_atoms):
-        close_atoms.append(aCurr)
+    if include_self:
+        if(target_atom not in close_atoms):
+            close_atoms.append(target_atom)
 
     if np.shape(close_atoms)[0] > 0:
-        distInfo = get_close_atom_distance_info(aCurr, close_atoms)
+        distInfo = get_close_atom_distance_info(target_atom, close_atoms, include_self=include_self)
     else:
         return []
 
     return distInfo
 
 
-def get_list_of_close_atoms_for_list_of_atoms(listOfInputAtoms,  aaType):
+def get_list_of_close_atoms_for_list_of_atoms(listOfInputAtoms,  aaType, include_self=True):
     
     """
     Objective: To get close atoms for a list of atoms.
@@ -149,6 +156,7 @@ def get_list_of_close_atoms_for_list_of_atoms(listOfInputAtoms,  aaType):
                     -DONOR_ACCEPTOR_BOTH_TBD: Donor,acceptor, both and to be determined
                     #NOTE: the atoms may not necessarily be correctly placed-for example
                            ASN may not be set, yet it has donors and acceptors.
+            include_self: whether to include the atoms in the same residue as target_atom
     Output:-LOCA: List of Close Atoms
            -dim: Number of Close Atoms including its own atom and all the info provided with it..i.e:
             [atom, atom.parent.id, atom.parent.resname, distance from original atom]
@@ -165,7 +173,7 @@ def get_list_of_close_atoms_for_list_of_atoms(listOfInputAtoms,  aaType):
         customList = stp.get_donor_acceptor_list(struct, aaType)
 
         #Get all the close atoms with the given custom list           
-        allCloseAtoms = get_all_close_atom_info_for_one_atom(at, customList)
+        allCloseAtoms = get_all_close_atom_info_for_one_atom(at, customList, include_self=include_self)
         
         LOCA.append(allCloseAtoms)
         dim.append(np.shape(allCloseAtoms)[0])

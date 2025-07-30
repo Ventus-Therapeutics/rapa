@@ -1825,9 +1825,9 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
         if(debug):
             stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f" ###############################################################################\n ###############################################################################\n\n Number: {count+1}/{lenUnResOrig} and unknown res is: {unknownRes} and its known val:{unknownRes.isKnown} and is rotamer:{unknownRes.isRotamer}, Skip value:{skipVal}, ChangeVal: {changeVal}\n")
     
-        myUnknownRes = mra.my_residue(unknownRes)
+        current_unknown_res = mra.my_residue(unknownRes)
         #Get list of active atoms, list of close atoms, and number of close atoms
-        LOAA_unknownRes = myUnknownRes.get_unknown_residue_acceptor_donor_atoms()
+        LOAA_unknownRes = current_unknown_res.get_unknown_residue_acceptor_donor_atoms()
         ##This adds close points for rotamer HIS as well:
         if(unknownRes.resname == 'HIS'):
             LOAA_unknownRes.append(structure[modelID][chainID][unknownRes.id]['CD2'])
@@ -1835,9 +1835,12 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
     
         #Get all the close atoms for the atoms in concern
         #This list of close atoms may not contain only known atoms
-        LOCA_unknownRes, dim = cats.get_list_of_close_atoms_for_list_of_atoms(LOAA_unknownRes,'DONOR_ACCEPTOR_BOTH_TBD')
-        ###Check if close atoms are present. If not, HIS->HIE, ASN/GLN remain the same. Now these are known.
-        if(all(x < 2 for x in dim)):
+        LOCA_unknownRes, dim = cats.get_list_of_close_atoms_for_list_of_atoms(LOAA_unknownRes,
+                                                                               'DONOR_ACCEPTOR_BOTH_TBD',
+                                                                              include_self=False)
+        # For HIS, ASN, GLN, if there are no polar atoms (unknown residues included), if it's HIS, set HIS-> HIE,
+        # if ASN/GLN keep them as they are and mark them known
+        if(all(x == 0 for x in dim)):
             if(log_file):
                 with open(fLogName, "a") as fLog:
                     fLog.write(f"No Close Atoms Found!\n\n")
@@ -1845,7 +1848,8 @@ def iterate_list_of_unknown_residues_and_set_states(structure, level, chV_level,
             if(debug):
                 stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"No Close Atoms Found!\n\n")
             
-            if(unknownRes.resname=='HIS'):  dictStructHIE = setup_HIS(unknownRes, structure, 'HIE', log_file=log_file, debug=debug)
+            if unknownRes.resname=='HIS':
+                setup_HIS(unknownRes, structure, 'HIE', log_file=log_file, debug=debug)
 
             structure[modelID][chainID][unknownRes.id].isKnown = 1 
             unknownRes.isKnown = 1
