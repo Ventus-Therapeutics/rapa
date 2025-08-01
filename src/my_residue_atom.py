@@ -34,6 +34,21 @@ import my_constants as mc
 ############################################################
 #### my_residue class
 ########################################################################################################################
+def if_two_atoms_are_same(atom1, atom2):
+    """
+    Checking if two atom object are the same by checking the coordinates, residue number, and name
+    """
+    # check residue number
+    if atom1.parent.id[1] != atom2.parent.id[1]:
+        return False
+    # check the name
+    if atom1.name != atom2.name:
+        return False
+    # check coordinates
+    threshold = 1e-2
+    if False in [abs(atom1.coord[_]-atom2.coord[_]) < threshold for _ in range(3)]:
+        return False
+    return True
 
 class my_residue(Bio.PDB.Residue.Residue):
     
