@@ -588,7 +588,8 @@ def get_info_for_acceptorAt_donorAt(inputAt):
     return [allCloseAtoms, closeAtmsTBD]
 
 
-def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype = 'SP3', chV_levelVal ='level_00_chV_00_structureNum_00', log_file=0, debug=0, pre_cal_acceptor_info=None):
+def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype = 'SP3', log_file=0, debug=0,
+                               pre_cal_acceptor_info=None):
  
     """
     objective: To compute energy for an acceptor atom
@@ -597,7 +598,6 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
             -donorAt: donor atom associated with acceptor Atom
             -attractive: is it donor-acceptor(=1) or (acceptor-acceptor=0) or (donor-donor=0)
             -atype: is the acceptor atom:SP3/SP2
-            -chV_levelVal: string defining changeValue+ level value-used for creating files
 
     output: - enValAcc: each energy value computed for the given acceptor(multiple lone pairs/ multiple hydrogens)
             -enSumAcc: sum of all energies associated with the acceptor atom
@@ -709,7 +709,7 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
     return enValAcc, enSumAcc
 
 
-def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 'SP3', hName = 'H', chV_levelVal ='level_00_chV_00_structureNum_00', log_file=0, debug =0,  pre_cal_donor_info=None):
+def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 'SP3', hName = 'H', log_file=0, debug =0,  pre_cal_donor_info=None):
    
     """
     objective: To compute energy for a donor atom
@@ -719,7 +719,6 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
             -attractive: is it donor-acceptor(=1) or (acceptor-acceptor=0) or (donor-donor=0)
             -atype: is the acceptor atom:SP3/SP2
             -hName: name of the hydrogen coord. If atom is not fixed use default hydrogen: 'H'
-            -chV_levelVal: string defining changeValue+ level value-used for creating files
             -pre_cal_donor_info: pre-compute information regarding the donor atom
 
     output: - enValAcc: each energy value computed for the given acceptor(multiple lone pairs/ multiple hydrogen)

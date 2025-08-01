@@ -236,32 +236,33 @@ def get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, a
 
         if(myCloseAt.get_behavior().abbrev == 'ac'):
             ##Assume the first to be the Hydrogen atom (the others can be either two hydrogen-LYS or two lone pairs-SER/THR)
-            aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
+            aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=1, atype = 'SP3', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
 
             if(sp3.parent.resname in ['LYS', 'LYN']):
                 #For the case of two hydrogen:
-                aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3,  attractive=1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
-                aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3,  attractive=1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
+                aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3,  attractive=1, atype = 'SP3', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
+                aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3,  attractive=1, atype = 'SP3', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
 
             else:
-                aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt, attractive = 0, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug,  pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
-                aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt, attractive = 0, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug,  pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
+                aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt, attractive = 0, atype = 'SP3', log_file=log_file, debug=debug,  pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
+                aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt, attractive = 0, atype = 'SP3', log_file=log_file, debug=debug,  pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
                 
             enSum = enSum + aat0enSum + aat1enSum + aat2enSum
 
 
         if(myCloseAt.get_behavior().abbrev == 'do'):
             ##Assume the first to be the hydrogen atom (the others can be either two hydrogen-LYS or two lone pairs-SER/THR)
-            aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=0, atype= 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
+            aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=0, atype= 'SP3', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
 
             if(sp3.parent.resname in ['LYS', 'LYN']):
                 #For the case of two hydrogen:
-                aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3, attractive =0, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
-                aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3, attractive =0, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
+                aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3, attractive =0,
+                                                                     atype = 'SP3', log_file=log_file,  debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
+                aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3, attractive =0, atype = 'SP3', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
 
             else:
-                aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt, attractive = 1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
-                aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt, attractive = 1, atype = 'SP3',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
+                aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt, attractive = 1, atype = 'SP3', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
+                aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt, attractive = 1, atype = 'SP3', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
 
             enSum = enSum + aat0enSum + aat1enSum + aat2enSum
 

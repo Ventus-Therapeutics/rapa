@@ -531,7 +531,7 @@ def set_HH_and_lonepair_coords_TYR(sp2, hhCoords, log_file=0, debug=0):
 
             if(myCloseAt.get_behavior().abbrev == 'ac'):
                 ##Considering donor atom associated with reference atom
-                enValDon, enSumDon = cats.compute_energy_as_donor(closeAt, hhCoords[j], sp2, attractive = 1, atype='SP2',  chV_levelVal = 'level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp2'])
+                enValDon, enSumDon = cats.compute_energy_as_donor(closeAt, hhCoords[j], sp2, attractive = 1, atype='SP2', log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp2'])
                 if(enValDon == []):
                     if(debug):
                         with open(fDebugName, "a") as fd:
@@ -540,12 +540,12 @@ def set_HH_and_lonepair_coords_TYR(sp2, hhCoords, log_file=0, debug=0):
                     continue 
                 enSum = enSum + enSumDon
                 #Considering acceptor atom associated with reference atom
-                enValAcc, enSumAcc = cats.compute_energy_as_acceptor(sp2, lp_vec, closeAt,attractive = 0, atype = 'SP2',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp2'])
+                enValAcc, enSumAcc = cats.compute_energy_as_acceptor(sp2, lp_vec, closeAt,attractive = 0, atype = 'SP2', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp2'])
                 enSum = enSum + enSumAcc
 
             if(myCloseAt.get_behavior().abbrev == 'do'):
                 ##Considering acceptor atom associated with reference atom
-                enValAcc, enSumAcc = cats.compute_energy_as_acceptor(sp2, lp_vec, closeAt, attractive = 1, atype='SP2',  chV_levelVal ='level_00_chV_00_structureNum_00', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp2'])
+                enValAcc, enSumAcc = cats.compute_energy_as_acceptor(sp2, lp_vec, closeAt, attractive = 1, atype='SP2',  log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp2'])
                 if not enValAcc:
                     if(debug):
                         with open(fDebugName, "a") as fd:
@@ -553,7 +553,7 @@ def set_HH_and_lonepair_coords_TYR(sp2, hhCoords, log_file=0, debug=0):
                     continue
                 enSum = enSum + enSumAcc
                 ##Considering donor atom associated with reference atom
-                enValDon, enSumDon = cats.compute_energy_as_donor(closeAt, hhCoords[j], sp2, attractive =0, atype = 'SP2',  chV_levelVal ='level_00_chV_00_structureNum_00',log_file=log_file, debug =debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp2'])
+                enValDon, enSumDon = cats.compute_energy_as_donor(closeAt, hhCoords[j], sp2, attractive =0, atype = 'SP2', log_file=log_file, debug =debug, pre_cal_donor_info=pre_cal_acceptor_donor_info['sp2'])
                 enSum = enSum + enSumDon
         enSumList.append([hhCoords[j], enSum])
         
