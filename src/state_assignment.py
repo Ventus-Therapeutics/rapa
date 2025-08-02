@@ -2003,6 +2003,14 @@ def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid
         unknown_res_list = stp.get_unknown_residue_list(structNew)
         num_unknown_res = len(unknown_res_list)
 
+        if num_unknown_res == 0: 
+            if (log_file):
+                with open(fLogName, "a") as fLog:
+                    fLog.write(f"No more unknown present\nBreak out of the while loop\n")
+                    fLog.flush()
+            structure = structNew
+            break
+
         if (chVal == 0):
             # If change value =0, we need to branch the first unknown residue and go from there
             if (log_file):
