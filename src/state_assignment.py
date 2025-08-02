@@ -2020,6 +2020,10 @@ def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid
                 # exit
                 for unknown_res in unknown_res_list:
                     structure[unknown_res.parent.parent.id][unknown_res.parent.id][unknown_res.id].isKnown = 1
+
+                # update the number of unknown residue here for the loop
+                unknown_res_list = stp.get_unknown_residue_list(structure)
+                num_unknown_res = len(unknown_res_list)
                 break
 
 
