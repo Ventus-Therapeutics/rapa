@@ -27,7 +27,7 @@ SOFTWARE.
 
 
 import Bio
-import setup_protein as stp
+from Bio import PDB
 import my_constants as mc
 
 
@@ -204,7 +204,7 @@ class my_atom(Bio.PDB.Atom.Atom):
             LPNames = dict_LPSCName[self.name+'_'+self.parent.resname]
         
         except KeyError:
-            stp.append_to_log(f"No LP for: {self.name} of {self.parent} and chain: {self.parent.parent}\n")
+            print(f"No LP for: {self.name} of {self.parent} and chain: {self.parent.parent}\n")
             LPNames = None
         
         return LPNames
@@ -220,7 +220,8 @@ class my_atom(Bio.PDB.Atom.Atom):
             try:
                 LPAtoms.append(self.parent[name])
             except KeyError:
-                stp.append_to_log(f"No LP: {name} for: {self.parent} with ID: {self.parent.id[1]} and chain: {self.parent.parent}\n")
+                print(f"No LP: {name} for: {self.parent} with ID: {self.parent.id[1]} and chain:"
+                      f" {self.parent.parent}\n")
                 pass
 
         return LPAtoms

@@ -27,14 +27,13 @@ SOFTWARE.
 import argparse
 import sys, os
 import timeit
-import shutil
-from Bio.PDB import *
 
 import my_constants as mc
 import setup_protein as stp
 import hydrogen_placement_sp2 as hsp2
 import state_assignment as sa
-
+import global_config as gc
+from misc import prettify_time, Logger
 
 def generate_multi_pdb_pymol_script(pdb_files, residues, output_pml="multi_pdb_show_residues.pml"):
     with open(output_pml, 'w') as f:
@@ -142,37 +141,25 @@ def main(argv):
         fOutName = args.out_name
     else:
         fOutName = protID + '_out'
+    # to have protID accessible from any point in the code
+    mc.protID = protID
+    mc.out_name = fOutName
 
-        # Switch on debug mode
-    if (args.debug):
-        debug = args.debug
-    else:
-        debug = 0
-
-    if (args.log_file):
-        log_file = args.log_file
-    else:
-        log_file = 0
+    # Switch on debug mode
+    gc.debug = args.debug
+    gc.log_file = args.log_file
+    if gc.log_file:
+        # If the log file option is on, print out info and direct stdout to file as well
+        log_file_name = stp.get_log_file_name()
+        sys.stdout = Logger(log_file_name)
 
     if (args.single_pdb_out):
         mc.ECutOff = 0
     else:
         mc.ECutOff = 1
 
-    # to have protID accessible from any point in the code
-    mc.protID = protID
-    mc.out_name = fOutName
-
-    if (debug):
-        # debug file
-        stp.start_debug_file(__name__, sys._getframe().f_code.co_name)
-        fDebugName = stp.get_debug_file_name()
-
     # basic information file
     fInfoName = stp.get_info_file_name()
-    if (log_file):
-        # log_file file
-        fLogName = stp.get_log_file_name()
 
     starttime = timeit.default_timer()
 
@@ -182,14 +169,9 @@ def main(argv):
     numModels = len(structure.child_list)
     numChains = len(chains)
 
-    if (log_file):
-        fLogName = stp.get_log_file_name()
-        with open(fLogName, "w") as f:
-            f.write(f"The PDB ID being used: {protID} and start time is: {starttime}\n")
-            f.flush()
-            f.write(
-                f"\nThe structure has number of models {numModels}: {structure.child_list} and number of chains: {numChains}: {chains}\n\n")
-            f.flush()
+    if gc.log_file:
+        print(f"The PDB ID being used: {protID} and start time is: {starttime}")
+        print(f"\nThe structure has number of models {numModels}: {structure.child_list} and number of chains: {numChains}: {chains}\n")
 
     with open(fInfoName, "w") as fInfo:
         fInfo.write(f"PDB ID: {protID} \n")
@@ -198,156 +180,106 @@ def main(argv):
         fInfo.write(f"Chains: {numChains}: {chains}\n\n")
         fInfo.flush()
 
-    if (debug):
-        with open(fDebugName, "w") as fd:
-            fd.write(f"PDB ID: {protID} \n")
-            fd.write(f"Models: {numModels}: {structure.child_list}\n")
-            fd.write(f"Chains: {numChains}: {chains}\n\n")
-            fd.flush()
+    if gc.debug:
+        print(f"PDB ID: {protID}")
+        print(f"Models: {numModels}: {structure.child_list}")
+        print(f"Chains: {numChains}: {chains}\n")
+
 
     # rename HID/HIE/HIP/ASH/GLH->HIS/HIS/HIS/ASP/GLU
-    stp.change_HIDEP_ASH_GLH(structure, debug=debug)
+    stp.change_HIDEP_ASH_GLH(structure)
 
     # initialize the known/unknown residues(ASN/GLN/HIS, and mark if 2 ASPs/GLUs are in h-bonding distance to each other)
-    stp.set_initial_known_residues_and_rotamers(structure, debug=debug)
+    stp.set_initial_known_residues_and_rotamers(structure)
 
-    mc.xc_orig, mc.yc_orig, mc.zc_orig = stp.get_centroid(structure, debug=debug)
+    mc.xc_orig, mc.yc_orig, mc.zc_orig = stp.get_centroid(structure)
     # normalize so the new centroid=(0,0,0)
-    stp.normalize_atom_coords(structure, debug=debug)
+    stp.normalize_atom_coords(structure)
 
     ###########################Adding hydrogen and  connected to sp2 side chain atoms of unknown residue ##########################
     if (HLPsp2_known == 0):
         lastSerial = list(structure.get_residues())[-1].child_list[-1].serial_number
         # This does not use neighboring residues
-        lastSerial, _ = hsp2.place_lonepair_on_backbone(structure, lastSerial, debug=debug)
-        lastSerial, _ = hsp2.add_sp2_sidechain_lonepairs(structure, lastSerial, debug=debug)
-        lastSerial, _ = hsp2.placeHydrogens_backbone(structure, lastSerial, log_file=log_file, debug=debug)
+        lastSerial, _ = hsp2.place_lonepair_on_backbone(structure, lastSerial)
+        lastSerial, _ = hsp2.add_sp2_sidechain_lonepairs(structure, lastSerial)
+        lastSerial, _ = hsp2.placeHydrogens_backbone(structure, lastSerial)
         # Adding hydrogen to side chains:
-        lastSerial, _ = hsp2.add_sp2_sidechain_hydrogens(structure, lastSerial, log_file=log_file, debug=debug)
+        lastSerial, _ = hsp2.add_sp2_sidechain_hydrogens(structure, lastSerial)
         fName = f'{protID}_HLPsp2.pdb'
-        stp.write_to_PDB(structure, fName, removeHLP=False, removeHall=False, set_original_centroid=False,
-                         log_file=log_file, debug=debug)
-
-        if (log_file):
-            with open(fLogName, "a") as f:
-                f.write("After adding the hydrogens..\n")
-                f.flush()
-
-        if (debug):
-            with open(fDebugName, "a") as fd:
-                fd.write("After adding the hydrogens..\n")
-                fd.flush()
-
+        stp.write_to_PDB(structure, fName, removeHLP=False, removeHall=False, set_original_centroid=False)
+        if gc.log_file:
+            print("After adding the hydrogens....")
         protIDName = protID + "_HLPsp2"
 
     else:
         protIDName = protID + "_HLPsp2"
 
-        if (log_file):
-            with open(fLogName, "a") as f:
-                f.write("\nHydrogen and lone pairs were already present!..\n")
-                f.flush()
+        if gc.log_file:
+            print("\nHydrogen and lone pairs were already present!")
 
-        if (debug):
-            with open(fDebugName, "a") as fd:
-                fd.write("\nHydrogen and lone pairs were already present!..\n")
-                fd.flush()
-
-    if (debug):
-        outputFolder = stp.get_output_folder_name()
-        opFolder = f"./{outputFolder}/debug/energyInfo_{mc.protID}/"
-        checkFolderPresent = os.path.isdir(opFolder)
-        if checkFolderPresent:
-            shutil.rmtree(opFolder)
 
     # setting up the new structure with hydrogen and lone pairs
     structure = stp.setup_structure(protIDName, outFolder='.', fName=None)
-    stp.set_initial_known_residues_and_rotamers(structure, debug=debug)
+    stp.set_initial_known_residues_and_rotamers(structure)
 
     # flagging the unknown ASP/GLUs
-    unknownASP, unknownASP_atomInfo = stp.get_all_unknown_ASP_GLU(structure, resName='ASP', log_file=log_file,
-                                                                  debug=debug)
-    unknownGLU, unknownGLU_atomInfo = stp.get_all_unknown_ASP_GLU(structure, resName='GLU', log_file=log_file,
-                                                                  debug=debug)
+    unknownASP, unknownASP_atomInfo = stp.get_all_unknown_ASP_GLU(structure, resName='ASP')
+    unknownGLU, unknownGLU_atomInfo = stp.get_all_unknown_ASP_GLU(structure, resName='GLU')
     over2ASPs = 0
     over2GLUs = 0
     if (unknownASP):
-        structure, uniqueIDsASP, over2ASPs = stp.accomodate_for_ASPs_GLUs(structure, unknownASP, unknownASP_atomInfo,
-                                                                          log_file=log_file, debug=debug)
+        structure, uniqueIDsASP, over2ASPs = stp.accomodate_for_ASPs_GLUs(structure, unknownASP, unknownASP_atomInfo)
     if (unknownGLU):
-        structure, uniqueIDsGLU, over2GLUs = stp.accomodate_for_ASPs_GLUs(structure, unknownGLU, unknownGLU_atomInfo,
-                                                                          log_file=log_file, debug=debug)
+        structure, uniqueIDsGLU, over2GLUs = stp.accomodate_for_ASPs_GLUs(structure, unknownGLU, unknownGLU_atomInfo)
 
     # Flag the side chain residue hydrogen position for SER, THR, LYS, TYR is unknown.
-    stp.set_initial_residue_side_chain_hydrogen_unknown(structure, debug=debug)
+    stp.set_initial_residue_side_chain_hydrogen_unknown(structure)
 
-    # maxLevel=15 #maximum vertical depth level it can go down while branching
-    ##For a given structure-how many times we go over unknown residue list till we reach no change from unknown to known(in the list of unknown residues) for the given structure.
-    # chValMax=15
-
-    # resolve the ambiguities in a given structure
-    # fileNums,filesGen, LOS,skipInfoAll, skipValAll = sa.resolve_residue_ambiguities_in_structure(structure,
-    # fOutName, maxLevel, chValMax, set_original_centroid=True, log_file=log_file, debug=debug)
-    if (log_file):
+    if gc.log_file:
         # if the log file option is on, first populate the list of unknown residues for later generating pml script
         all_unknown_res = get_unknown_list_for_pml(structure)
 
 
     generated_files, _ = sa.resolve_residue_ambiguities_in_one_structure(structure, set_original_centroid=True,
                                                                       generated_files=None, pdb_file_num=None,
-                                                                      fOutName=fOutName, log_file=log_file, debug=debug)
-    netTime = timeit.default_timer() - starttime
+                                                                      fOutName=fOutName)
+    total_run_time = timeit.default_timer() - starttime
 
-    if (log_file):
-        with open(fLogName, "a") as f:
-            f.write(f"###############################################################\n")
-            f.write(f"###############################################################\n")
-            f.write(f"###############################################################\n\n\n")
-            f.write(f"The time taken is :{netTime} seconds or {netTime / 60} minutes or {netTime / 3600} hours \n")
-            f.write(f"Number of files generated: {len(generated_files)} and files generated:\n"
-                    f"{'\n'.join(generated_files)}\n")
-            f.flush()
+    if gc.log_file:
+        print("###############################################################")
+        print("###############################################################")
+        print("###############################################################\n\n")
+        print(f"Done. Execution time is: {prettify_time(total_run_time)}")
+        print(f"Number of files generated: {len(generated_files)} and files generated:\n"
+                f"{'\n'.join(generated_files)}")
         generate_multi_pdb_pymol_script(generated_files, all_unknown_res, f'{stp.get_output_folder_name()}/inspect.pml')
 
     with open(fInfoName, "a") as fInfo:
         fInfo.write(f"###############################################################\n")
         fInfo.write(f"###############################################################\n")
         fInfo.write(f"###############################################################\n\n\n")
-        fInfo.write(f"The time taken is :{netTime} second or {netTime / 60} mins or  {netTime / 3600} hours\n")
+        fInfo.write(f"Done. Execution time is: {prettify_time(total_run_time)}")
         fInfo.write(
             f"Number of files generated: {len(generated_files)} and files generated:\n{'\n'.join(generated_files)}\n")
         fInfo.flush()
 
     if (over2ASPs > 0 or over2GLUs > 0):
-        if (log_file):
-            with open(fLogName, "a") as f:
-                f.write(
-                    f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
-                f.flush()
+        if gc.log_file:
+            print(f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details")
 
         with open(fInfoName, "a") as fInfo:
             fInfo.write(
                 f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
             fInfo.flush()
 
-        if (debug):
-            with open(fDebugName, "a") as fd:
-                fd.write(
-                    f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
-                fd.flush()
 
     if (not keep_hlp):
         file_hlp = f"{protID}" + "_HLPsp2.pdb"
         if os.path.exists(file_hlp):
             os.remove(file_hlp)
         else:
-            if (debug):
-                with open(fDebugName, "a") as fd:
-                    fd.write(f"File {file_hlp} does not exist.")
-                    fd.flush()
-
-    if (debug):
-        stp.end_debug_file(__name__, sys._getframe().f_code.co_name)
+            if gc.debug:
+                print(f"File {file_hlp} does not exist.")
 
     print("************************************************************")
     print(f"RAPA exiting. Run for the given PDB: {protID} is completed")
@@ -355,9 +287,6 @@ def main(argv):
     sys.exit()
 
 
+
 if __name__ == "__main__":
     main(sys.argv[1:])
-
-
-
-

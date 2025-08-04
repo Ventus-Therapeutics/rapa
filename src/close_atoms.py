@@ -40,6 +40,7 @@ from Bio.PDB import *
 import setup_protein as stp
 import my_residue_atom as mra
 import my_constants as mc
+import global_config as gc
 
 def hbond_energy(r, theta, gamma, attractive=True,
                  D1=5.3690476811615016,D2=27.58319209788471,D3=39.701896317848934,D4=4.854675162065331e-10,D5=0.09999999999999998,
@@ -638,7 +639,7 @@ def get_info_for_acceptorAt_donorAt(inputAt):
     return [allCloseAtoms, closeAtmsTBD]
 
 
-def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype = 'SP3', log_file=0, debug=0,
+def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atype = 'SP3',
                                pre_cal_acceptor_info=None):
  
     """
@@ -656,18 +657,6 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
 
 
     param = []
-
-    if(debug):
-        outputFolder = stp.get_output_folder_name()
-        #opFolder = f"./{outputFolder}/energyInfo_{mc.protID}/data_{chV_levelVal}"
-        opFolder = f"./{outputFolder}/debug/energyInfo_{mc.protID}/data_{chV_levelVal}"
-        checkFolderPresent = os.path.isdir(opFolder)
-        if not checkFolderPresent: os.makedirs(opFolder)
-        accFname = f'{opFolder}/{acceptorAt.parent.id[1]}_{acceptorAt.parent.resname}_chain_{acceptorAt.parent.parent.id}.csv'
-        fe = exists(accFname)
-        if(fe ==False):
-            param.append([ 'refAtom', 'refParent', 'atm1Parent', 'atm2Parent', 'atm1', 'atm1Coord', 'atm2', 'atm2Coord', 'atm3', 'atm3Coord','LP','LPCoord', 'r','theta','gamma', 'energy', 'attractive', 'atype', 'allCloseAtoms', 'CloseAtoms:unknownRes', 'refAtom:Rotamer'])#
-     
     enValAcc = []
     enSumAcc = 0
 
@@ -695,20 +684,21 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
                     break
 
         if(hPresent == -1): 
-            if(log_file): stp.append_to_log(f"Donor atom:{atom2} belongs to res {atom2.parent} of chain: {atom2.parent.parent} has no hydrogen present \n")
+            if gc.log_file: print(f"Donor atom:{atom2} belongs to res {atom2.parent} of chain:"
+            f" {atom2.parent.parent} has no hydrogen present \n")
 
         else:
             atom3 = get_hydrogen_connected_to_donor(atom2)
             #for various hydrogen atoms bonded to donor (theta will change)
             try: atom3
             except NameError:
-                if(log_file):stp.append_to_log(f"Insufficient atoms/pseudo LPs or info not found in any funcs \n")
+                if gc.log_file: print(f"Insufficient atoms/pseudo LPs or info not found in any funcs \n")
 
             for at in range(np.shape(atom3)[0]):
 
                 r, theta = get_r_theta(atom1, atom2, [atom3[at]])
                 energy = hbond_energy(r, theta, gamma, attractive)
-                check_energy_range(energy, log_file=log_file)
+                check_energy_range(energy)
 
                 param.append([ acceptorAt, acceptorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, atom3[at], atom3[at].coord,lp_vec,lp_vec, r,theta, gamma, energy, attractive, atype, allCloseAtoms, closeAtmsTBD, acceptorAt.parent.isRotamer])
 
@@ -733,7 +723,8 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
                 LPNames.remove(lp)
     
         if(not LPNames):
-            if(log_file): stp.append_to_log(f"##################################In compute_energy_as_acceptor, No Lone Pairs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and psAcceptor atom: {myPsAcceptor} of {myPsAcceptor.parent}, as attractive:{attractive} #################################")
+            if gc.log_file: print(f"##################################In compute_energy_as_acceptor, "
+            f"No Lone Pairs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and psAcceptor atom: {myPsAcceptor} of {myPsAcceptor.parent}, as attractive:{attractive} #################################")
             param.append([ acceptorAt, acceptorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, 'LPNames[k]', 'atom3Coord', 'lp_vec', 'lp_vec',  'r', 'theta', 'gamma', 'energy', attractive, atype, allCloseAtoms,closeAtmsTBD, acceptorAt.parent.isRotamer]) 
             
         else:
@@ -742,24 +733,17 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
                 #Atom3 is "donor"
                 r, theta = get_r_theta(atom1, atom2, atom3Coord,  hydNotAtom = 1)
                 energy = hbond_energy(r, theta, gamma, attractive)
-                check_energy_range(energy, log_file=log_file)
+                check_energy_range(energy)
                 param.append([ acceptorAt, acceptorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, LPNames[k], atom3Coord, lp_vec, lp_vec,  r, theta, gamma, energy, attractive, atype, allCloseAtoms,closeAtmsTBD, acceptorAt.parent.isRotamer]) #removing phi
 
                 enValAcc.append([energy])
                 enSumAcc = enSumAcc+energy    
 
 
-    if(debug):
-        with open(accFname,"a") as fileAcceptor:
-            writerAcceptor = csv.writer(fileAcceptor)
-            for row in param:
-                writerAcceptor.writerow(row)
-
-
     return enValAcc, enSumAcc
 
 
-def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 'SP3', hName = 'H', log_file=0, debug =0,  pre_cal_donor_info=None):
+def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype = 'SP3', hName = 'H',  pre_cal_donor_info=None):
    
     """
     objective: To compute energy for a donor atom
@@ -777,18 +761,6 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
    
 
     param = []
-    if(debug):
-        outputFolder = stp.get_output_folder_name()
-        #opFolder = f"./{outputFolder}/energyInfo_{mc.protID}/data_{chV_levelVal}"
-        opFolder = f"./{outputFolder}/debug/energyInfo_{mc.protID}/data_{chV_levelVal}"
-        checkFolderPresent = os.path.isdir(opFolder)
-        if not checkFolderPresent: os.makedirs(opFolder)
-        donorFname = f'{opFolder}/{donorAt.parent.id[1]}_{donorAt.parent.resname}_chain_{donorAt.parent.parent.id}.csv'
-
-        fe = exists(donorFname)
-        if (fe ==False):
-            param.append([ 'refAtom', 'refParent', 'atm1Parent', 'atm2Parent', 'atm1', 'atm1Coord', 'atm2', 'atm2Coord', 'atm3', 'atm3Coord','LP','LPCoord', 'r','theta', 'gamma', 'energy', 'attractive', 'atype','allCloseAtoms', 'CloseAtoms:unknownRes', 'refAtom:Rotamer'])
-##
     enValDon = []
 
 
@@ -824,7 +796,8 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
                 LPNames.remove(lp)
     
         if(not LPNames):
-            if(log_file): stp.append_to_log(f"##########################In compute_energy_as_donor: No Lone Pairs found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and donor atom: {donorAt} of {donorAt.parent} as attractive:{attractive} ################################")
+            if gc.log_file: print(f"##########################In compute_energy_as_donor: No Lone Pairs "
+            f"found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and donor atom: {donorAt} of {donorAt.parent} as attractive:{attractive} ################################")
             param.append([donorAt, donorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, hName, atom3,'LPNames[k]','LP_coord',r,theta, 'gamma', 'energy', attractive, atype, allCloseAtoms, closeAtmsTBD, donorAt.parent.isRotamer])
         else:
             for k in range(len(LPNames)):
@@ -832,7 +805,7 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
                 LP_vec = Vector(LP_coord)
                 gamma = get_gamma(donorAt.get_vector(), acceptorAt_vec, LP_vec)
                 energy = hbond_energy(r, theta, gamma, attractive=True)
-                check_energy_range(energy, log_file=log_file)
+                check_energy_range(energy)
                 enValDon.append([energy])
                 enSumDon = enSumDon+energy 
                 param.append([donorAt, donorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, hName, atom3,LPNames[k],LP_coord, r,theta, gamma, energy, attractive, atype, allCloseAtoms, closeAtmsTBD, donorAt.parent.isRotamer]) 
@@ -847,13 +820,14 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
                     break
 
         if(hPresent ==-1):            
-            if(log_file):stp.append_to_log(f"Pseudo Donor(or acceptor) atom:{atom1} belongs residue {atom1.parent} of its chain: {atom1.parent.parent} has NO hydrogen present")
+            if gc.log_file: print(f"Pseudo Donor(or acceptor) atom:{atom1} belongs residue {atom1.parent} "
+            f"of its chain: {atom1.parent.parent} has NO hydrogen present")
         else:
             ps_atom3 = get_hydrogen_connected_to_donor(atom1)
 
             try: ps_atom3
             except NameError:
-                if(log_file):stp.append_to_log(f"Insufficient atoms/Pseudo LPs or info not found in any funcs \n")
+                if gc.log_file: print(f"Insufficient atoms/Pseudo LPs or info not found in any funcs")
             
             #iterate over multiple hydrogen (acting as LPs for computation)
             for at in range(np.shape(ps_atom3)[0]):
@@ -862,20 +836,13 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
                 LP_vec = Vector(LP_coord)
                 gamma = get_gamma(donorAt.get_vector(), acceptorAt_vec, LP_vec)
                 energy = hbond_energy(r, theta, gamma, bool(attractive))
-                check_energy_range(energy, log_file=log_file)
+                check_energy_range(energy)
                 
                 
                 param.append([donorAt, donorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, hName, atom3,ps_atom3[at],LP_coord,  r,theta, gamma, energy, attractive, atype, allCloseAtoms, closeAtmsTBD, donorAt.parent.isRotamer])
                            
                 enValDon.append([energy])
                 enSumDon = enSumDon+energy
-
-    if(debug):
-        with open(donorFname,"a") as fileDonor:
-            writerDonor = csv.writer(fileDonor)
-            for row in param:
-                writerDonor.writerow(row)
-
 
     return enValDon, enSumDon
 

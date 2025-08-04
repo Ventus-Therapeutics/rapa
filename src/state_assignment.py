@@ -41,9 +41,10 @@ import my_constants as mc
 import hydrogen_placement_sp2 as hsp2
 import hydrogen_placement_sp3 as hsp3
 import close_atoms as cats
+import global_config as gc
 
 
-def setup_HIS(HISres, structure, HIStype = None, log_file=0, debug =0):
+def setup_HIS(HISres, structure, HIStype = None):
 
     """
         Objective: To create a new type(HID/HIE/HIP) of HIS in the given structure and 
@@ -67,25 +68,23 @@ def setup_HIS(HISres, structure, HIStype = None, log_file=0, debug =0):
     ####Add the hydrogen
     HIS_dict={'HIP':hsp2.place_hydrogens_HIP, 'HIE':hsp2.place_hydrogens_HIE,'HID':hsp2.place_hydrogens_HID}
     lastSerial = list(dict_struct[structName].get_residues())[-1].child_list[-1].serial_number
-    lastSerial, hCoord = HIS_dict[HIStype](dict_struct[structName][modelID][chainID][resID], lastSerial, log_file=log_file, debug=debug)
+    lastSerial, hCoord = HIS_dict[HIStype](dict_struct[structName][modelID][chainID][resID], lastSerial)
 
     LP_dict = { 'HIE': [mc.hvysForLPsHIE, mc.LPSCnamesHIE], 'HID': [mc.hvysForLPsHID, mc.LPSCnamesHID]}
     try:
         hvys = LP_dict[HIStype][0]
         LPnameAll = LP_dict[HIStype][1]
 
-        hsp2.place_lonepair(dict_struct[structName][modelID][chainID][resID], lastSerial, hvys, LPnameAll, debug=debug)
+        hsp2.place_lonepair(dict_struct[structName][modelID][chainID][resID], lastSerial, hvys, LPnameAll)
     except KeyError:
-        if(log_file):stp.append_to_log(f"No Lone pairs to place for HIStype:{HIStype}, and unknown residue: {HISres} on chain: {HISres.parent}")
-        if(debug):
-            stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"No Lone pairs to place for HIStype:{HIStype}, and unknown residue: {HISres} on chain: {HISres.parent}")
+        if gc.log_file: print(f"No Lone pairs to place for HIStype:{HIStype}, and unknown residue: {HISres} on chain: {HISres.parent}")
         pass
 
     
     return dict_struct[structName]
 
 
-def setup_rotamer_in_structure(res, structure, placeHyd = True, placeLP = True, log_file=0, debug = 0):
+def setup_rotamer_in_structure(res, structure, placeHyd = True, placeLP = True):
     """
         Objective: To create a rotamer of a given residue in a given structure
         Description: In this function 1.remove any hydrogen/LP and then
@@ -121,9 +120,8 @@ def setup_rotamer_in_structure(res, structure, placeHyd = True, placeLP = True, 
         try:
             res.detach_child(hyd)
         except KeyError:
-            if(log_file): stp.append_to_log(f"Tried to remove hydrogen to setup a rotamer but no hydrogen were present for: {res} and chain: {res.parent}\n")
-            if(debug):
-                stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Tried to remove hydrogen to setup a rotamer but no hydrogens were present for: {res} and chain: {res.parent}\n")
+            if gc.log_file: print(f"Tried to remove hydrogen to setup a rotamer but no hydrogen were "
+                                             f"present for: {res} and chain: {res.parent}\n")
 ##############################step 2: Temp store original atom coords################################
     ##store original
     origAtoms = []
@@ -143,11 +141,10 @@ def setup_rotamer_in_structure(res, structure, placeHyd = True, placeLP = True, 
     if(placeHyd):
         lastSerial = list(structure.get_residues())[-1].child_list[-1].serial_number
         try:
-            lastSerial, hCoord = rotomerPlaceH[resInStruct.resname](resInStruct, lastSerial, log_file=log_file, debug=debug)
+            lastSerial, hCoord = rotomerPlaceH[resInStruct.resname](resInStruct, lastSerial)
         except KeyError:
-            if(log_file): stp.append_to_log(f"Tried to place hydrogens to set up a rotamer but no hydrogens for: {res} on chain: {res.parent} \n")
-            if(debug):
-                stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Tried to place hydrogens to set up a rotamer but no hydrogens for: {res} on chain: {res.parent} \n", log_file=0, debug=0)
+            if gc.log_file: print(f"Tried to place hydrogens to set up a rotamer but no hydrogens for:"
+            f" {res} on chain: {res.parent} \n")
             pass
 
     LP_dict = {'ASP': [mc.hvysForLPsASP, mc.LPSCnamesASP], 'GLU': [mc.hvysForLPsGLU, mc.LPSCnamesGLU],
@@ -160,11 +157,10 @@ def setup_rotamer_in_structure(res, structure, placeHyd = True, placeLP = True, 
         try:
             hvys = LP_dict[res.resname][0]
             LPnameAll = LP_dict[res.resname][1]
-            hsp2.place_lonepair(res, lastSerial, hvys, LPnameAll, debug=debug)
+            hsp2.place_lonepair(res, lastSerial, hvys, LPnameAll)
         except KeyError:
-            if(log_file): stp.append_to_log(f"Tried to place lone pairs but no Lone pairs for: {res} on chain: {res.parent} \n")
-            if(debug):
-                stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f" Tried to place lone pairs but no Lone pairs for: {res} on chain: {res.parent} \n")
+            if gc.log_file: print(f"Tried to place lone pairs but no Lone pairs for: {res} on chain:"
+            f" {res.parent} \n")
             pass
 
     resInStruct.isRotamer = 1
@@ -173,7 +169,7 @@ def setup_rotamer_in_structure(res, structure, placeHyd = True, placeLP = True, 
 
 
 
-def create_GLN_ASN_states(unRes, structure, log_file=0, debug=0):
+def create_GLN_ASN_states(unRes, structure):
     """
        Objective: Create GLN rotamer or ASN rotamer configurations
        Input: unknown residue and the structure the residue belongs to
@@ -194,15 +190,12 @@ def create_GLN_ASN_states(unRes, structure, log_file=0, debug=0):
     #Creating a rotamer and adding it to the dictionary
     structure2rotomer = structure.copy()  
     res2Rotamer = structure2rotomer[mID][cID][unfullRID] 
-    structDict["struct"+str(unRID)+unRName+"R"] = setup_rotamer_in_structure(res2Rotamer, structure2rotomer, log_file=log_file, debug=debug)
-
-    if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"created all states for {unRes} of {unRes.parent} and added as a dictionary to: {structDict}")
+    structDict["struct"+str(unRID)+unRName+"R"] = setup_rotamer_in_structure(res2Rotamer, structure2rotomer)
 
     return structDict
 
 
-def create_HIS_states(unRes, structure, log_file=0, debug=0):
+def create_HIS_states(unRes, structure):
 
     """
         Objective: Create all different configs of HIS:
@@ -238,7 +231,7 @@ def create_HIS_states(unRes, structure, log_file=0, debug=0):
     ##Setup all the structures with relevant HIStidines:HID/HIE/HIP
     for count,name in enumerate(HISnames):
         skey = "struct"+str(unRID)+name 
-        structDict[skey] = setup_HIS(unRes , structuresHIS[count], HIStype = name, log_file=log_file, debug=debug)
+        structDict[skey] = setup_HIS(unRes , structuresHIS[count], HIStype = name)
         skeyList.append(skey)
     
     ##Structures with HIP,HIE and HID are formed.
@@ -256,23 +249,20 @@ def create_HIS_states(unRes, structure, log_file=0, debug=0):
             
     skey = "struct"+str(unRID)+"HIER" 
     skeyList.append(skey) 
-    structDict[skey] = setup_rotamer_in_structure( hie2Rotamer, structureHIErotomer, log_file=log_file, debug=debug)
+    structDict[skey] = setup_rotamer_in_structure( hie2Rotamer, structureHIErotomer)
 
 
     skey = "struct"+str(unRID)+"HIDR"
     skeyList.append(skey)
-    structDict[skey] = setup_rotamer_in_structure( hid2Rotamer, structureHIDrotomer, log_file=log_file, debug=debug) 
+    structDict[skey] = setup_rotamer_in_structure( hid2Rotamer, structureHIDrotomer)
     skey = "struct"+str(unRID)+"HIPR"
     skeyList.append(skey)
-    structDict[skey] = setup_rotamer_in_structure( hip2Rotamer, structureHIProtomer, log_file=log_file, debug=debug)
+    structDict[skey] = setup_rotamer_in_structure( hip2Rotamer, structureHIProtomer)
 
-    if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"created all states for {unRes} of {unRes.parent} and added as a dictionary to: {structDict}")
-    
     return structDict
 
 
-def create_ASH(structForASH, ASP_A, ASP_B, LPs, log_file=0, debug=0):
+def create_ASH(structForASH, ASP_A, ASP_B, LPs):
 
     """
     objective: to create an ASH with respect to one ASP (APS-A) and one oxygen
@@ -358,14 +348,10 @@ def create_ASH(structForASH, ASP_A, ASP_B, LPs, log_file=0, debug=0):
     lpChange = lpList[ind]
     lpChangeCoord = lpChange.coord
     
-    if(log_file):
-        stp.append_to_log(f"Need to create ASH from ASP_A:{ASP_A} from {ASP_A.parent}, and {ASP_B} from from {ASP_B.parent} with minimum distance: {minDist}.\n \
+    if gc.log_file:
+        print(f"Need to create ASH from ASP_A:{ASP_A} from {ASP_A.parent}, and {ASP_B} from from {ASP_B.parent} with minimum distance: {minDist}.\n \
         All distances from lone pair(LP3/LP4 or LP5/LP6) associated with OD of ASP_A to OD of ASP_B: {dist_btw} are: {list2check}. Dropping LP:{lpChange} as it is associated with minimum distance \n")
 
-    if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Need to create ASH from ASP_A:{ASP_A} from {ASP_A.parent}, and {ASP_B} from {ASP_B.parent} with minimum distance: {minDist}.\n \
-    All distances from lone pair(LP3/LP4 or LP5/LP6) associated with OD of ASP_A to OD of ASP_B: {dist_btw} are: {list2check}. Dropping LP:{lpChange} as it is associated with minimum distance \n")
-    
     ##detatch that lone-pair and add HD2 with the lone-pair coordinates
     ASP_A.detach_child(lpChange.name)
 
@@ -412,7 +398,7 @@ def create_ASH(structForASH, ASP_A, ASP_B, LPs, log_file=0, debug=0):
         return structASH
 
 
-def create_GLH(structForGLH, GLU_A, GLU_B, LPs, log_file=0, debug=0):
+def create_GLH(structForGLH, GLU_A, GLU_B, LPs):
 
     """
     objective: to create an GLH with respect to one GLU (GLU-A) and one oxygen
@@ -490,11 +476,8 @@ def create_GLH(structForGLH, GLU_A, GLU_B, LPs, log_file=0, debug=0):
     lpChange = lpList[ind]
     lpChangeCoord = lpChange.coord
 
-    if(log_file): stp.append_to_log(f"Need to create GLH from GLU_A:{GLU_A} from {GLU_A.parent}, and {GLU_B} from {GLU_B.parent} with minimum distance: {minDist}.\n \
-    All distances from lone pair(LP3/LP4 or LP5/LP6) associated with OE of GLU_A to OE of GLU_B: {dist_btw} are: {list2check}. Dropping LP:{lpChange} as it is associated with minimum distance \n")
-
-    if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Need to create GLH from GLU_A:{GLU_A} from {GLU_A.parent}, and {GLU_B} from from {GLU_B.parent} with minimum distance: {minDist}.\n \
+    if gc.log_file: print(f"Need to create GLH from GLU_A:{GLU_A} from {GLU_A.parent}, and {GLU_B} from"
+    f" {GLU_B.parent} with minimum distance: {minDist}.\n \
     All distances from lone pair(LP3/LP4 or LP5/LP6) associated with OE of GLU_A to OE of GLU_B: {dist_btw} are: {list2check}. Dropping LP:{lpChange} as it is associated with minimum distance \n")
 
     
@@ -547,7 +530,7 @@ def create_GLH(structForGLH, GLU_A, GLU_B, LPs, log_file=0, debug=0):
         return structGLH
 
 
-def create_ASH_states(ASP_A_orig, ASP_B_orig, structure, log_file=0 ,debug=0):
+def create_ASH_states(ASP_A_orig, ASP_B_orig, structure):
 
     """
     objective: To create four different ASP states given two ASP in h-bonding distance with each other
@@ -577,14 +560,12 @@ def create_ASH_states(ASP_A_orig, ASP_B_orig, structure, log_file=0 ,debug=0):
    
     #generating the four states:
     for i in range(1,len(sNames)+1):
-        structDict[sNames[i-1]] = create_ASH(structForASH, ASP_list[i-1], ASP_list[-i], LPnames[(i-1)%2], log_file=log_file, debug=debug)
+        structDict[sNames[i-1]] = create_ASH(structForASH, ASP_list[i-1], ASP_list[-i], LPnames[(i-1)%2])
 
-    if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"For ASPs: ASP_A:{ASP_A} of {ASP_A.parent} and ASP_B: {ASP_B.parent}, the ASH structures are created and stored in a dictionary: {structDict}")
     return structDict
 
 
-def create_GLH_states(GLU_A_orig, GLU_B_orig, structure, log_file=0 ,debug=0):
+def create_GLH_states(GLU_A_orig, GLU_B_orig, structure):
 
 
     """
@@ -616,16 +597,12 @@ def create_GLH_states(GLU_A_orig, GLU_B_orig, structure, log_file=0 ,debug=0):
     
 
     for i in range(1,len(sNames)+1):
-        structDict[sNames[i-1]] = create_GLH(structForGLH, GLU1[i-1], GLU1[-i], LPnames[(i-1)%2], log_file=log_file, debug=debug)
-
-
-    if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"For ASPs: ASP_A:{ASP_A} of {ASP_A.parent} and ASP_B: {ASP_B.parent}, the ASH structures are created and stored in a dictionary: {structDict}")
+        structDict[sNames[i-1]] = create_GLH(structForGLH, GLU1[i-1], GLU1[-i], LPnames[(i-1)%2])
 
     return structDict
 
 
-def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist, log_file=0, debug=0):
+def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist):
 
     """
     objective: For a given ASP/GLU (any of the two oxygen side chain atoms),
@@ -639,13 +616,6 @@ def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist, log_file=0, debug=0):
 
     output: the pair ASP_GLU that is in the h-bonding distance within currASP_GLU
     """
-
-    if(log_file):
-        fLogName = stp.get_log_file_name()
-
-    if(debug):
-        stp.start_debug_file(__name__, sys._getframe().f_code.co_name)
-        fDebugName = stp.get_debug_file_name()
 
     unknownASP_GLUatom = []
     unknownASP_GLUatomInfo = []
@@ -688,23 +658,10 @@ def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist, log_file=0, debug=0):
     searchASP_GLUatoms.append(currASP_GLU[oxygenName1])
     searchASP_GLUatoms.append(currASP_GLU[oxygenName2])
 
-    
-    if(debug):
-        
-        with open(fDebugName, "a") as fd:
-            fd.write(f"Atom found in h-bonding distance neighborhood of {oxygenName1} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom1}, and\n \
-     Atom found in h-bonding distance neighborhood of {oxygenName2} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom2} \n")
 
-
-            fd.write(f"\n For both oxygen atoms the currrent ASP/GLU oxygen atom, current ASP/GLU oxygens residue, current atom residue chain, uat(atom belonging to unknown ASP/GLU in hbonding dist), uat residue, uats residues chain, distance between oxygen atom of current ASP/GLU and uat are the following:\n \
-                    {unknownASP_GLUatomInfo}\n\n ")
-            fd.flush()
-    
-    if(log_file):
-        with open(fLogName, "a") as fLog:
-            fLog.write(f"Atom found in h-bonding distance neighborhood of {oxygenName1} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom1},\n \
+    if gc.log_file:
+            print(f"Atom found in h-bonding distance neighborhood of {oxygenName1} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom1},\n \
                     and  Atom found in h-bonding distance neighborhood of {oxygenName2} belonging to {currASP_GLU} of {currASP_GLU.parent} is : {potUnknownAtom2} \n")
-            fLog.flush()
    
     unknownASP_GLUlist = []
 
@@ -717,16 +674,8 @@ def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist, log_file=0, debug=0):
     #since this code is meant for only diad!
 
     if(len(unknownASP_GLUset)> mc.numASPsGLUs-1):
-        if(log_file):
-            with open(fLogName, "a") as fLog:
-                fLog.write(f"number of unique ASPs: {len(unknownASP_GLUset)}. Please check\n\n")
-                fLog.flush()
-       
-        if(debug):
-            with open(fDebugName, "a") as fd:
-                fd.write(f"number of unique ASPs: {len(unknownASP_GLUset)}. Please check\n\n")
-                fd.flush()
-
+        if gc.log_file:
+            print(f"number of unique ASPs: {len(unknownASP_GLUset)}. Please check\n\n")
     
     
     if(not unknownASP_GLUset):
@@ -735,22 +684,14 @@ def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist, log_file=0, debug=0):
         unknownASP_GLUpair = list(unknownASP_GLUset)[0]
         
         for unknownASP_GLU in unknownASP_GLUset:
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"The unknownASP/GLU pair for {currASP_GLU} of {currASP_GLU.parent} is:  {unknownASP_GLU} of chain: {unknownASP_GLU.parent}\n")
-                    fLog.flush()
-            if(debug):
-                with open(fDebugName, "a") as fd:
-                    fd.write(f"The unknownASP/GLU pair for {currASP_GLU} of {currASP_GLU.parent} is:  {unknownASP_GLU} of chain: {unknownASP_GLU.parent}\n")
-                    fd.flush()
-
-    if(debug):
-        stp.end_debug_file(__name__,sys._getframe().f_code.co_name)
+            if gc.log_file:
+                print(f"The unknownASP/GLU pair for {currASP_GLU} of {currASP_GLU.parent} is:  {unknownASP_GLU} of "
+                     f"chain: {unknownASP_GLU.parent}\n")
 
     return unknownASP_GLUpair
 
 
-def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, debug=0):
+def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms):
     """
     Objective: To compute energy interaction with neighboring atoms when my reference
                 atom(current atom part of the unknown res) is a donor.
@@ -761,29 +702,6 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, debug=
  
     """
 
-    if(log_file):
-        fLogName = stp.get_log_file_name()
-
-    if(debug):
-        stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
-        fDebugName = stp.get_debug_file_name()
-
-        myHvyAt = mra.my_atom(hvyAt)
-        myHvyAtBehav = myHvyAt.get_behavior().abbrev
-        with open(fDebugName, "a") as fd:
-            fd.write(f"behavior: do=donor, ac=acceptor,bo=both-donor and acceptor, tbd=to be decided\n")
-            fd.write(f"The current heavy atom is: {hvyAt} (with behavior:{myHvyAtBehav}) of residue: {hvyAt.parent} of chain: {hvyAt.parent.parent}\n")
-            fd.flush()
-
-            for i in range(1, np.shape(allCloseAtoms)[0]):
-                cAt= allCloseAtoms[i][0]
-                cAtBehav = mra.my_atom(cAt).get_behavior().abbrev
-                fd.write(f"closeAtom: {cAt}-behavior:{cAtBehav}, closeAtom residue:{cAt.parent}, close atom chain:{cAt.parent.parent} \n")
-                fd.flush()
-            fd.write(f"energy value details in the folder: energyInfo_ for each level and structure present\n")
-            fd.flush()
-            stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
-    
     enSumTotal = 0
     enValList = []
 
@@ -808,7 +726,7 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, debug=
             lastSerial = list(struct.get_residues())[-1].child_list[-1].serial_number
 
             if(currCloseRes.resname=='SER' or currCloseRes.resname=='THR'):
-                lastSerial, hLPCoords = hsp3.place_hydrogens_lonepairs_SER_THR(currCloseAtom.parent, lastSerial, log_file=log_file, debug=debug) 
+                lastSerial, hLPCoords = hsp3.place_hydrogens_lonepairs_SER_THR(currCloseAtom.parent, lastSerial)
                 if np.size(hLPCoords) == 0:
                     currCloseRes.isSCHknown = 0
                 else:
@@ -817,14 +735,14 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, debug=
                 hvyAt.parent.isKnown = 0
 
             elif(currCloseRes.resname in ['LYS', 'LYN']):
-                lastSerial, hLPCoords = hsp3.place_hydrogens_lonepairs_LYS(currCloseAtom.parent, lastSerial, log_file=log_file, debug=debug)
+                lastSerial, hLPCoords = hsp3.place_hydrogens_lonepairs_LYS(currCloseAtom.parent, lastSerial)
                 if np.size(hLPCoords) == 0:
                     currCloseRes.isSCHknown = 0
                 else:
                     currCloseRes.isSCHknown = 1
                 hvyAt.parent.isKnown = 0
             elif(currCloseRes.resname == 'TYR'):
-                lastSerial, hLPCoords = hsp2.place_hydrogens_TYR(currCloseAtom.parent, lastSerial, log_file=log_file, debug=debug)
+                lastSerial, hLPCoords = hsp2.place_hydrogens_TYR(currCloseAtom.parent, lastSerial)
                 if np.size(hLPCoords) == 0:
                     currCloseRes.isSCHknown = 0
                 else:
@@ -834,10 +752,8 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, debug=
                 continue
         #After attempting to place hydrogen/LP-if there is no known closeAtoms-then pls continue and try again in another iteration if it comes up!
         if(currCloseRes.isSCHknown==0): 
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"Current Close atom:{currCloseRes} is still unknown! Going on to the next close atom\n")
-                    fLog.flush()
+            if gc.log_file:
+                print(f"Current Close atom:{currCloseRes} is still unknown! Going on to the next close atom\n")
             continue
 ####################################################################################################################
         hvyAt.parent.isKnown = 0
@@ -849,30 +765,33 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, debug=
                 if(at.id=='H'):
                     hPresent=1
         if(hPresent==-1):            
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"No backbone hydrogen is present for energy computations. Heavy atom: {hvyAt} belongs to {hvyAt.parent} of its chain: {hvyAt.parent.parent}. Perhaps its the first residue on the chain. \n")
-                    fLog.flush()
+            if gc.log_file:
+                print(f"No backbone hydrogen is present for energy computations. Heavy atom: {hvyAt} belongs to"
+                  f" {hvyAt.parent} of its chain: {hvyAt.parent.parent}. Perhaps its the first residue on the chain. \n")
         else:
             atomHs = cats.get_hydrogen_connected_to_donor(hvyAt)
             #going over all the hydrogen atoms connected to the heavy atom
             for hat in atomHs:
                 if(closeAtomBehav=='do'):
-                    enVal, enSum=cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=0, atype='SP2', hName=hat.id, log_file=log_file, debug=debug,pre_cal_donor_info=pre_cal_donor_info['hvyAt'])
+                    enVal, enSum=cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=0,
+                                                              atype='SP2', hName=hat.id, pre_cal_donor_info=pre_cal_donor_info['hvyAt'])
                     enSumTotal = enSumTotal+enSum
                     enValList.append(enVal)
 
                 elif(closeAtomBehav=='ac'):
                     #Next if it is an acceptor
-                    enVal, enSum = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=1, atype='SP2',hName=hat.id, log_file=log_file, debug=debug,pre_cal_donor_info=pre_cal_donor_info['hvyAt'])
+                    enVal, enSum = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=1,
+                                                                atype='SP2',hName=hat.id, pre_cal_donor_info=pre_cal_donor_info['hvyAt'])
                     enSumTotal = enSumTotal+enSum
                     enValList.append(enVal)
 
                 elif(closeAtomBehav=='bo'):
                     #If both then-First acceptor
-                    enVal0, enSum0 = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive = 1, atype = 'SP2', hName = hat.id, log_file=log_file ,debug=debug,  pre_cal_donor_info=pre_cal_donor_info['hvyAt'])
+                    enVal0, enSum0 = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive = 1,
+                                                                  atype = 'SP2', hName = hat.id, pre_cal_donor_info=pre_cal_donor_info['hvyAt'])
                     #Next donor
-                    enVal1, enSum1 = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=0, atype='SP2', hName=hat.id, log_file=log_file, debug=debug, pre_cal_donor_info=pre_cal_donor_info['hvyAt'])
+                    enVal1, enSum1 = cats.compute_energy_as_donor(currCloseAtom, hat.coord, hvyAt, attractive=0,
+                                                                  atype='SP2', hName=hat.id, pre_cal_donor_info=pre_cal_donor_info['hvyAt'])
 
                     enSumTotal = enSumTotal+enSum0+enSum1
                     enValList.append([enVal0, enVal1])
@@ -883,7 +802,7 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, debug=
 
 
 
-def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, debug=0):
+def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms):
 
     """
     Objective: To compute energy interaction with neighboring atoms when my reference
@@ -900,24 +819,6 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, deb
     LPAtoms=myHvyAt.get_lonepairs_atoms()
 
     struct=hvyAt.parent.parent.parent.parent
-
-    if(debug):
-        stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
-        fDebugName=stp.get_debug_file_name()
-        myHvyAt = mra.my_atom(hvyAt)
-        myHvyAtBehav = myHvyAt.get_behavior().abbrev
-        with open(fDebugName, "a") as fd:
-            fd.write(f"behavior: do=donor, ac=acceptor,bo=both-donor and acceptor, tbd=to be decided\n")
-            fd.write(f"The current heavy atom is: {hvyAt} (with behavior: {myHvyAtBehav}) of residue: {hvyAt.parent} of chain: {hvyAt.parent.parent}\n")
-            fd.flush()
-            for i in range(1, np.shape(allCloseAtoms)[0]):
-                cAt = allCloseAtoms[i][0]
-                cAtBehav = mra.my_atom(cAt).get_behavior().abbrev
-                fd.write(f"closeAtom: {cAt}-behavior:{cAtBehav}, closeAtom residue:{cAt.parent}, close atom chain:{cAt.parent.parent} \n")
-                fd.flush()
-            fd.write(f"energy value details in the folder: energyInfo_ for each level and structure present\n")
-            fd.flush()
-            stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
 
     pre_cal_acceptor_info = {'hvyAt': cats.get_info_for_acceptorAt_donorAt(hvyAt)}
 
@@ -937,7 +838,7 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, deb
             hvyAt.parent.isKnown=1
             lastSerial=list(struct.get_residues())[-1].child_list[-1].serial_number
             if(currCloseRes.resname == 'SER' or currCloseRes.resname == 'THR'):
-                lastSerial, hLPCoords=hsp3.place_hydrogens_lonepairs_SER_THR(currCloseAtom.parent, lastSerial, log_file=log_file, debug=debug)
+                lastSerial, hLPCoords=hsp3.place_hydrogens_lonepairs_SER_THR(currCloseAtom.parent, lastSerial)
                 hvyAt.parent.isKnown=0
                 if np.size(hLPCoords) == 0:
                     currCloseRes.isSCHknown=0
@@ -945,7 +846,7 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, deb
                     currCloseRes.isSCHknown=1
 
             elif(currCloseRes.resname in ['LYS', 'LYN']):
-                lastSerial, hLPCoords=hsp3.place_hydrogens_lonepairs_LYS(currCloseAtom.parent, lastSerial, log_file=log_file, debug=debug)
+                lastSerial, hLPCoords=hsp3.place_hydrogens_lonepairs_LYS(currCloseAtom.parent, lastSerial)
                 if np.size(hLPCoords) == 0:
                     currCloseRes.isSCHknown=0
                 else:
@@ -953,7 +854,7 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, deb
                 hvyAt.parent.isKnown=0
 
             elif(currCloseRes.resname=='TYR'):
-                lastSerial, hLPCoords=hsp2.place_hydrogens_TYR(currCloseAtom.parent, lastSerial, log_file=log_file, debug=debug)
+                lastSerial, hLPCoords=hsp2.place_hydrogens_TYR(currCloseAtom.parent, lastSerial)
                 if np.size(hLPCoords) == 0:
                     currCloseRes.isSCHknown=0
                 else:
@@ -965,7 +866,8 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, deb
     
         #After attempting to place hydrogen/LP-if there is no known closeAtoms-then pls continue and try again in another iteration if it comes up!
         if(currCloseRes.isSCHknown==0): 
-            if(log_file): stp.append_to_log(f"Current Close atom:{currCloseRes} is still unknown! Going on to the next close atom \n")
+            if gc.log_file: print(f"Current Close atom:{currCloseRes} is still unknown! Going on to the "
+            f"next close atom \n")
             continue
         hvyAt.parent.isKnown=0
         #Going over all the lone pair atoms for acceptors. All acceptors have lone pairs in-order to accept a H atom
@@ -973,21 +875,25 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, deb
                 lp_vec = LPAtoms[j].get_vector()
                 if(closeAtomBehav == 'do'):
                     #If close atom is a donor
-                    enVal,enSum = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 1, atype = 'SP2', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_info['hvyAt'])
+                    enVal,enSum = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 1,
+                                                                  atype = 'SP2', pre_cal_acceptor_info=pre_cal_acceptor_info['hvyAt'])
                     #summing the total energy for a given heavy atom
                     enSumTotal = enSumTotal+enSum
                     enValList.append(enVal)                            
                 elif(closeAtomBehav == 'ac'):
                     #If close atom is an acceptor
-                    enVal, enSum = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 0, atype = 'SP2', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_info['hvyAt'])
+                    enVal, enSum = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 0,
+                                                                   atype = 'SP2', pre_cal_acceptor_info=pre_cal_acceptor_info['hvyAt'])
                     #summing the total energy for a given heavy atom
                     enSumTotal=enSumTotal+enSum
                     enValList.append(enVal)
 
                 elif(closeAtomBehav == 'bo'):
                     #If close atom is both then taking the donor first(attractive=1) and then acceptor(attractive=0)
-                    enVal0,enSum0 = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 1, atype = 'SP2', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_info['hvyAt'])
-                    enVal1,enSum1 = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 0, atype = 'SP2', log_file=log_file, debug=debug, pre_cal_acceptor_info=pre_cal_acceptor_info['hvyAt'])
+                    enVal0,enSum0 = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 1,
+                                                                    atype = 'SP2', pre_cal_acceptor_info=pre_cal_acceptor_info['hvyAt'])
+                    enVal1,enSum1 = cats.compute_energy_as_acceptor(hvyAt, lp_vec, currCloseAtom, attractive = 0,
+                                                                    atype = 'SP2', pre_cal_acceptor_info=pre_cal_acceptor_info['hvyAt'])
 
                     enSumTotal=enSumTotal+enSum0+enSum1
                     enValList.append([enVal0, enVal1])
@@ -999,7 +905,7 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=0, deb
 
 
 
-def compute_energy_for_given_atoms(resState, givenAtoms, log_file=0, debug=0):
+def compute_energy_for_given_atoms(resState, givenAtoms):
 
     """
     Objective: Given a configuration, compute energy sum of all the donors and acceptors present in the residue.
@@ -1009,9 +915,6 @@ def compute_energy_for_given_atoms(resState, givenAtoms, log_file=0, debug=0):
     O/P: enSumTotal: Total Energy sum of the configuration, 
          enSumForHvys: list of each heavy atom along with its energy sum
     """
-
-    if(log_file):
-        fLogName = stp.get_log_file_name()
 
     struct = resState.parent.parent.parent
 
@@ -1029,30 +932,23 @@ def compute_energy_for_given_atoms(resState, givenAtoms, log_file=0, debug=0):
         ##Get a list of all close Atoms (which are donor, acceptor, and both) for the given hvy atom
         allCloseAtoms = cats.get_all_close_atom_info_for_one_atom(hvyAt, customList, dist_cutoff=mc.hbond_d)
         
-        if(log_file):
-            with open(fLogName, "a") as fLog:
-                fLog.write(f"Evaluate given residue state, hvyAt: {hvyAt} and All close atoms: {allCloseAtoms}\n")
-                fLog.flush()
+        if gc.log_file:
+            print(f"Evaluate given residue state, hvyAt: {hvyAt} and All close atoms: {allCloseAtoms}")
 
         if(myHvyAtBehav == 'do'):
             #If the heavy atom is a donor the compute energy for all close atoms
-            enValList, enSumTotalDonor = energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms, debug=debug)
+            enValList, enSumTotalDonor = energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms)
             enSumTotal = enSumTotal + enSumTotalDonor
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"energy sum donor from func:{enSumTotalDonor} and current enSumTotal:{enSumTotal} \n")
-                    fLog.write(str(enValList)+'\n')
-                    fLog.flush()
+            if gc.log_file:
+                    print(f"energy sum donor from func:{enSumTotalDonor} and current enSumTotal:{enSumTotal}")
+                    print(str(enValList))
         elif(myHvyAtBehav == 'ac'):
             #If heavyAtom is acceptor-compute energy for all its close atom.
-            enValList, enSumTotalAcceptor = energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms, log_file=log_file, debug=debug)
+            enValList, enSumTotalAcceptor = energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms)
             enSumTotal = enSumTotal + enSumTotalAcceptor
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"energy sum acceptor from func:{enSumTotalAcceptor} and current enSumTotal"
-                               f":{enSumTotal}\n")
-                    fLog.write(str(enValList)+'\n')
-                    fLog.flush()
+            if gc.log_file:
+                print(f"energy sum acceptor from func:{enSumTotalAcceptor} and current enSumTotal:{enSumTotal}")
+                print(str(enValList))
                 
         else:
             continue
@@ -1060,17 +956,15 @@ def compute_energy_for_given_atoms(resState, givenAtoms, log_file=0, debug=0):
         enSumForHvys.append([hvyAt, enSumTotal])
 
 
-    if(log_file):
-        with open(fLogName, "a") as fLog:
-            fLog.write(f"For this state:{resState} tot energy is: {enSumTotal}\n")
-            fLog.write("************************************************************************\n")
-            fLog.write("************************************************************************\n")
-            fLog.flush()    
+    if gc.log_file:
+        print(f"For this state:{resState} tot energy is: {enSumTotal}")
+        print("************************************************************************")
+        print("************************************************************************")
 
     return enSumTotal, enSumForHvys
 
 
-def compute_energy_for_given_state(resState, log_file=0, debug=0):
+def compute_energy_for_given_state(resState):
 
     """
     Objective: Given a configuration, compute energy sum of all the donors and acceptors present in the residue.
@@ -1084,22 +978,12 @@ def compute_energy_for_given_state(resState, log_file=0, debug=0):
     LOAAresState = mra.my_residue(resState).get_unknown_residue_acceptor_donor_atoms() 
 
     #Find the energy for all the side chain active atoms of the unknown residue
-    enSumTotal, enSumForHvys = compute_energy_for_given_atoms(resState, LOAAresState, log_file=log_file, debug=debug)
-
-    if(debug):
-        stp.start_debug_file( __name__, sys._getframe().f_code.co_name)
-        fDebugName = stp.get_debug_file_name()
-        with open(fDebugName, "a") as fd:
-            fd.write(f"For this state:{resState} (of {resState.parent}) where isRotamer: {resState.isRotamer}, given atoms: {LOAAresState} total energy is: {enSumTotal}, while the individual energies assembled as: heavy atom and energy value is: {enSumForHvys}\n")
-            fd.write("************************************************************************\n")
-            fd.write("************************************************************************\n")
-            fd.flush() 
-            stp.end_debug_file(__name__,sys._getframe().f_code.co_name) 
+    enSumTotal, enSumForHvys = compute_energy_for_given_atoms(resState, LOAAresState)
 
     return enSumTotal, enSumForHvys
 
 
-def compute_energy_for_all_states(unknownRes, structStates, log_file=0, debug=0):
+def compute_energy_for_all_states(unknownRes, structStates):
 
     """
         objective: compute energy for all states of the given unknown residue 
@@ -1108,8 +992,6 @@ def compute_energy_for_all_states(unknownRes, structStates, log_file=0, debug=0)
         structStates: all the states of unknown residues
         O/P: energy list of all residue stats, and states
     """
-    if(log_file):
-        fLogName = stp.get_log_file_name()
 
     resStates = []
     energyList = []
@@ -1120,7 +1002,7 @@ def compute_energy_for_all_states(unknownRes, structStates, log_file=0, debug=0)
     if(unknownRes.resname == 'ASP' or unknownRes.resname == 'GLU'):
         ##Get the 2 unknownresidue
         sUn = unknownRes.parent.parent.parent
-        unknownASPpair = get_ASP_GLU_pair(unknownRes, sUn, mc.deltaD, log_file=log_file, debug=debug)
+        unknownASPpair = get_ASP_GLU_pair(unknownRes, sUn, mc.deltaD)
         unknownRes0 = [unknownRes, unknownRes, unknownASPpair, unknownASPpair]
     else:
         unknownRes0 = [unknownRes, unknownRes, unknownRes, unknownRes]
@@ -1131,22 +1013,18 @@ def compute_energy_for_all_states(unknownRes, structStates, log_file=0, debug=0)
         structState = structStates['struct'+str(unknownRes0[count].id[1])+con]
         #accesing the residue state:
         resState = structState[modelID][chainID][unknownRes0[count].id]
-        if(log_file):
-            with open(fLogName, "a") as fLog:
-                fLog.write("************************************************************************\n")
-                fLog.write(f"State: {con}, with ID {unknownRes0[count].id[1]} and chain: {unknownRes0[count].parent} and isRotamer: {resState.isRotamer} \n")
-                fLog.flush()
-        if(debug):
-            stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f" ************************************************************************\n State: {con}, with ID {unknownRes0[count].id[1]} and chain: {unknownRes0[count].parent} and isRotamer: {resState.isRotamer} \n")
+        if gc.log_file:
+            print("************************************************************************")
+            print(f"State: {con}, with ID {unknownRes0[count].id[1]} and chain: {unknownRes0[count].parent} and isRotamer: {resState.isRotamer}")
         resStates.append(resState)
         #compute energy for the given state:
-        enSumTotalResState, enSumForHvys = compute_energy_for_given_state(resState, log_file=log_file, debug=debug)
+        enSumTotalResState, enSumForHvys = compute_energy_for_given_state(resState)
         energyList.append([resState, enSumTotalResState, structState, resState, con ])
 
     return energyList, resStates
 
 
-def branch_structure(unknownRes, structure, log_file=0, debug=0):
+def branch_structure(unknownRes, structure):
 
     """
     objective: to create branch of the structure provided. This function creates all the possible options
@@ -1159,25 +1037,22 @@ def branch_structure(unknownRes, structure, log_file=0, debug=0):
 
     #depending on the name of unknownRes create the structures
     if(unknownRes.resname=='HIS'):      
-        S = create_HIS_states(unknownRes, structure, log_file=log_file, debug=debug)
+        S = create_HIS_states(unknownRes, structure)
     elif(unknownRes.resname=='ASN' or unknownRes.resname == 'GLN'):  
-        S = create_GLN_ASN_states(unknownRes,structure, log_file=log_file, debug=debug)
+        S = create_GLN_ASN_states(unknownRes,structure)
     elif(unknownRes.resname=='ASP' or unknownRes.resname == 'GLU'):
-        resPair = get_ASP_GLU_pair(unknownRes, structure, mc.deltaD, log_file=log_file, debug=debug)
+        resPair = get_ASP_GLU_pair(unknownRes, structure, mc.deltaD)
         if(unknownRes.resname=='ASP'):
-            S = create_ASH_states(unknownRes, resPair, structure, log_file=log_file, debug=debug)
+            S = create_ASH_states(unknownRes, resPair, structure)
         else:
-            S = create_GLH_states(unknownRes, resPair, structure, log_file=log_file, debug=debug)
+            S = create_GLH_states(unknownRes, resPair, structure)
     else:
         S = None
-    
-    if(debug):
-            stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"For the unknown residue: {unknownRes} of {unknownRes.parent}, the following structures are created and stored in a dictionary: {S}")
+
     return S
 
 
-
-def set_state(unknownRes, res2keep, nameOfS2keep, changeVal, branchedS, MSG, log_file=0, debug=0):
+def set_state(unknownRes, res2keep, nameOfS2keep, changeVal, branchedS, MSG):
 
     """
     objective: To set the state in the given structure by converting it to known and removing it from the list of unknowns
@@ -1193,11 +1068,8 @@ def set_state(unknownRes, res2keep, nameOfS2keep, changeVal, branchedS, MSG, log
     """
     struct = branchedS[nameOfS2keep]
     
-    if(log_file):
-        fLogName = stp.get_log_file_name()
-        with open(fLogName, "a") as fLog:
-            fLog.write(MSG+"\n")
-            fLog.flush()
+    if gc.log_file:
+        print(MSG)
 
     changeVal+=1
     
@@ -1207,24 +1079,12 @@ def set_state(unknownRes, res2keep, nameOfS2keep, changeVal, branchedS, MSG, log
 
     if(unknownRes.resname == 'ASP' or unknownRes.resname == 'GLU'):
         sUn = unknownRes.parent.parent.parent
-        unknownASP_GLUpair = get_ASP_GLU_pair(unknownRes, sUn, mc.deltaD, log_file=log_file, debug=debug)
+        unknownASP_GLUpair = get_ASP_GLU_pair(unknownRes, sUn, mc.deltaD)
         modelIDpair = unknownASP_GLUpair.parent.parent.id
         chainIDpair = unknownASP_GLUpair.parent.id
         struct[modelIDpair][chainIDpair][unknownASP_GLUpair.id].isKnown = 1
 
     structure = copy.deepcopy(branchedS[nameOfS2keep])
-
-    if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f" setting state for: {unknownRes} of {unknownRes.parent} \n \
-                 residue kept:{res2keep} of {res2keep.parent}, isRotamer:{res2keep.isRotamer},\n \
-                 name of structure kept:{nameOfS2keep},\n \
-                 new list of unknowns: {unknownResMod},\n \
-                 current change value:{changeVal},\n\
-                 additional info inclued:[unknownRes, res2keep, unknownRes.parent.id, MSG ]:{collectData},\n \
-                 branched structure is:{branchedS},\n \
-                 updated structure kept is: {structure}\n\
-                 message to print:{MSG}\n ")
-
 
     return structure, changeVal
 
@@ -1245,7 +1105,7 @@ def get_structure_name(res, moreInfo=None):
     return nameOfStruct
 
 
-def get_degenerate_structure_names(degenArray, debug=0):
+def get_degenerate_structure_names(degenArray):
 
     """
     objective: To extract all the structure names for the degenerate cases using the dgenArray data type
@@ -1260,14 +1120,14 @@ def get_degenerate_structure_names(degenArray, debug=0):
     for count, res in enumerate(degenArray[:,0]): 
         nameOfStruct = get_structure_name(res, moreInfo = degenArray[count,-1])
         degenStructNames.append(nameOfStruct)
-    
-    if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"The degenerate structure names are: {degenStructNames}\n And more details are(resState, enSumTotalResState, structState, resState, con/name of the state ): {degenArray}\n")
+    if gc.debug:
+        print(f"The degenerate structure names are: {degenStructNames}\n And more details are(resState, "
+              f"enSumTotalResState, structState, resState, con/name of the state ): {degenArray}\n")
 
     return degenStructNames
 
 
-def get_HIP_energies(resHIP, resHIPR, log_file=0, debug=0):
+def get_HIP_energies(resHIP, resHIPR):
 
     """
     objective:-get energy for the HIP cases (original state + rotomer)
@@ -1276,7 +1136,6 @@ def get_HIP_energies(resHIP, resHIPR, log_file=0, debug=0):
 
     Input: -resHIP: the original state of HIP
            -resHIPR: the rotamer state of HIP
-           -ch_level: the changeValue + level value in a string format for debugging purpose
 
     Output: -enSumTotND1: energy for ND1 atom of HIP original state
             -enSumTotNE2: energy for NE2 atom of HIP original state
@@ -1284,28 +1143,17 @@ def get_HIP_energies(resHIP, resHIPR, log_file=0, debug=0):
             -enSumTotNE2Ro: energy for NE2 atom of HIP rotomer state
 
     """
+    enSumTotND1, enSumForND1 = compute_energy_for_given_atoms(resHIP, [resHIP['ND1']])
+    enSumTotNE2, enSumForNE2 = compute_energy_for_given_atoms(resHIP, [resHIP['NE2']])
 
-
-    enSumTotND1, enSumForND1 = compute_energy_for_given_atoms(resHIP, [resHIP['ND1']], log_file=log_file, debug=debug)
-    enSumTotNE2, enSumForNE2 = compute_energy_for_given_atoms(resHIP, [resHIP['NE2']], log_file=log_file, debug=debug)
-
-    enSumTotND1Ro, enSumForND1Ro = compute_energy_for_given_atoms(resHIPR, [resHIPR['ND1']], log_file=log_file, debug=debug)
-    enSumTotNE2Ro, enSumForNE2Ro = compute_energy_for_given_atoms(resHIPR, [resHIPR['NE2']], log_file=log_file, debug=debug)
-    if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"computing energy value for HIPs: {resHIP} and {resHIPR} .The energies for the original state are the following.\n \
-  For ND1, total sum and individual values are: {enSumTotND1}, {enSumForND1} \n \
-  For NE2, total sum and individual values are: {enSumTotNE2}, {enSumForNE2} \n\n \
-The energies for the rotamer state are the following.\n \
-  For ND1 in rotamer state, total sum and individual values are: {enSumTotND1Ro}, {enSumForND1Ro} \n \
-  For NE2 in rotamer state, total sum and individual values are: {enSumTotNE2Ro}, {enSumForNE2Ro} \n \
-                ")
+    enSumTotND1Ro, enSumForND1Ro = compute_energy_for_given_atoms(resHIPR, [resHIPR['ND1']])
+    enSumTotNE2Ro, enSumForNE2Ro = compute_energy_for_given_atoms(resHIPR, [resHIPR['NE2']])
 
     return enSumTotND1, enSumTotNE2, enSumTotND1Ro, enSumTotNE2Ro
 
 
 
-def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArray, changeVal, skipVal, skipResInfo,
-                              log_file=0, debug = 0):
+def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArray, changeVal, skipVal, skipResInfo):
 
 
     """
@@ -1330,9 +1178,6 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
            -skipVal: keep track  of residues that are skipped in the list of unknowns
            -skipResInfo: updated info if the unknown residue's state is not yet set.This includes: unknown redisue, degenerate info, degenerate structure names, structure associated.
     """
-
-    if(log_file):
-        fLogName = stp.get_log_file_name()
 
     ##Evaluating 5 possible cases
     #1. all energy values are zero
@@ -1364,7 +1209,7 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
         if(unknownRes.resname=='GLU' or unknownRes.resname=='ASP'):
             del S
             sUn = unknownRes.parent.parent.parent
-            unknownASP_GLUpair = get_ASP_GLU_pair(unknownRes, sUn, mc.deltaD, log_file=log_file, debug=debug)
+            unknownASP_GLUpair = get_ASP_GLU_pair(unknownRes, sUn, mc.deltaD)
             modelID_pair = unknownASP_GLUpair.parent.parent.id
             chainID_pair = unknownASP_GLUpair.parent.id
 
@@ -1373,10 +1218,8 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
             structure[modelID_pair][chainID_pair][unknownASP_GLUpair.id].isKnown=1
             res2keep=unknownRes 
             MSG=f'{unknownRes} and pair: {unknownASP_GLUpair} All energies = 0  '
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(MSG+"\n")
-                    fLog.flush()
+            if gc.log_file:
+                print(MSG)
             changeVal +=1
             return structure, changeVal, skipVal, skipResInfo
 
@@ -1392,7 +1235,7 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
 
         msg2Usr = f"{condStr}, Saving residue: {res2keep} to residue state corresponding to minimum energy  i.e {enValPick} and isRotamer:{res2keep.isRotamer}"
         ###Setting the state-change value and skip values are updated in the function (set_state)
-        structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, msg2Usr, log_file=log_file, debug=debug)
+        structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, msg2Usr)
 
         del S
 
@@ -1409,7 +1252,7 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
          condStr = "Smallest Energy is zero and the next one is either pos or zero!"
          msg2Usr = f"{condStr},Saving residue: {res2keep} to residue state corresponding to minimum energy  i.e {enValPick} and isRotamer:{res2keep.isRotamer} (specifically:smallest: {sortedEnArray[0,1]} and next smallest:{sortedEnArray[1,1]})"
          ###Setting the state-change value and skip values are updated in the function (set_state)
-         structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, msg2Usr, log_file=log_file, debug=debug)
+         structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, msg2Usr)
 
          del S
 
@@ -1429,8 +1272,7 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
 
             msg2Usr = f"{condStr}, Saving residue: {res2keep} to residue state corresponding to minimum energy  i.e {enValPick} and isRotamer:{res2keep.isRotamer}, (specifically:smallest: {sortedEnArray[0,1]} and next smallest:{sortedEnArray[1,1]})"
             ###Setting the state-change value and skip values are updated in the function (set_state)
-            structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, msg2Usr,
-                                             log_file=log_file, debug=debug)
+            structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, msg2Usr)
 
             del S
         else:
@@ -1460,25 +1302,18 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
             degenStructNames = get_degenerate_structure_names(degenInfo)
             #update skip info
             skipResInfo.append([unknownRes, degenInfo,degenStructNames,S])
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"Skipping: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate Info: {degenInfo} with {EnDiffWithMin[indDegen]}<{mc.ECutOff}\n")
-
-                    fLog.write("###########################################################################\n")
-                    fLog.flush()
-                
-            if(debug):
-                stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f' \n Skipping: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate Info: {degenInfo} with {EnDiffWithMin[indDegen]}<{mc.ECutOff} \n')
+            if gc.log_file:
+                print(f"Skipping: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:"
+                  f"{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate Info: {degenInfo} with {EnDiffWithMin[indDegen]}<{mc.ECutOff}")
+                print("###########################################################################")
 
 
     elif(allEnergyPos or allEnergyNeg):
             ##Degenerate case
             MinEn = sortedEnArray[0,1]
 
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"All Energy Values are positive OR negative: {sortedEnArray}\n")
-                    fLog.flush()
+            if gc.log_file:
+                print(f"All Energy Values are positive OR negative: {sortedEnArray}")
 
             #find the difference with minimum energy
             EnDiffWithMin =abs(sortedEnArray[:,1]-MinEn)
@@ -1495,29 +1330,20 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
             #updating skipResInfo
             skipResInfo.append([unknownRes, degenArray,degenStructNames,S])
 
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"Please Skip: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate names: {degenNames} and values are: {degenArray} with {EnDiffWithMin}<{mc.ECutOff}\n")
-                    fLog.write("###########################################################################\n")
-                    fLog.flush()
-
-            if(debug):
-                stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Please Skip: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate names: {degenNames} and values are: {degenArray} with {EnDiffWithMin}<{mc.ECutOff}\n ###########################################################################\n")
+            if gc.log_file:
+                print(f"Please Skip: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate names: {degenNames} and values are: {degenArray} with {EnDiffWithMin}<{mc.ECutOff}")
+                print("###########################################################################")
                 
     else:
-           if(log_file): 
-               with open(fLogName, "a") as fLog:
-                   fLog.write("ERROR: SHOULD NOT GO THROUGH DEGENERATE CASES!\n")
-                   fLog.flush()
-           if(debug):
-               stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"ERROR: SHOULD NOT GO THROUGH DEGENERATE CASES. \n")
+           if gc.log_file:
+               print("ERROR: SHOULD NOT GO THROUGH DEGENERATE CASES!")
            sys.exit()
            
     
     return structure, changeVal, skipVal, skipResInfo
 
 
-def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo, log_file=0, debug =0) :
+def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo) :
     """
     objective: To investigate the HIS could be HIP/HIP rotamer
     I/P:-unknownRes: the unknown HIS to investigate
@@ -1537,10 +1363,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
         -HIPset: if HIS is set as HIP-> then set this flag to 1/true
         -HIPdegen: if HIS is a degenerate case between HIP and HIP rotamer then set this flag to true!!
 
-    """    
-
-    if(log_file):
-        fLogName = stp.get_log_file_name()
+    """
 
     modelID = unknownRes.parent.parent.id
     chainID = unknownRes.parent.id
@@ -1554,7 +1377,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
     HIPdegen = 0
 
 
-    enSumTotND1, enSumTotNE2, enSumTotND1Ro, enSumTotNE2Ro   = get_HIP_energies(resHIP, resHIPR, log_file=log_file, debug=debug)
+    enSumTotND1, enSumTotNE2, enSumTotND1Ro, enSumTotNE2Ro   = get_HIP_energies(resHIP, resHIPR)
     sumOrigState = enSumTotND1 + enSumTotNE2
     
     sumRotamer = enSumTotND1Ro + enSumTotNE2Ro
@@ -1563,12 +1386,9 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
 
     #Checking the degenerate case
     if(origStateHIP and rotamerStateHIP and abs(sumOrigState - sumRotamer)<1*mc.ECutOff and (enSumTotND1 !=0 and enSumTotNE2 !=0 and enSumTotND1Ro !=0 and enSumTotNE2Ro !=0 ) ):
-          if(log_file):  
-              with open(fLogName, "a") as fLog:
-                  fLog.write(f"HIP:{unknownRes} of {unknownRes.parent} is DEGENERATE!! \n")
-                  fLog.flush()
-          if(debug):
-              stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"HIP:{unknownRes} of {unknownRes.parent} is DEGENERATE!! \n")
+          if gc.log_file:
+              print(f"HIP:{unknownRes} of {unknownRes.parent} is DEGENERATE!!")
+
           #create the list and array of energy information
           energyList = [[resHIP, sumOrigState,S[sHIP], resHIP,'HIP'], [resHIPR, sumRotamer, S[sHIP],resHIPR ,'HIPR']]
           energyArray = np.array(energyList)
@@ -1578,8 +1398,8 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
 
           #check the degenerate cases
           skipValb4check = skipVal
-          structure, changeVal, skipVal, skipResInfo = evaluate_degenerate_cases( unknownRes,
-                                                                                                structure, S, energyArray, sortedEnArray, changeVal, skipVal, skipResInfo, log_file=log_file, debug=debug)
+          structure, changeVal, skipVal, skipResInfo = evaluate_degenerate_cases( unknownRes, structure, S,
+                                                                                  energyArray, sortedEnArray, changeVal, skipVal, skipResInfo)
           if(abs(skipValb4check - skipVal)==0):
               HIPdegen =0
           else:
@@ -1595,12 +1415,8 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
         ##check if the original state is a possibility
         ##Also check if the closest atom is OG from SER or OG1 from THR. If it is then HIP cannot be the state.
         ##Because OG/OG1 are poor acceptors
-        if(log_file):
-            with open(fLogName, "a") as fLog:
-                fLog.write(f"possibility of original state HIP as the two energy values are: {enSumTotND1} and {enSumTotNE2}\n")
-                fLog.flush()
-        if(debug):
-            stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"possibility of original state HIP as the two energy values are: {enSumTotND1} and {enSumTotNE2}")
+        if gc.log_file:
+            print(f"possibility of original state HIP as the two energy values are: {enSumTotND1} and {enSumTotNE2}")
         myHIP = mra.my_residue(resHIP)
         LOAA_unknownRes = myHIP.get_unknown_residue_acceptor_donor_atoms()
         
@@ -1632,13 +1448,8 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
 
             if(any(a == 1 for a in cannotBeHIP)):
                 ##If it cannot be HIP-delete the appropriate structures and move on
-                if(log_file):
-                    with open(fLogName, "a") as fLog:
-                        fLog.write(f"cannotBeHIP: {cannotBeHIP}\n")
-                        fLog.flush()
-
-                if(debug):
-                    stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"cannotBeHIP: {cannotBeHIP}\n")
+                if gc.log_file:
+                    print(f"cannotBeHIP: {cannotBeHIP}")
                 del S['struct'+str(unknownRes.id[1])+'HIP' ]
                 del S['struct'+str(unknownRes.id[1])+'HIPR' ]
 
@@ -1646,7 +1457,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
                 res2keep = resHIP
                 nameOfS2keep = sHIP
                 saveText = f"Saving residue: {res2keep.resname} to residue state corresponding to minimum energy i.e ND1Ro: {enSumTotND1} + NE2Ro: {enSumTotNE2} isRotamer:{res2keep.isRotamer}"
-                structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, saveText, log_file=log_file, debug=debug)
+                structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, saveText)
                 HIPset = 1 
 
                 del S['struct'+str(unknownRes.id[1])+'HIE' ]
@@ -1656,25 +1467,16 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
                 del S['struct'+str(unknownRes.id[1])+'HIPR' ]
         
         else: 
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"ERROR: Investigating HIP-where energies for both nitrogen's<-{1*mc.ECutOff} but close atoms = 0. PLS CHECK CODE \n")
-                    fLog.flush()
-            
-            if(debug):
-                stp.append_to_debug(__name__, sys._getframe().f_code.co_name,f"ERROR: Investigating HIP-where energies for both nitrogen's<-1*{mc.ECutOff} but close atoms = 0. Check more details. \n")
-            os.exit()
+            if gc.log_file:
+                print(f"ERROR: Investigating HIP-where energies for both nitrogen's<-{1*mc.ECutOff} but close atoms = 0. PLS CHECK CODE ")
+            sys.exit()
 
     elif(enSumTotND1Ro< -1*mc.ECutOff and enSumTotNE2Ro<-1*mc.ECutOff):
         ##check if the rotamer state is a possibility
         ##Check if the closest atom is OG from SER or OG1 from THR. If it is then HIP cannot be the state
         ##Because OG/OG1 are poor acceptors
-        if(log_file):
-            with open(fLogName, "a") as fLog:
-                fLog.write("possibility of rotamer state HIP...\n")
-                fLog.flush()
-        if(debug):
-            stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"possibility of rotamer state HIP...\n")
+        if gc.log_file:
+            print("possibility of rotamer state HIP...")
         myHIPR = mra.my_residue(resHIPR)
 
         LOAA_unknownResR = myHIPR.get_unknown_residue_acceptor_donor_atoms()
@@ -1707,13 +1509,9 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
 
             if(any(value == 1 for value in cannotBeHIPR)):
                 ##If it cannot by HIP-delete the appropriate structures.
-                if(log_file):
-                    with open(fLogName, "a") as fLog:
-                        fLog.write(f"cannotBeHIPR: {cannotBeHIPR} \n")
-                        fLog.flush()
+                if gc.log_file:
+                    print(f"cannotBeHIPR: {cannotBeHIPR}")
 
-                if(debug):
-                    stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"cannotBeHIPR: {cannotBeHIPR} \n")
                 del S['struct'+str(unknownRes.id[1])+'HIP' ]
                 del S['struct'+str(unknownRes.id[1])+'HIPR' ]
 
@@ -1722,7 +1520,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
                 res2keep = resHIPR
                 nameOfS2keep = sHIPR
                 saveText = f"Saving residue: {res2keep.resname} to residue state corresponding to minimum energy i.e ND1Ro: {enSumTotND1Ro} + NE2Ro: {enSumTotNE2Ro} isRotamer:{res2keep.isRotamer}"
-                structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, saveText, log_file=log_file, debug=debug)
+                structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, saveText)
                 HIPset = 1 
 
                 del S['struct'+str(unknownRes.id[1])+'HIE' ]
@@ -1732,13 +1530,9 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
                 del S['struct'+str(unknownRes.id[1])+'HIP' ]
 
         else: 
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"Investigating HIP Rotamer-where energies for both nitrogen's<-{1*mc.ECutOff} but close atoms = 0. Check more details. \n")
-                    fLog.flush()
-            if(debug):
-                stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Investigating HIP Rotamer-where energies for both nitrogens<-{1*mc.ECutOff} but close atoms = 0. Check more details. \n")
-            os.exit()
+            if gc.log_file:
+                print(f"Investigating HIP Rotamer-where energies for both nitrogen's<-{1*mc.ECutOff} but close atoms = 0. Check more details.")
+            sys.exit()
 
     else:
         del S['struct'+str(unknownRes.id[1])+'HIP' ]
@@ -1747,7 +1541,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
     return structure, changeVal, skipVal, skipResInfo, S, HIPset, HIPdegen
 
 
-def iterate_list_of_unknown_residues_and_set_states(structure, log_file=0, debug=0):
+def iterate_list_of_unknown_residues_and_set_states(structure):
     """
     objective: To iterate over a given structure and to set states depending on energy computations
     I/P: structure: structure of a protein
@@ -1757,9 +1551,6 @@ def iterate_list_of_unknown_residues_and_set_states(structure, log_file=0, debug
          skipVal: num of residues skipped
          skipResInfo: collecting information where no changes are made-and the unknown residue is skipped. This includes: unknown residue, degenerate info, degenerate structure names, structure associated
     """
-
-    if(log_file):
-        fLogName = stp.get_log_file_name()
 
     skipVal = 0
     changeVal =0 
@@ -1776,16 +1567,11 @@ def iterate_list_of_unknown_residues_and_set_states(structure, log_file=0, debug
 
     uniqRes = Counter(unknownResNames).items()
 
-    if(log_file):
-        with open(fLogName, "a") as fLog:
-            fLog.write(f"\n New iterate_list_of_unkwown_residues call\n")
-            fLog.write(f"\n unknown residue to iterate over: {unknownResIter}, and its length: {len(unknownResIter)}\n\n")
-            fLog.write(f"\n The unknowns present: {uniqRes} \n\n")
-            fLog.flush()
+    if gc.log_file:
+        print("\n\nNew iterate_list_of_unkwown_residues call")
+        print(f"Unknown residue to iterate over: {unknownResIter}, and its length: {len(unknownResIter)}")
+        print(f"The unknowns present: {uniqRes}\n\n")
 
-    
-    if(debug):
-        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"\n Level:{level}, structure number on this level: {numCount}, unknown residue to iterate over: {unknownResIter}, and its length: {len(unknownResIter)}\n\n The unknowns present: {uniqRes} \n\n")
     
     
     for count, unknownResOrig in enumerate(unknownResIter):    
@@ -1794,16 +1580,11 @@ def iterate_list_of_unknown_residues_and_set_states(structure, log_file=0, debug
         unknownRes = structure[modelID][chainID][unknownResOrig.id]
         if(unknownRes.isKnown == 1):continue
         
-        if(log_file):
-            with open(fLogName, "a") as fLog:
-                fLog.write("\n###############################################################################\n")
-                fLog.write("###############################################################################\n\n")
-                fLog.write(f"unknown residue number: {count+1}/{lenUnResOrig} and unknown res is: {unknownRes} and its known val:{unknownRes.isKnown} and is rotamer:{unknownRes.isRotamer}, Skip value:{skipVal}, ChangeVal: {changeVal}\n")
-                fLog.flush()
-        
-        if(debug):
-            stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f" ###############################################################################\n ###############################################################################\n\n Number: {count+1}/{lenUnResOrig} and unknown res is: {unknownRes} and its known val:{unknownRes.isKnown} and is rotamer:{unknownRes.isRotamer}, Skip value:{skipVal}, ChangeVal: {changeVal}\n")
-    
+        if gc.log_file:
+            print("#"*160)
+            print(f"unknown residue number: {count+1}/{lenUnResOrig} and unknown res is: {unknownRes} and its known val:{unknownRes.isKnown} and is rotamer:{unknownRes.isRotamer}, Skip value:{skipVal}, ChangeVal: {changeVal}")
+
+
         current_unknown_res = mra.my_residue(unknownRes)
         #Get list of active atoms, list of close atoms, and number of close atoms
         LOAA_unknownRes = current_unknown_res.get_unknown_residue_acceptor_donor_atoms()
@@ -1841,53 +1622,37 @@ def iterate_list_of_unknown_residues_and_set_states(structure, log_file=0, debug
         # All the other residues, they will remain unknown
         if(total_valid_neighbor_count == 0):
 
-            if(debug):
-                stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"No Close Atoms Found!\n\n")
-
             if unknownRes.resname in ['HIS', 'ASN', 'GLN']:
-                if (log_file):
-                    with open(fLogName, "a") as fLog:
-                        fLog.write(f"This is a {unknownRes.resname} w/o polar atoms nearby, setting state to "
-                                   f"known!\n\n")
-                        fLog.flush()
+                if gc.log_file:
+                    print("This is a {unknownRes.resname} w/o polar atoms nearby, setting state to known!")
+
                 if unknownRes.resname == 'HIS':
-                    setup_HIS(unknownRes, structure, 'HIE', log_file=log_file, debug=debug)
+                    setup_HIS(unknownRes, structure, 'HIE')
                 structure[modelID][chainID][unknownRes.id].isKnown = 1
                 unknownRes.isKnown = 1
                 changeVal += 1
             # for other residues, do nothing, they would remain unknown
-            if (log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"There are no known residues nearby for current residue: {unknownRes.resname},"
-                               f"leave it as unknown...\n")
-                    fLog.flush()
+            if gc.log_file:
+                print(f"There are no known residues nearby for current residue: {unknownRes.resname},leave it as unknown...")
+
             continue
 
         else:
-            if(debug):
-                stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"checked for close atoms and close atoms are present!!\n\n")
-
             # if there are no known polar atoms nearby, do nothing and leave it as unknown (we need at least one
             # known polar atoms nearby to evaluate the states)
             if total_known_neighbor_count == 0:
-                if (log_file):
-                    with open(fLogName, "a") as fLog:
-                        fLog.write(f"There are no known residues nearby for current residue: {unknownRes.resname},"
-                                   f"leave it as unknown...\n")
-                        fLog.flush()
+                if gc.log_file:
+                    print("There are no known residues nearby for current residue: {unknownRes.resname},leave it as unknown...")
                 continue
 
-            if(log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"There are known residues nearby for current residue: {unknownRes.resname}, "
-                               f"branching the structure to check the energy!!\n\n")
-                    fLog.flush()
+            if gc.log_file:
+                print(f"There are known residues nearby for current residue: {unknownRes.resname},branching the structure to check the energy!!\n")
 
             # if there are known nearby, branch the structure and keep the one with lowest energy
             #create branch of a given unknown residue.
-            S = branch_structure(unknownRes, structure, log_file=log_file, debug=debug)
+            S = branch_structure(unknownRes, structure)
 
-            energyList, resStates = compute_energy_for_all_states(unknownRes, S, log_file=log_file, debug=debug)
+            energyList, resStates = compute_energy_for_all_states(unknownRes, S)
 
             energyArray = np.array(energyList, dtype=object)
             sortedEnList = sorted(energyList,key=lambda x: (x[1]))
@@ -1899,35 +1664,20 @@ def iterate_list_of_unknown_residues_and_set_states(structure, log_file=0, debug
             if(unknownRes.resname == 'HIS' and not(allEnergyZero)): 
                 #If HIS and all energy values are not zero - test the possibility of HIP:
                 structure, changeVal, skipVal, skipResInfo, S, HIPset, HIPdegen = evaluate_HIP_cases(
-                    unknownRes, structure, S, changeVal, skipVal, skipResInfo, log_file=log_file,
-                    debug=debug)
+                    unknownRes, structure, S, changeVal, skipVal, skipResInfo)
 
                 if(HIPdegen==1 or HIPset==1):
-                    if(log_file):
-                        with open(fLogName, "a") as fLog:
-                            fLog.write("Continuing to the next unknown in the for loop as HIP is set or HIP is degenerate\n")
-                            fLog.flush()
-
-                    if(debug):
-                        stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Continuing to the next unknown in the for loop as HIP is set or HIP is degenerate\n")
+                    if gc.log_file:
+                        print("Continuing to the next unknown in the for loop as HIP is set or HIP is degenerate")
                     continue
 
-                if(log_file):
-                    with open(fLogName, "a") as fLog:
-                        fLog.write("continuing as HIP is not an option!!\n") ##continue in the for loop
-                        fLog.flush()
-
-                if(debug):
-                    stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"continuing as HIP is not an option!!\n")
+                if gc.log_file:
+                    print("continuing as HIP is not an option!!")
 
             else:
                 #If not a HIS/all HIS energy values are zero. Declare HIP is not possible.
-                if(log_file):
-                    with open(fLogName, "a") as fLog:
-                        fLog.write(f"Not checking for HIP- as I am {unknownRes} of {unknownRes.parent} and currently am not on HIS or all the HIS energies are zero\n\n")
-                        fLog.flush()
-                if(debug):
-                    stp.append_to_debug(__name__, sys._getframe().f_code.co_name, f"Not checking for HIP- as I am {unknownRes} of {unknownRes.parent} and currently am not on HIS or all the HIS energies are zero\n\n")
+                if gc.log_file:
+                    print(f"Not checking for HIP- as I am {unknownRes} of {unknownRes.parent} and currently am not on HIS or all the HIS energies are zero\n")
     #########Take the smallest value and subtract from all other values. Find out how many values are<1
             MinEn = sortedEnArray[0,1]
             #The first value is the minimum. So starting from second Val
@@ -1937,16 +1687,14 @@ def iterate_list_of_unknown_residues_and_set_states(structure, log_file=0, debug
             degenFound = any(diffWithMin< mc.ECutOff) 
 ###################################IF DEGENERATE ###############################################################
             if(degenFound):
-                if (log_file):
-                    with open(fLogName, "a") as fLog:
-                        fLog.write(f"For current residue: {unknownRes.resname} there are more than one states whose "
-                                   f"energy difference is less than 1kcal\nSorted energy for all states are:"
-                                   f" {sortedEnArray[:,1]}\nStart evaluating if they are actually degenerate...\n")
-                        fLog.flush()
+                if gc.log_file:
+                    print(f"For current residue: {unknownRes.resname} there are more than one states whose energy "
+                          f"difference is less than 1kcal\nSorted energy for all states are: {sortedEnArray[:,1]}\nStart evaluating if they are actually degenerate...")
+
                 #if smallest two energies are less than ECutOff then explore the possibility of degeneracy
                 # if the states are actually degenerate, leave the residue as unknown
                 # the degenerate state info is kept in skipResInfo
-                structure, changeVal, skipVal, skipResInfo = evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArray, changeVal, skipVal, skipResInfo, log_file=log_file, debug=debug)
+                structure, changeVal, skipVal, skipResInfo = evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArray, changeVal, skipVal, skipResInfo)
             else:
                 ##If not degenerate, pick the state with the smallest energy value and set it as known
                 res2keep = sortedEnArray[0,0] ##Picking the smallest
@@ -1955,48 +1703,42 @@ def iterate_list_of_unknown_residues_and_set_states(structure, log_file=0, debug
                 nameOfS2keep = get_structure_name(res2keep, moreInfo = moreInfoName)
 
                 enValPick =sortedEnArray[ind][1] # originally used for printing
-                if (log_file):
-                    with open(fLogName, "a") as fLog:
-                        fLog.write(f"One state for current residue: {res2keep.resname} has minimum energy that is "
+                if  gc.log_file:
+                    print(f"One state for current residue: {res2keep.resname} has minimum energy that is "
                                    f"more than 1kcal smaller than all the other states.\n Sorted energy for all states "
                                    f"are: "
                                    f"{sortedEnArray[:,1]}\n"
                                    f"Setting the state to:"
-                                   f"isRotamer: {res2keep.isRotamer}\n\n")
-                        fLog.flush()
+                                   f"isRotamer: {res2keep.isRotamer}\n")
                 saveText = ''
 
-                structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, saveText, log_file=log_file, debug=debug)
+                structure, changeVal = set_state(unknownRes, res2keep, nameOfS2keep, changeVal, S, saveText)
                 del S
 
    
     return structure,changeVal,skipVal,skipResInfo
 
 def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid=False, generated_files=None,
-                                                 pdb_file_num=None, fOutName = 'out', log_file=0, debug=0):
+                                                 pdb_file_num=None, fOutName = 'out'):
 
     if generated_files is None:
         generated_files = []
     if pdb_file_num is None:
         pdb_file_num = [0] # make it a list so that it's mutable for recursive call
 
-    if(log_file):
-        fLogName = stp.get_log_file_name()
     num_unknown_res = len(stp.get_unknown_residue_list(structure))
 
     # only stop when number of unknown residues is 0
     loop_count = 0
     while(num_unknown_res > 0):
-        if (log_file):
-            with open(fLogName, "a") as fLog:
-                fLog.write(f'resolve_residue_ambiguities_in_one_structure Iteration: {loop_count}\n')
+        if gc.log_file:
+            print(f'resolve_residue_ambiguities_in_one_structure Iteration: {loop_count}')
 
         # iterate over all the unknown residues and set as many states as possible. If a change is made or a state is set then chVal increments by 1 else skpVal increments by 1
         # chVal = total number of unknown states set in this function call
         # skpVal = total number of degenerate states found (these are the "ambiguous" residues in the paper)
         # skpInfo = all the info about that degenerate state
-        structNew, chVal, skpVal, skpInfo = iterate_list_of_unknown_residues_and_set_states(structure,
-                                                                                            log_file=log_file, debug=debug)
+        structNew, chVal, skpVal, skpInfo = iterate_list_of_unknown_residues_and_set_states(structure)
         loop_count += 1
 
         # update the number of unknown residue here for the loop
@@ -2004,26 +1746,21 @@ def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid
         num_unknown_res = len(unknown_res_list)
 
         if num_unknown_res == 0: 
-            if (log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"No more unknown present\nBreak out of the while loop\n")
-                    fLog.flush()
+            if gc.log_file:
+                print(f"No more unknown present\nBreak out of the while loop")
             structure = structNew
             break
 
         if (chVal == 0):
             # If change value =0, we need to branch the first unknown residue and go from there
-            if (log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"No states set after this iteration\nStart branching\n")
-                    fLog.flush()
+            if gc.log_file:
+                print(f"No states set after this iteration\nStart branching")
+
             if skpVal == 0:
-                if (log_file):
-                    with open(fLogName, "a") as fLog:
-                        fLog.write(f"Did not have any degenerate states ready for branching, meaning there "
+                if gc.log_file:
+                    print(f"Did not have any degenerate states ready for branching, meaning there "
                                    f"are no known residues nearby the rest of the unknowns\nSetting the rest of "
                                    f"unknowns to known: {unknown_res_list}\n")
-                        fLog.flush()
                 # in this case, there is nothing knonwn to determine the unknown residue, just set them as known and
                 # exit
                 for unknown_res in unknown_res_list:
@@ -2041,12 +1778,10 @@ def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid
             # these info are being appened by "evaluate_degenerate_cases"
             all_degen_struc_names = skpInfo[0][-2]
             res_to_be_branch = skpInfo[0][0]
-            if (log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"The residue to be branched out: {res_to_be_branch}\n")
-                    fLog.write(f"Number of degenerate states previously generated to be used for branch:"
-                               f" {len(all_degen_struc_names)}\n")
-                    fLog.flush()
+            if gc.log_file:
+                print(f"The residue to be branched out: {res_to_be_branch}")
+                print(f"Number of degenerate states previously generated to be used for branch: {len(all_degen_struc_names)}")
+
             for count, struc_name in enumerate(all_degen_struc_names):
 
                 modelID = res_to_be_branch.parent.parent.id
@@ -2056,21 +1791,17 @@ def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid
                 structBranch[modelID][chainID][res_to_be_branch.id].isKnown = 1
                 if res_to_be_branch.resname in ['ASP', 'GLU']:
                     sUn = res_to_be_branch.parent.parent.parent
-                    unknownASPpair = get_ASP_GLU_pair(res_to_be_branch, sUn, mc.deltaD, log_file=log_file, debug=debug)
+                    unknownASPpair = get_ASP_GLU_pair(res_to_be_branch, sUn, mc.deltaD)
                     modelID_ASPpair = unknownASPpair.parent.parent.id
                     chainID_ASPpair = unknownASPpair.parent.id
                     structBranch[modelID_ASPpair][chainID_ASPpair][unknownASPpair.id].isKnown = 1
-                if (log_file):
-                    with open(fLogName, "a") as fLog:
-                        fLog.write(f"Processing {res_to_be_branch}'s degenerate states: {count+1}"
-                                   f"/{len(all_degen_struc_names)}\nStart another "
-                                   f"'resolve_residue_ambiguities_in_one_structure call\n")
-                        fLog.flush()
+                if gc.log_file:
+                    print(f"Processing {res_to_be_branch}'s degenerate states: {count+1}/{len(all_degen_struc_names)}")
+                    print("Start another 'resolve_residue_ambiguities_in_one_structure call'")
                 _, num_unknown_res = resolve_residue_ambiguities_in_one_structure(structBranch,
                                                              set_original_centroid=set_original_centroid,
                                                               generated_files=generated_files,
-                                                              pdb_file_num=pdb_file_num, fOutName= fOutName,
-                                                              log_file=log_file, debug=debug)
+                                                              pdb_file_num=pdb_file_num, fOutName= fOutName)
             # it'd only get here when all branches are finished
             # we need to return here to avoid breaking out and write the final PDB again
             if num_unknown_res == 0:
@@ -2082,11 +1813,9 @@ def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid
             structure = structNew
             del skpVal
             del skpInfo
-            if (log_file):
-                with open(fLogName, "a") as fLog:
-                    fLog.write(f"Number of states set after iteration {loop_count}: {chVal}\n")
-                    fLog.write(f"Current number of unknown residues: {num_unknown_res}\n")
-                    fLog.flush()
+            if gc.log_file:
+                print(f"Number of states set after iteration {loop_count}: {chVal}\n")
+                print(f"Current number of unknown residues: {num_unknown_res}\n")
 
 
     # when it get out of the while loop
@@ -2095,18 +1824,15 @@ def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid
     fPDBname = f"{fOutName}_{pdb_file_num[0]}.pdb"
     fPDBfullPath = os.getcwd() + f"/{fout}/{fPDBname}"
 
-    if (log_file):
-        with open(fLogName, "a") as fLog:
-            fLog.write(f"No more unknown for this structure, Writing result to: {fPDBname}\n")
-            fLog.flush()
+    if gc.log_file:
+        print(f"No more unknown for this structure, Writing result to: {fPDBname}")
 
-    stp.detect_clash_within_structure(structure, log_file=log_file)
-    stp.detect_clash_within_residue_for_all_residues(structure, log_file=log_file)
+    stp.detect_clash_within_structure(structure)
+    stp.detect_clash_within_residue_for_all_residues(structure)
 
     generated_files.append(fPDBfullPath)
     # keep a track on number of pdb files written
     pdb_file_num[0] += 1
-    stp.write_to_PDB(structure, fPDBfullPath, removeHLP=True, set_original_centroid=set_original_centroid,
-                     log_file=log_file, debug=debug)
+    stp.write_to_PDB(structure, fPDBfullPath, removeHLP=True, set_original_centroid=set_original_centroid)
     return generated_files, num_unknown_res
 
