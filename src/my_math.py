@@ -22,21 +22,7 @@ SOFTWARE.
 
 
 """
-
-
 import numpy as np
-
-def mod(x):
-    
-    """
-        objective: modulus of a vector is computed
-        input:x: numpy array/vector
-        output: mod value
-    """
-    
-    mod_val = np.sqrt(x.dot(x))
-    return mod_val
-
 
 def get_unit_vector(x):
 
@@ -46,7 +32,7 @@ def get_unit_vector(x):
        output: unit vector
     """
 
-    return  x/mod(x)
+    return  x/np.linalg.norm(x)
 
 def get_rotation_matrix(theta):
 
