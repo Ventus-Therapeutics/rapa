@@ -41,7 +41,6 @@ import setup_protein as stp
 import my_residue_atom as mra
 import my_constants as mc
 
-
 def hbond_energy(r, theta, gamma, attractive=True,
                  D1=5.3690476811615016,D2=27.58319209788471,D3=39.701896317848934,D4=4.854675162065331e-10,D5=0.09999999999999998,
                  r1=-0.07438325810984132,r2=1.400238259764079,r3=0.4857252493470585,r4=-0.8284743134969731,
@@ -56,6 +55,7 @@ def hbond_energy(r, theta, gamma, attractive=True,
         return f1*np.exp(-(t**2/(2*f2**2) + g**2/(2*f3**2) + f4*t*g)) + f5
 
     def fit_2(t, g, f1, f2, f3, f4):
+        #return (f2 + f1*np.cos(np.radians(t)))**4 + f4*(1 - f3*np.cos(np.radians(t)))*np.cos(np.radians(g))
         return (f2 + f1*np.cos(np.radians(t)))**4 + (f4 + f3*np.cos(np.radians(g)))**4
 
     def morse(R, t, g):
@@ -66,17 +66,67 @@ def hbond_energy(r, theta, gamma, attractive=True,
         C = fit_1(t, g, C1, C2, C3, C4, C5)
         return D*(1 - np.exp(-A*(R - rm)))**2 + C - U_inf
 
-    u = morse(r, theta, gamma)
-    if -90.0 < gamma < 90.0 and -90.0 < theta < 90.0:
-        if attractive:
-            if u < 0:
-                return u
-            elif morse(r, 0.0, 0.0) < 0:
+    def morse_corrected(R, t, g):
+        U = morse(R, t, g)
+        if U < 0:
+            # If the energy is less than 0 than return it
+            return U
+        elif morse(R, 0.0, 0.0) < 0:
+            # If the idealized case @ r is less than 0, set it to zero
+            stp = np.arange(2.9,4.0,0.01)
+            a_u = morse(stp, theta, gamma)
+            min_p = np.where(a_u == min(a_u))[0]
+            if np.all(a_u >= 0.0) or stp[min_p] < R:
                 return 0.0
             else:
-                return u
+                return U
         else:
-            return mc.repulsive_k/(r**(mc.r_power))
+            # Return the energy going up the repulsive wall
+            return U
+
+    # Calculating the attractive energy at these parameters
+    u = morse_corrected(r, theta, gamma)
+
+    # If gamma or theta is greater than ABS(90) set the energy to 0
+    if -90.0 < gamma < 90.0 and -90.0 < theta < 90.0:
+        # Returning energy for attractive forces
+        if attractive:
+            return u
+        else:
+            #### Temporary adhoc for repulsive energy
+            #### This needs further tuning
+            ################ This whole block is for repulsive not just line 121
+
+            #### The version that would give you two states for Nate's system 6ES0a:#######
+            # you gotta return here not line 121 
+            #return (9*(2.9**6))/(r**6)
+            #######################################################
+
+            # Calculating the repulsive energy
+            # Calculating the derivative of the morse potential
+            step_size = 0.001
+            off_set = 2.5
+            derivative = (morse_corrected(r+step_size, theta, gamma) - morse_corrected(r-step_size, theta, gamma)) / (2*step_size)
+            if derivative < 0.0:
+                # If the morse potential is going up the repulsive wall
+                steps = np.arange(2.9,4.0,0.01)
+                alt_u = -1*morse(steps, theta, gamma)
+                max_u = max(alt_u)
+                if max_u < u:
+                    # Assuring the attractive energy is never greater than the repulsive
+                    #return u
+                    return u+off_set
+                else:
+                    return max_u+off_set
+            elif derivative == 0.0:
+                # If the derivative is exactly zero, the energy is zero
+                return off_set
+            else:
+                # Return the inverse energy for repulsive interactions
+                return (-1*u)+off_set
+                #return ((-1*u)+90.5)
+                #return 90.5
+                #return (9*(2.9**6))/(r**6)
     else:
         return 0.0
 
