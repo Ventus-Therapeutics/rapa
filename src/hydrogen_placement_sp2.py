@@ -32,10 +32,9 @@ import math
 from Bio.PDB import *
 
 import my_residue_atom as mra
-import my_constants as mc
 import setup_protein as stp
 import close_atoms as cats
-import global_config as gc
+import global_constants as gc
 
 
 def eliminate_extraneous_solution(HCoord, vecHeavy, theta):
@@ -114,7 +113,7 @@ def compute_hydrogen_coords_sp2( heavyAtoms, clashOccurs):
     if clashOccurs == 1:
         theta = ((2*np.pi-calc_angle(Vec_heavy0,Vec_heavy1,Vec_heavy2))/2) ##This should be approximately 120
     else:
-        theta = mc.sp2Angle_rad #120 degrees
+        theta = gc.sp2Angle_rad #120 degrees
 
 
     v1 = heavyAtoms[0] - heavyAtoms[1]
@@ -132,12 +131,12 @@ def compute_hydrogen_coords_sp2( heavyAtoms, clashOccurs):
     
     if clashOccurs == 1:
         vecHeavy = np.array([Vec_heavy0, Vec_heavy1, Vec_heavy2])
-        hCoordFinal = eliminate_extraneous_solution(hCoord, vecHeavy, theta*mc.rad_to_deg)
+        hCoordFinal = eliminate_extraneous_solution(hCoord, vecHeavy, theta*gc.rad_to_deg)
     else:
         hCoordFinal = hCoord
 
     if gc.debug:
-        print(f' \n angle between sp2 atoms should be approximately 120, and it is: {theta*mc.rad_to_deg}. Note, clash occurs is: {clashOccurs} and final hydrogen coordinates are: {hCoordFinal}\n')
+        print(f' \n angle between sp2 atoms should be approximately 120, and it is: {theta*gc.rad_to_deg}. Note, clash occurs is: {clashOccurs} and final hydrogen coordinates are: {hCoordFinal}\n')
 
     return hCoordFinal
 
@@ -708,9 +707,9 @@ def add_sp2_sidechain_lonepairs(structure, lastSerial):
 
     """
 
-    LP_dict = {'ASP': [mc.hvysForLPsASP, mc.LPSCnamesASP], 'GLU': [mc.hvysForLPsGLU, mc.LPSCnamesGLU],
-                'ASN': [mc.hvysForLPsASN, mc.LPSCnamesASN], 'GLN': [mc.hvysForLPsGLN, mc.LPSCnamesGLN],
-                'HIE': [mc.hvysForLPsHIE, mc.LPSCnamesHIE], 'HID': [mc.hvysForLPsHID, mc.LPSCnamesHID]
+    LP_dict = {'ASP': [gc.hvysForLPsASP, gc.LPSCnamesASP], 'GLU': [gc.hvysForLPsGLU, gc.LPSCnamesGLU],
+                'ASN': [gc.hvysForLPsASN, gc.LPSCnamesASN], 'GLN': [gc.hvysForLPsGLN, gc.LPSCnamesGLN],
+                'HIE': [gc.hvysForLPsHIE, gc.LPSCnamesHIE], 'HID': [gc.hvysForLPsHID, gc.LPSCnamesHID]
     }
 
 

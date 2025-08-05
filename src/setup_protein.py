@@ -31,105 +31,10 @@ import copy
 
 import numpy as np
 import my_residue_atom as mra
-import my_constants as mc
-import global_config as gc
+import global_constants as gc
 
 from Bio.PDB import *
 
-def get_output_folder_name():
-    
-    """
-    objective: To return name of the output folder
-    O/P:
-    -outputFolder: name of the output folder
-    """
-    #outputFolder = "outputs_"+mc.protID
-
-    outputFolder = mc.out_name+"_outputs"
-
-    return outputFolder
-
-
-def get_log_file_name():
-
-    """
-    objective: To get the name of the log file
-    Output:
-    -fLogName: name of the log file
-    """
-
-    outputFolder = get_output_folder_name()
-
-    fDest = f'{outputFolder}/log/'
-    checkFolderPresent = os.path.isdir(fDest)    
-    if not checkFolderPresent: os.makedirs(fDest)
-
-    #fLogName = f"{fDest}"+f"{mc.protID}.log"
-
-    fLogName = f"{fDest}"+f"{mc.out_name}.log"
-    
-    return fLogName
-
-def get_info_file_name():
-    """
-    objective: To get the name of the info file name
-    Output:
-    -fInfoName: name of the info file
-    """
-        
-
-    outputFolder = get_output_folder_name()
-
-    fDest = f'{outputFolder}/'
-    checkFolderPresent = os.path.isdir(fDest)    
-    if not checkFolderPresent: os.makedirs(fDest)
-
-    #fInfoName = f"{fDest}"+f"{mc.protID}.info"
-
-    fInfoName = f"{fDest}"+f"{mc.out_name}.info"
-    
-    return fInfoName
-
-def get_debug_file_name():
-    
-    """
-    objective: To get the name of the info file name
-    Output:
-    -fDebugName: name of the info file
-    """   
-
-    outputFolder = get_output_folder_name()
-
-    #fDest = f'{outputFolder}/'
-
-    fDest = f'{outputFolder}/debug/'
-    checkFolderPresent = os.path.isdir(fDest)    
-    if not checkFolderPresent: os.makedirs(fDest)
-
-    #fDebugName = f"{fDest}"+f"{mc.protID}.debug"
-
-    fDebugName = f"{fDest}"+f"{mc.out_name}.debug"
-    
-    return fDebugName
-
-
-#def get_pdb_out_folder():
-#    
-#    """
-#    objective: To get the name of the folder where the output PDBs are stored
-#    Output:
-#    -foPDB: name of the pdb folder
-#    """
-#        
-#
-#    outputFolder = get_output_folder_name()
-#
-#    foPDB = f'{outputFolder}/pdb_out_{mc.protID}'
-#    checkFolderPresent = os.path.isdir(foPDB)    
-#    if not checkFolderPresent: os.makedirs(foPDB)
-#
-#    
-#    return foPDB
 
 def get_all_ASPs(structure):
 
@@ -281,8 +186,8 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP'):
         ns = Bio.PDB.NeighborSearch(searchASP_GLUatoms)
     
         #use the search object/list  with respect to the two oxygen side chain atoms(OD1/OD2 or OE1/OE2) of the given ASP/GLU
-        potUnknownAtom1 = ns.search(currASP_GLU[oxygenName1].coord,mc.deltaD)
-        potUnknownAtom2 = ns.search(currASP_GLU[oxygenName2].coord,mc.deltaD)
+        potUnknownAtom1 = ns.search(currASP_GLU[oxygenName1].coord,gc.deltaD)
+        potUnknownAtom2 = ns.search(currASP_GLU[oxygenName2].coord,gc.deltaD)
         
         #if any of the unknown add it to the unknownASP_GLUatom list and collect relevant info
         if(potUnknownAtom1):
@@ -328,9 +233,6 @@ def accomodate_for_ASPs_GLUs(structure, unknownASP_GLU, unknownASP_GLU_atomInfo)
     """
     
 
-
-    fInfoName = get_info_file_name()
-
     unASP_GLU_atomInfoArr = np.array(unknownASP_GLU_atomInfo)
     allUnknownIDs = unASP_GLU_atomInfoArr[:,1]
     uniqueUnknownIDs = set(allUnknownIDs)
@@ -345,7 +247,7 @@ def accomodate_for_ASPs_GLUs(structure, unknownASP_GLU, unknownASP_GLU_atomInfo)
             print(f"WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n "
                   f"{uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
     
-        with open(fInfoName, "a") as fInfo:
+        with open(gc.out_info_file, "a") as fInfo:
             fInfo.write(f"WARNING: There are more than 2 ASPs/GLUs for:\n {ASP_GLU_res_unique} with \n {uniqueUnknownIDs} that are in bonding distance to each other. \n Additional Info :{unASP_GLU_atomInfoArr}\n")
             fInfo.flush()
 
@@ -367,7 +269,7 @@ def accomodate_for_ASPs_GLUs(structure, unknownASP_GLU, unknownASP_GLU_atomInfo)
         print(f"Got unknown atoms {unknownASP_GLU}.\n And relevant info:\n {unknownASP_GLU_atomInfo}")
 
     
-    with open(fInfoName, "a") as fInfo:
+    with open(gc.out_info_file, "a") as fInfo:
         fInfo.write(f"###################################### \n")
         fInfo.write(f"###################################### \n")
         fInfo.write(f"Got unknown ASPs/GLUs: {ASP_GLU_res} with atoms {unknownASP_GLU}.\n And relevant info: {unknownASP_GLU_atomInfo}")
@@ -393,7 +295,7 @@ def get_all_residues(structure,  donotIncludeRes = None):
     
     for residue in structure.get_residues():
         r = mra.my_residue(residue)
-        if(r.is_valid_amino_acid() and ( residue != donotIncludeRes) and (residue.resname in mc.validResnames)):
+        if(r.is_valid_amino_acid() and ( residue != donotIncludeRes) and (residue.resname in gc.validResnames)):
             allRes.append(residue)
 
     return allRes
@@ -623,7 +525,7 @@ def create_list_of_atoms_of_residue_without_lonepair(res):
     return listOfAtoms
 
 
-def detect_clash_for_atoms_of_one_residue(structure, res2check, withinStructClashDist = mc.btwResClashDist):
+def detect_clash_for_atoms_of_one_residue(structure, res2check, withinStructClashDist = gc.btwResClashDist):
     """
     objective: To detect if there is a clash with respect to one particular residue in a given structure
     input:Structure:structure in concern
@@ -670,7 +572,7 @@ def detect_clash_within_structure(structure):
 
     allRes  = get_all_residues(structure, donotIncludeRes = None)
     for res in allRes:
-        detect_clash_for_atoms_of_one_residue(structure, res, withinStructClashDist = mc.btwResClashDist)
+        detect_clash_for_atoms_of_one_residue(structure, res, withinStructClashDist = gc.btwResClashDist)
 
     if gc.log_file:
         print("Looked for clash within the structure\n")
@@ -690,7 +592,7 @@ def detect_clash_within_residue(res2check):
         searchListAtoms.remove(atom2check)
         ####use the nbd search and create an object ns.
         ns = Bio.PDB.NeighborSearch(searchListAtoms)
-        potClashAtom = ns.search(atom2check.coord, mc.withinResClashDist)
+        potClashAtom = ns.search(atom2check.coord, gc.withinResClashDist)
 
         if(potClashAtom and gc.log_file):
             print(f"potential clash atom = {potClashAtom}\n")
@@ -978,7 +880,7 @@ def write_to_PDB(structure, fname, removeHLP = False, removeHall = False,set_ori
             print("removed any hydrogen element present on a residue\n")
 
     if(set_original_centroid==True):
-        set_atom_coords_in_original_frame(structure,mc.xc_orig,mc.yc_orig,mc.zc_orig)
+        set_atom_coords_in_original_frame(structure,gc.xc_orig,gc.yc_orig,gc.zc_orig)
 
     io = PDBIO()
     io.set_structure(structure)

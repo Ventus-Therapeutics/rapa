@@ -37,11 +37,10 @@ from Bio.PDB import *
 
 import setup_protein as stp
 import my_residue_atom as mra
-import my_constants as mc
 import hydrogen_placement_sp2 as hsp2
 import hydrogen_placement_sp3 as hsp3
 import close_atoms as cats
-import global_config as gc
+import global_constants as gc
 
 
 def setup_HIS(HISres, structure, HIStype = None):
@@ -70,7 +69,7 @@ def setup_HIS(HISres, structure, HIStype = None):
     lastSerial = list(dict_struct[structName].get_residues())[-1].child_list[-1].serial_number
     lastSerial, hCoord = HIS_dict[HIStype](dict_struct[structName][modelID][chainID][resID], lastSerial)
 
-    LP_dict = { 'HIE': [mc.hvysForLPsHIE, mc.LPSCnamesHIE], 'HID': [mc.hvysForLPsHID, mc.LPSCnamesHID]}
+    LP_dict = { 'HIE': [gc.hvysForLPsHIE, gc.LPSCnamesHIE], 'HID': [gc.hvysForLPsHID, gc.LPSCnamesHID]}
     try:
         hvys = LP_dict[HIStype][0]
         LPnameAll = LP_dict[HIStype][1]
@@ -147,9 +146,9 @@ def setup_rotamer_in_structure(res, structure, placeHyd = True, placeLP = True):
             f" {res} on chain: {res.parent} \n")
             pass
 
-    LP_dict = {'ASP': [mc.hvysForLPsASP, mc.LPSCnamesASP], 'GLU': [mc.hvysForLPsGLU, mc.LPSCnamesGLU],
-                'ASN': [mc.hvysForLPsASN, mc.LPSCnamesASN], 'GLN': [mc.hvysForLPsGLN, mc.LPSCnamesGLN],
-                'HIE': [mc.hvysForLPsHIE, mc.LPSCnamesHIE], 'HID': [mc.hvysForLPsHID, mc.LPSCnamesHID]
+    LP_dict = {'ASP': [gc.hvysForLPsASP, gc.LPSCnamesASP], 'GLU': [gc.hvysForLPsGLU, gc.LPSCnamesGLU],
+                'ASN': [gc.hvysForLPsASN, gc.LPSCnamesASN], 'GLN': [gc.hvysForLPsGLN, gc.LPSCnamesGLN],
+                'HIE': [gc.hvysForLPsHIE, gc.LPSCnamesHIE], 'HID': [gc.hvysForLPsHID, gc.LPSCnamesHID]
     }
 
 
@@ -673,7 +672,7 @@ def get_ASP_GLU_pair(currASP_GLU, structure, ASP_GLUdist):
     unknownASP_GLUset = set(unknownASP_GLUlist)
     #since this code is meant for only diad!
 
-    if(len(unknownASP_GLUset)> mc.numASPsGLUs-1):
+    if(len(unknownASP_GLUset)> gc.numASPsGLUs-1):
         if gc.log_file:
             print(f"number of unique ASPs: {len(unknownASP_GLUset)}. Please check\n\n")
     
@@ -930,7 +929,7 @@ def compute_energy_for_given_atoms(resState, givenAtoms):
         #create a custom list to find all close atoms
         customList = stp.get_known_donor_acceptor_list_for_one_atom(struct, hvyAt, aaType = 'DONOR_ACCEPTOR_BOTH')
         ##Get a list of all close Atoms (which are donor, acceptor, and both) for the given hvy atom
-        allCloseAtoms = cats.get_all_close_atom_info_for_one_atom(hvyAt, customList, dist_cutoff=mc.hbond_d)
+        allCloseAtoms = cats.get_all_close_atom_info_for_one_atom(hvyAt, customList, dist_cutoff=gc.hbond_d)
         
         if gc.log_file:
             print(f"Evaluate given residue state, hvyAt: {hvyAt} and All close atoms: {allCloseAtoms}")
@@ -1002,13 +1001,13 @@ def compute_energy_for_all_states(unknownRes, structStates):
     if(unknownRes.resname == 'ASP' or unknownRes.resname == 'GLU'):
         ##Get the 2 unknownresidue
         sUn = unknownRes.parent.parent.parent
-        unknownASPpair = get_ASP_GLU_pair(unknownRes, sUn, mc.deltaD)
+        unknownASPpair = get_ASP_GLU_pair(unknownRes, sUn, gc.deltaD)
         unknownRes0 = [unknownRes, unknownRes, unknownASPpair, unknownASPpair]
     else:
         unknownRes0 = [unknownRes, unknownRes, unknownRes, unknownRes]
 
     #Going over all states of the unknown residue
-    for count,con in enumerate(mc.unResDict[unknownRes.resname][0]):
+    for count,con in enumerate(gc.unResDict[unknownRes.resname][0]):
         #accesing the struct state:
         structState = structStates['struct'+str(unknownRes0[count].id[1])+con]
         #accesing the residue state:
@@ -1041,7 +1040,7 @@ def branch_structure(unknownRes, structure):
     elif(unknownRes.resname=='ASN' or unknownRes.resname == 'GLN'):  
         S = create_GLN_ASN_states(unknownRes,structure)
     elif(unknownRes.resname=='ASP' or unknownRes.resname == 'GLU'):
-        resPair = get_ASP_GLU_pair(unknownRes, structure, mc.deltaD)
+        resPair = get_ASP_GLU_pair(unknownRes, structure, gc.deltaD)
         if(unknownRes.resname=='ASP'):
             S = create_ASH_states(unknownRes, resPair, structure)
         else:
@@ -1079,7 +1078,7 @@ def set_state(unknownRes, res2keep, nameOfS2keep, changeVal, branchedS, MSG):
 
     if(unknownRes.resname == 'ASP' or unknownRes.resname == 'GLU'):
         sUn = unknownRes.parent.parent.parent
-        unknownASP_GLUpair = get_ASP_GLU_pair(unknownRes, sUn, mc.deltaD)
+        unknownASP_GLUpair = get_ASP_GLU_pair(unknownRes, sUn, gc.deltaD)
         modelIDpair = unknownASP_GLUpair.parent.parent.id
         chainIDpair = unknownASP_GLUpair.parent.id
         struct[modelIDpair][chainIDpair][unknownASP_GLUpair.id].isKnown = 1
@@ -1209,7 +1208,7 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
         if(unknownRes.resname=='GLU' or unknownRes.resname=='ASP'):
             del S
             sUn = unknownRes.parent.parent.parent
-            unknownASP_GLUpair = get_ASP_GLU_pair(unknownRes, sUn, mc.deltaD)
+            unknownASP_GLUpair = get_ASP_GLU_pair(unknownRes, sUn, gc.deltaD)
             modelID_pair = unknownASP_GLUpair.parent.parent.id
             chainID_pair = unknownASP_GLUpair.parent.id
 
@@ -1290,7 +1289,7 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
             #find the difference with minimum energy
             EnDiffWithMin =abs(degenArray[:,1]-MinEn)
             #get the index where difference of energy is less than 1 kcal
-            indDegen = np.where(EnDiffWithMin<mc.ECutOff)
+            indDegen = np.where(EnDiffWithMin<gc.ECutOff)
             #use the index where diff of energy is less than 1 kcal to form a degenInfo
             degenInfo = degenArray[indDegen,:]
             a,b,c =degenInfo.shape
@@ -1304,7 +1303,7 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
             skipResInfo.append([unknownRes, degenInfo,degenStructNames,S])
             if gc.log_file:
                 print(f"Skipping: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:"
-                  f"{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate Info: {degenInfo} with {EnDiffWithMin[indDegen]}<{mc.ECutOff}")
+                  f"{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate Info: {degenInfo} with {EnDiffWithMin[indDegen]}<{gc.ECutOff}")
                 print("###########################################################################")
 
 
@@ -1318,7 +1317,7 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
             #find the difference with minimum energy
             EnDiffWithMin =abs(sortedEnArray[:,1]-MinEn)
             #get the index where difference of energy is less than 1 kcal
-            indDegen = np.where(EnDiffWithMin<mc.ECutOff)
+            indDegen = np.where(EnDiffWithMin<gc.ECutOff)
             #use the index where diff of energy is less than 1 kcal to get degenNames, using the sortedResNamesArr
             degenNames = sortedResNamesArr[indDegen]
             #create the degenArray using the index where diff of energy<1Kcal in the sortedEnArray
@@ -1331,7 +1330,7 @@ def evaluate_degenerate_cases(unknownRes, structure, S, energyArray, sortedEnArr
             skipResInfo.append([unknownRes, degenArray,degenStructNames,S])
 
             if gc.log_file:
-                print(f"Please Skip: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate names: {degenNames} and values are: {degenArray} with {EnDiffWithMin}<{mc.ECutOff}")
+                print(f"Please Skip: {structure[modelID][chainID][unknownRes.id[1]]} as lowest vals:{sortedEnArray[0,1]} and {sortedEnArray[1,1]}, degenergate names: {degenNames} and values are: {degenArray} with {EnDiffWithMin}<{gc.ECutOff}")
                 print("###########################################################################")
                 
     else:
@@ -1381,11 +1380,11 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
     sumOrigState = enSumTotND1 + enSumTotNE2
     
     sumRotamer = enSumTotND1Ro + enSumTotNE2Ro
-    origStateHIP = enSumTotND1< -1*mc.ECutOff and enSumTotNE2< -1*mc.ECutOff
-    rotamerStateHIP = enSumTotND1Ro< -1*mc.ECutOff and enSumTotNE2Ro<-1*mc.ECutOff
+    origStateHIP = enSumTotND1< -1*gc.ECutOff and enSumTotNE2< -1*gc.ECutOff
+    rotamerStateHIP = enSumTotND1Ro< -1*gc.ECutOff and enSumTotNE2Ro<-1*gc.ECutOff
 
     #Checking the degenerate case
-    if(origStateHIP and rotamerStateHIP and abs(sumOrigState - sumRotamer)<1*mc.ECutOff and (enSumTotND1 !=0 and enSumTotNE2 !=0 and enSumTotND1Ro !=0 and enSumTotNE2Ro !=0 ) ):
+    if(origStateHIP and rotamerStateHIP and abs(sumOrigState - sumRotamer)<1*gc.ECutOff and (enSumTotND1 !=0 and enSumTotNE2 !=0 and enSumTotND1Ro !=0 and enSumTotNE2Ro !=0 ) ):
           if gc.log_file:
               print(f"HIP:{unknownRes} of {unknownRes.parent} is DEGENERATE!!")
 
@@ -1411,7 +1410,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
 
           return structure, changeVal, skipVal, skipResInfo, S, HIPset, HIPdegen
 
-    elif(enSumTotND1< -1*mc.ECutOff and enSumTotNE2< -1*mc.ECutOff):
+    elif(enSumTotND1< -1*gc.ECutOff and enSumTotNE2< -1*gc.ECutOff):
         ##check if the original state is a possibility
         ##Also check if the closest atom is OG from SER or OG1 from THR. If it is then HIP cannot be the state.
         ##Because OG/OG1 are poor acceptors
@@ -1468,10 +1467,10 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
         
         else: 
             if gc.log_file:
-                print(f"ERROR: Investigating HIP-where energies for both nitrogen's<-{1*mc.ECutOff} but close atoms = 0. PLS CHECK CODE ")
+                print(f"ERROR: Investigating HIP-where energies for both nitrogen's<-{1*gc.ECutOff} but close atoms = 0. PLS CHECK CODE ")
             sys.exit()
 
-    elif(enSumTotND1Ro< -1*mc.ECutOff and enSumTotNE2Ro<-1*mc.ECutOff):
+    elif(enSumTotND1Ro< -1*gc.ECutOff and enSumTotNE2Ro<-1*gc.ECutOff):
         ##check if the rotamer state is a possibility
         ##Check if the closest atom is OG from SER or OG1 from THR. If it is then HIP cannot be the state
         ##Because OG/OG1 are poor acceptors
@@ -1531,7 +1530,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
 
         else: 
             if gc.log_file:
-                print(f"Investigating HIP Rotamer-where energies for both nitrogen's<-{1*mc.ECutOff} but close atoms = 0. Check more details.")
+                print(f"Investigating HIP Rotamer-where energies for both nitrogen's<-{1*gc.ECutOff} but close atoms = 0. Check more details.")
             sys.exit()
 
     else:
@@ -1684,7 +1683,7 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
             diffWithMin = abs(sortedEnArray[1:,1]-MinEn)
 
             ##checking if the difference between the smallest two energy value is less than 1-thus a possible degeneracy!
-            degenFound = any(diffWithMin< mc.ECutOff) 
+            degenFound = any(diffWithMin< gc.ECutOff)
 ###################################IF DEGENERATE ###############################################################
             if(degenFound):
                 if gc.log_file:
@@ -1718,8 +1717,8 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
    
     return structure,changeVal,skipVal,skipResInfo
 
-def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid=False, generated_files=None,
-                                                 pdb_file_num=None, fOutName = 'out'):
+def resolve_residue_ambiguities_in_one_structure(structure, set_original_centroid=False, generated_files=None,
+                                                 pdb_file_num=None, outprefix='out'):
 
     if generated_files is None:
         generated_files = []
@@ -1791,7 +1790,7 @@ def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid
                 structBranch[modelID][chainID][res_to_be_branch.id].isKnown = 1
                 if res_to_be_branch.resname in ['ASP', 'GLU']:
                     sUn = res_to_be_branch.parent.parent.parent
-                    unknownASPpair = get_ASP_GLU_pair(res_to_be_branch, sUn, mc.deltaD)
+                    unknownASPpair = get_ASP_GLU_pair(res_to_be_branch, sUn, gc.deltaD)
                     modelID_ASPpair = unknownASPpair.parent.parent.id
                     chainID_ASPpair = unknownASPpair.parent.id
                     structBranch[modelID_ASPpair][chainID_ASPpair][unknownASPpair.id].isKnown = 1
@@ -1799,9 +1798,10 @@ def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid
                     print(f"Processing {res_to_be_branch}'s degenerate states: {count+1}/{len(all_degen_struc_names)}")
                     print("Start another 'resolve_residue_ambiguities_in_one_structure call'")
                 _, num_unknown_res = resolve_residue_ambiguities_in_one_structure(structBranch,
-                                                             set_original_centroid=set_original_centroid,
-                                                              generated_files=generated_files,
-                                                              pdb_file_num=pdb_file_num, fOutName= fOutName)
+                                                                                  set_original_centroid=set_original_centroid,
+                                                                                  generated_files=generated_files,
+                                                                                  pdb_file_num=pdb_file_num,
+                                                                                  outprefix=outprefix)
             # it'd only get here when all branches are finished
             # we need to return here to avoid breaking out and write the final PDB again
             if num_unknown_res == 0:
@@ -1820,9 +1820,8 @@ def resolve_residue_ambiguities_in_one_structure(structure,set_original_centroid
 
     # when it get out of the while loop
     # meaning there are no more unknown residue, then write to PDB file
-    fout = stp.get_output_folder_name()
-    fPDBname = f"{fOutName}_{pdb_file_num[0]}.pdb"
-    fPDBfullPath = os.getcwd() + f"/{fout}/{fPDBname}"
+    fPDBname = f"{outprefix}_{pdb_file_num[0]}.pdb"
+    fPDBfullPath = os.getcwd() + f"/{gc.out_folder}/{fPDBname}"
 
     if gc.log_file:
         print(f"No more unknown for this structure, Writing result to: {fPDBname}")

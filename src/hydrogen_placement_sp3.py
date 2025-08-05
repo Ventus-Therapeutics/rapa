@@ -30,11 +30,10 @@ from Bio.PDB import *
 
 
 import my_residue_atom as mra
-import my_constants as mc
 import setup_protein as stp
 import close_atoms as cats
 import my_math as mm
-import global_config as gc
+import global_constants as gc
 
 
 def check_bond_angle_for_all_connected_atoms(sp3,abvSP3, sp3Coord, abvSP3Coord, aat0, aat1, aat2):
@@ -286,7 +285,7 @@ def optimize_connected_atoms_by_rotation_in_plane(sp3, aboveSp3, aatPrime,allClo
     aatPrimeMat = []
 
     #end angle for LYS: 120, and end angle for SER/THR: 360
-    endAng = mc.optRotAngle_LYS if(sp3.parent.resname in ['LYS', 'LYN']) else mc.optRotAngle
+    endAng = gc.optRotAngle_LYS if(sp3.parent.resname in ['LYS', 'LYN']) else gc.optRotAngle
     
    #precomputing to reduce time
     pre_cal_acceptor_donor_info= {'sp3': cats.get_info_for_acceptorAt_donorAt(sp3)}
@@ -368,7 +367,7 @@ def adjust_first_connected_atom_to_sp3_in_prime_reference_frame(aboveSp3CoordPri
     V0 = Vector(aboveSp3CoordPrime)
     V1 = Vector(sp3CoordPrime )
     V2 = Vector(aat0CoordPrime)
-    adjustTheta = mc.sp3Angle-(calc_angle(V0, V1, V2)*180/np.pi)
+    adjustTheta = gc.sp3Angle-(calc_angle(V0, V1, V2)*180/np.pi)
     aat0CoordPrimeMod = np.einsum('ij,j->i',mm.get_rotation_matrix_about_Yaxis(adjustTheta), aat0CoordPrime)
     
     return aat0CoordPrimeMod

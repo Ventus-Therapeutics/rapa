@@ -1,7 +1,4 @@
 """
-This module contains all the required constants.
-
-
 Copyright (c) 2025 Ventus Therapeutics U.S., Inc.
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -26,12 +23,21 @@ SOFTWARE.
 import numpy as np
 from collections import namedtuple
 
+# the variable here will be set by main then shared by every file (because python only load it once)
+
+##### set up by parse_argument
+log_file = False
+debug = False
+out_folder = ''
+out_info_file = ''
+ECutOff = 1.0 ##Degenerate cases # this will be set when user specified "--single_pdb_out"
+
+##### global constants
+
 xc_orig=0
 yc_orig=0
 zc_orig=0
 
-protID = []
-out_name = '' 
 #rotation for LYS and SER/THR while searching for side chain hydrogen
 optRotAngle_LYS = 130
 optRotAngle = 360
@@ -49,7 +55,7 @@ repulsive_k = 9*(2.9**6) # use coloumn potential the constant is being set so th
 withinResClashDist = 0.98
 btwResClashDist = 1.3
 
-ECutOff = 1.0 ##Degenerate cases
+
 
 #max num of ASP/GLUS
 numASPsGLUs =2
@@ -109,8 +115,8 @@ ASHhAttached = ['HD2']
 GLHhAttached = ['HE2']
 
 ##creating a dictionary for each residue of concern.
-unResDict = {'HIS':[HIStypesNoHIP, HISactiveAtoms, HIShAttached, abvAA_HIS], 
-             'GLN':[GLNtypes, GLNactiveAtoms, GLNhAttached, abvAA_GLN], 
+unResDict = {'HIS':[HIStypesNoHIP, HISactiveAtoms, HIShAttached, abvAA_HIS],
+             'GLN':[GLNtypes, GLNactiveAtoms, GLNhAttached, abvAA_GLN],
              'ASN':[ASNtypes,ASNactiveAtoms, ASNhAttached, abvAA_ASN],
              'ASH':[ASHtypes,ASHactiveAtoms, ASHhAttached, abvAA_ASH],
              'ASP':[ASHtypes,ASHactiveAtoms, ASHhAttached, abvAA_ASH],
@@ -148,5 +154,3 @@ LPSCnamesTYR  = [['LP3']]
 LPSCnamesASH =[['LP3','LP4'],['LP5']]
 
 LPSCnamesGLH =[['LP3','LP4'],['LP5']]
-
-

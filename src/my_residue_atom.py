@@ -24,11 +24,9 @@ SOFTWARE.
 
 """
 
-
-
 import Bio
 from Bio import PDB
-import my_constants as mc
+import global_constants as gc
 
 
 ############################################################
@@ -69,13 +67,13 @@ class my_residue(Bio.PDB.Residue.Residue):
 ##This function defines only the "valid" amino acid or which has the first id space empty.
     def is_valid_amino_acid(self):
         """ Defining the valid Amino acids that not the Hetero-residues or water."""
-        return 1 if (self.idvalue[0] == ' ' and self.resname in mc.validResnames) else 0
+        return 1 if (self.idvalue[0] == ' ' and self.resname in gc.validResnames) else 0
 
 
 
     def is_residue_of_concern(self):
         """ Defining if the residue is in the residue of concern list as defined in the myConstants class"""
-        return 1 if self.resname in mc.res_of_concern else 0
+        return 1 if self.resname in gc.res_of_concern else 0
 
 ##defining the active atoms of unknown residue
     def get_unknown_residue_acceptor_donor_atoms(self):
@@ -132,7 +130,7 @@ class my_atom(Bio.PDB.Atom.Atom):
        """  gives info regarding if provided atom is part of backbone.
             Note:Treating Proline's N as part of backbone """
 
-       return 1 if self.name in mc.atoms_backbone else 0
+       return 1 if self.name in gc.atoms_backbone else 0
        
 
     def get_id(self):
@@ -156,22 +154,22 @@ class my_atom(Bio.PDB.Atom.Atom):
             
             if(self.name[0] == 'N' and (atomParentName != 'PRO')):
                 ##ANY Nitrogen is a donor-except Proline backbone and HIS. In HIS: it can be an acceptor!!
-                self.atomBehavior = mc.donor
+                self.atomBehavior = gc.donor
 
             elif (self.name[0] == 'O' and self.name!= 'OXT'):
-                self.atomBehavior = mc.acceptor
+                self.atomBehavior = gc.acceptor
             else:
-                self.atomBehavior = mc.doesNothing
+                self.atomBehavior = gc.doesNothing
         
             if (self.name == 'ND1' and atomParentName == 'HIE') or (self.name == 'NE2' and atomParentName == 'HID'):
-                self.atomBehavior = mc.acceptor
+                self.atomBehavior = gc.acceptor
 
             if (atomParentName == 'HIS') and  (self.name == 'ND1' or self.name == 'NE2'):
-                self.atomBehavior = mc.TBD
+                self.atomBehavior = gc.TBD
 
-            if( ((atomParentName in mc.res_with_OH ) and (self.name == 'OG1' or self.name =='OG' or self.name == 'OH'))\
+            if( ((atomParentName in gc.res_with_OH ) and (self.name == 'OG1' or self.name =='OG' or self.name == 'OH'))\
               or( atomParentName == 'GLH' and self.name == 'OE2') or (atomParentName == 'ASH' and self.name == 'OD2')):
-                self.atomBehavior = mc.both
+                self.atomBehavior = gc.both
 
             return self.atomBehavior 
 
@@ -186,19 +184,19 @@ class my_atom(Bio.PDB.Atom.Atom):
         """This method provides the lone pair names(ex."LP1","LP2","LP3",etc) associated with the given atom"""
 
         if(self.is_backbone()==1):
-            LPNames = mc.LPBB[0]
+            LPNames = gc.LPBB[0]
             return LPNames
 
-        dict_LPSCName = {'OD1_ASP': mc.LPSCnamesASP[0],  'OD2_ASP': mc.LPSCnamesASP[1],
-                          'OE1_GLU':mc.LPSCnamesGLU[0], 'OE2_GLU':mc.LPSCnamesGLU[1],
-                          'OD1_ASN': mc.LPSCnamesASN[0],'OE1_GLN': mc.LPSCnamesGLN[0],
-                          'OD1_ASNR': mc.LPSCnamesASN[0],'OE1_GLNR': mc.LPSCnamesGLN[0],
-                          'ND1_HIE': mc.LPSCnamesHIE[0],'NE2_HID': mc.LPSCnamesHID[0],
-                          'ND1_HIER': mc.LPSCnamesHIE[0],'NE2_HIDR': mc.LPSCnamesHID[0],
-                          'OG_SER':mc.LPSCnamesSER[0], 'OG1_THR':mc.LPSCnamesTHR[0],
-                          'OH_TYR':mc.LPSCnamesTYR[0], 'OD1_ASH':mc.LPSCnamesASH[0],
-                          'OD2_ASH':mc.LPSCnamesASH[1], 'OE1_GLH':mc.LPSCnamesGLH[0],
-                          'OE2_GLH':mc.LPSCnamesGLH[1]
+        dict_LPSCName = {'OD1_ASP': gc.LPSCnamesASP[0],  'OD2_ASP': gc.LPSCnamesASP[1],
+                          'OE1_GLU':gc.LPSCnamesGLU[0], 'OE2_GLU':gc.LPSCnamesGLU[1],
+                          'OD1_ASN': gc.LPSCnamesASN[0],'OE1_GLN': gc.LPSCnamesGLN[0],
+                          'OD1_ASNR': gc.LPSCnamesASN[0],'OE1_GLNR': gc.LPSCnamesGLN[0],
+                          'ND1_HIE': gc.LPSCnamesHIE[0],'NE2_HID': gc.LPSCnamesHID[0],
+                          'ND1_HIER': gc.LPSCnamesHIE[0],'NE2_HIDR': gc.LPSCnamesHID[0],
+                          'OG_SER':gc.LPSCnamesSER[0], 'OG1_THR':gc.LPSCnamesTHR[0],
+                          'OH_TYR':gc.LPSCnamesTYR[0], 'OD1_ASH':gc.LPSCnamesASH[0],
+                          'OD2_ASH':gc.LPSCnamesASH[1], 'OE1_GLH':gc.LPSCnamesGLH[0],
+                          'OE2_GLH':gc.LPSCnamesGLH[1]
         }
         try:
             LPNames = dict_LPSCName[self.name+'_'+self.parent.resname]

@@ -28,11 +28,10 @@ import argparse
 import sys, os
 import timeit
 
-import my_constants as mc
 import setup_protein as stp
 import hydrogen_placement_sp2 as hsp2
 import state_assignment as sa
-import global_config as gc
+import global_constants as gc
 from misc import prettify_time, Logger
 
 def generate_multi_pdb_pymol_script(pdb_files, residues, output_pml="multi_pdb_show_residues.pml"):
@@ -85,12 +84,15 @@ def get_unknown_list_for_pml(structure):
         all_unknown_residues.append((chainID, res_num))
     return all_unknown_residues
 
-def main(argv):
+def parse_arguments(argv):
+    """
+    process arguments and parse them to global when needed
+    """
     parser = argparse.ArgumentParser(description='RAPA')
-    parser.add_argument('-pID', '--protein_id', type=str, required=True, metavar='',
+    parser.add_argument('-pID', '--protein_id',dest='protID', type=str, required=True, metavar='',
                         help='Input protein ID name. It is a required argument of data type string.')
 
-    parser.add_argument('-o', '--out_name', type=str, metavar='',
+    parser.add_argument('-o', '--out_name',dest='out_prefix', type=str, default='', metavar='',
                         help='Prefix of output file name. It is an optional argument of data type string. If not provided, it will use the default value as "[pID]_out". ')
 
     parser.add_argument('-s', '--single_pdb_out',
@@ -116,72 +118,68 @@ def main(argv):
     parser.add_argument('-v', '--version', action='version', version='%(prog)s 1.1.1 ')
 
     args = parser.parse_args(argv)
-    print('PROGRAM CALL:python {}'.format(' '.join(sys.argv)))
+
     # Protein id
-    if (args.protein_id):
-        protID, _ = os.path.splitext(args.protein_id)
-    else:
-        protID = ''
-        sys.exit('please provide an input PDB file name')
+    # the input can either be 1bcd or 1bcd.pdb
+    # we're stripping the prefix
+    args.protID, _ = os.path.splitext(args.protID)
 
-    # if hydrogen bonded to sp2 side chain atoms of unknown residue, along with lone pair locations are known or not.
-    # If the tool is run once-it will create a PDB file with hydrogen bonded with sp2 atoms, and lone pair coordinates. The code will use that if you give a value of 1 for this flag
-    if (args.keep_hlp):
-        keep_hlp = args.keep_hlp
-    else:
-        keep_hlp = 0
+    # set up outputs
+    if args.out_prefix == '':
+        args.out_prefix = args.protID + '_out'
 
-    if (args.HLPsp2_known):
-        HLPsp2_known = args.HLPsp2_known
+    args.output_folder = f"{args.out_prefix}_outputs"
+    if os.path.isdir(args.output_folder):
+        print(f"WARNING: specified output folder {args.output_folder} already exist, will overwrite")
     else:
-        HLPsp2_known = 0
+        os.makedirs(args.output_folder)
 
-    # the out files will be created with XXX_Number.pdb where XXX will be the name provided by the user, otherwise default is: protID_'out'
-    if (args.out_name):
-        fOutName = args.out_name
-    else:
-        fOutName = protID + '_out'
-    # to have protID accessible from any point in the code
-    mc.protID = protID
-    mc.out_name = fOutName
+    args.log_name = f"{args.output_folder}/{args.out_prefix}.log"
 
-    # Switch on debug mode
+    # pass to global variable
     gc.debug = args.debug
     gc.log_file = args.log_file
+    gc.out_folder = args.output_folder
+    gc.out_info_file = f"{args.output_folder}/{args.out_prefix}.info"
+
+    if args.single_pdb_out:
+        gc.ECutOff = 0
+    else:
+        gc.ECutOff = 1
+
+    return args
+
+def main(argv):
+
+    args = parse_arguments(argv)
+
     if gc.log_file:
         # If the log file option is on, print out info and direct stdout to file as well
-        log_file_name = stp.get_log_file_name()
-        sys.stdout = Logger(log_file_name)
+        sys.stdout = Logger(args.log_name)
 
-    if (args.single_pdb_out):
-        mc.ECutOff = 0
-    else:
-        mc.ECutOff = 1
-
-    # basic information file
-    fInfoName = stp.get_info_file_name()
 
     starttime = timeit.default_timer()
+    print('PROGRAM CALL:python {}'.format(' '.join(sys.argv)))
 
     # set up structure, know the number of model and chain in the pdb
-    structure = stp.setup_structure(protID, outFolder='.', fName=None)
+    structure = stp.setup_structure(args.protID, outFolder='.', fName=None)
     chains = [item for sublist in structure for item in sublist]
     numModels = len(structure.child_list)
     numChains = len(chains)
 
     if gc.log_file:
-        print(f"The PDB ID being used: {protID} and start time is: {starttime}")
+        print(f"The PDB ID being used: {args.protID} and start time is: {starttime}")
         print(f"\nThe structure has number of models {numModels}: {structure.child_list} and number of chains: {numChains}: {chains}\n")
 
-    with open(fInfoName, "w") as fInfo:
-        fInfo.write(f"PDB ID: {protID} \n")
+    with open(gc.out_info_file, "w") as fInfo:
+        fInfo.write(f"PDB ID: {args.protID} \n")
         fInfo.flush()
         fInfo.write(f"Models: {numModels}: {structure.child_list}\n")
         fInfo.write(f"Chains: {numChains}: {chains}\n\n")
         fInfo.flush()
 
     if gc.debug:
-        print(f"PDB ID: {protID}")
+        print(f"PDB ID: {args.protID}")
         print(f"Models: {numModels}: {structure.child_list}")
         print(f"Chains: {numChains}: {chains}\n")
 
@@ -192,12 +190,12 @@ def main(argv):
     # initialize the known/unknown residues(ASN/GLN/HIS, and mark if 2 ASPs/GLUs are in h-bonding distance to each other)
     stp.set_initial_known_residues_and_rotamers(structure)
 
-    mc.xc_orig, mc.yc_orig, mc.zc_orig = stp.get_centroid(structure)
+    gc.xc_orig, gc.yc_orig, gc.zc_orig = stp.get_centroid(structure)
     # normalize so the new centroid=(0,0,0)
     stp.normalize_atom_coords(structure)
 
     ###########################Adding hydrogen and  connected to sp2 side chain atoms of unknown residue ##########################
-    if (HLPsp2_known == 0):
+    if args.HLPsp2_known:
         lastSerial = list(structure.get_residues())[-1].child_list[-1].serial_number
         # This does not use neighboring residues
         lastSerial, _ = hsp2.place_lonepair_on_backbone(structure, lastSerial)
@@ -205,14 +203,14 @@ def main(argv):
         lastSerial, _ = hsp2.placeHydrogens_backbone(structure, lastSerial)
         # Adding hydrogen to side chains:
         lastSerial, _ = hsp2.add_sp2_sidechain_hydrogens(structure, lastSerial)
-        fName = f'{protID}_HLPsp2.pdb'
+        fName = f'{args.protID}_HLPsp2.pdb'
         stp.write_to_PDB(structure, fName, removeHLP=False, removeHall=False, set_original_centroid=False)
         if gc.log_file:
             print("After adding the hydrogens....")
-        protIDName = protID + "_HLPsp2"
+        protIDName = args.protID + "_HLPsp2"
 
     else:
-        protIDName = protID + "_HLPsp2"
+        protIDName = args.protID + "_HLPsp2"
 
         if gc.log_file:
             print("\nHydrogen and lone pairs were already present!")
@@ -241,8 +239,8 @@ def main(argv):
 
 
     generated_files, _ = sa.resolve_residue_ambiguities_in_one_structure(structure, set_original_centroid=True,
-                                                                      generated_files=None, pdb_file_num=None,
-                                                                      fOutName=fOutName)
+                                                                         generated_files=None, pdb_file_num=None,
+                                                                         outprefix=args.out_prefix)
     total_run_time = timeit.default_timer() - starttime
 
     if gc.log_file:
@@ -254,7 +252,7 @@ def main(argv):
                 f"{'\n'.join(generated_files)}")
         generate_multi_pdb_pymol_script(generated_files, all_unknown_res, f'{stp.get_output_folder_name()}/inspect.pml')
 
-    with open(fInfoName, "a") as fInfo:
+    with open(gc.out_info_file, "a") as fInfo:
         fInfo.write(f"###############################################################\n")
         fInfo.write(f"###############################################################\n")
         fInfo.write(f"###############################################################\n\n\n")
@@ -267,14 +265,14 @@ def main(argv):
         if gc.log_file:
             print(f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details")
 
-        with open(fInfoName, "a") as fInfo:
+        with open(gc.out_info_file, "a") as fInfo:
             fInfo.write(
                 f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
             fInfo.flush()
 
 
-    if (not keep_hlp):
-        file_hlp = f"{protID}" + "_HLPsp2.pdb"
+    if (not args.keep_hlp):
+        file_hlp = f"{args.protID}" + "_HLPsp2.pdb"
         if os.path.exists(file_hlp):
             os.remove(file_hlp)
         else:
@@ -282,7 +280,7 @@ def main(argv):
                 print(f"File {file_hlp} does not exist.")
 
     print("************************************************************")
-    print(f"RAPA exiting. Run for the given PDB: {protID} is completed")
+    print(f"RAPA exiting. Run for the given PDB: {args.protID} is completed")
     print("************************************************************")
     sys.exit()
 

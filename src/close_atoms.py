@@ -32,15 +32,10 @@ import numpy as np
 
 import copy
 
-from os.path import exists
 from Bio.PDB import *
-
-
-
 import setup_protein as stp
 import my_residue_atom as mra
-import my_constants as mc
-import global_config as gc
+import global_constants as gc
 
 def hbond_energy(r, theta, gamma, attractive=True,
                  D1=5.3690476811615016,D2=27.58319209788471,D3=39.701896317848934,D4=4.854675162065331e-10,D5=0.09999999999999998,
@@ -163,7 +158,7 @@ def get_close_atom_distance_info(atomCurr, close_atoms, include_self=True):
    
     return distInfo
 
-def get_all_close_atom_info_for_one_atom(target_atom, givenList, dist_cutoff=mc.deltaD, include_self=True):
+def get_all_close_atom_info_for_one_atom(target_atom, givenList, dist_cutoff=gc.deltaD, include_self=True):
 
     """
         I/P: 
@@ -180,7 +175,7 @@ def get_all_close_atom_info_for_one_atom(target_atom, givenList, dist_cutoff=mc.
         sys.exit("No search list provided for getting close atoms")
 
     ns = Bio.PDB.NeighborSearch(givenList)
-    close_atoms = ns.search(target_atom.coord, dist_cutoff) ##distance cut off is defined by mc.deltaD
+    close_atoms = ns.search(target_atom.coord, dist_cutoff) ##distance cut off is defined by gc.deltaD
     
     if include_self:
         if(target_atom not in close_atoms):
