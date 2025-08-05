@@ -24,10 +24,7 @@ SOFTWARE.
 
 
 """
-
-import Bio
 import numpy as np
-import math
 
 import Bio
 from Bio import PDB

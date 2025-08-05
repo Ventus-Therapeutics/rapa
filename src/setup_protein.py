@@ -26,7 +26,6 @@ SOFTWARE.
 
 import sys
 import os
-import Bio
 import copy
 
 import numpy as np
