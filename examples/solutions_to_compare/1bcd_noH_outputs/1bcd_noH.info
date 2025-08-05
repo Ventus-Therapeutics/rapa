@@ -2,22 +2,48 @@ PDB ID: 1bcd_noH
 Models: 1: [<Model id=0>]
 Chains: 1: [<Chain id=A>]
 
-###################################### 
-###################################### 
 
-
-Got unknown ASPs/GLUs: [<Residue ASP het=  resseq=110 icode= >, <Residue ASP het=  resseq=34 icode= >] with atoms [<Atom OD1>, <Atom OD1>].
- And relevant info: [[<Atom OD1>, 34, <Atom OD1>, 110, np.float32(3.7638721)], [<Atom OD1>, 110, <Atom OD1>, 34, np.float32(3.7638721)]]
-
-
-Got unknown atoms [<Atom OD1>, <Atom OD1>].
- And relevant info:
- [[<Atom OD1>, 34, <Atom OD1>, 110, np.float32(3.7638721)], [<Atom OD1>, 110, <Atom OD1>, 34, np.float32(3.7638721)]]
-###############################################################
-###############################################################
-###############################################################
-
-
-The time taken is :47.79978437535465 second or 0.7966630729225774 mins or  0.013277717882042957 hours
+########################################
+Total number of unknown residues: 33
+Unknown residues:
+ HIS-3 of chain A
+ HIS-4 of chain A
+ HIS-10 of chain A
+ ASN-11 of chain A
+ HIS-15 of chain A
+ HIS-17 of chain A
+ GLN-28 of chain A
+ HIS-36 of chain A
+ GLN-53 of chain A
+ ASN-61 of chain A
+ ASN-62 of chain A
+ HIS-64 of chain A
+ ASN-67 of chain A
+ GLN-74 of chain A
+ GLN-92 of chain A
+ HIS-94 of chain A
+ HIS-96 of chain A
+ GLN-103 of chain A
+ HIS-107 of chain A
+ HIS-119 of chain A
+ HIS-122 of chain A
+ ASN-124 of chain A
+ GLN-136 of chain A
+ GLN-137 of chain A
+ GLN-158 of chain A
+ ASN-178 of chain A
+ GLN-222 of chain A
+ ASN-230 of chain A
+ ASN-232 of chain A
+ ASN-244 of chain A
+ GLN-249 of chain A
+ ASN-253 of chain A
+ GLN-255 of chain A
+########################################
+Residues w/ degenerate states: (energy of different states within 1 kcal/mol)
+ HIS-122 of chain A
+########################################
+Done. Execution time is: 35.453986 seconds
 Number of files generated: 2 and files generated:
-['/data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_0.pdb', '/data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_1.pdb']
+/data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_0.pdb
+/data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_1.pdb

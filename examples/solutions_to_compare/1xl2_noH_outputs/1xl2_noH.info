@@ -4,20 +4,36 @@ Chains: 2: [<Chain id=A>, <Chain id=B>]
 
 ###################################### 
 ###################################### 
-
-
 Got unknown ASPs/GLUs: [<Residue ASP het=  resseq=25 icode= >, <Residue ASP het=  resseq=25 icode= >] with atoms [<Atom OD2>, <Atom OD2>].
- And relevant info: [[<Atom OD2>, 25, <Atom OD2>, 25, np.float32(2.8664)], [<Atom OD2>, 25, <Atom OD2>, 25, np.float32(2.8664)]]
-
-
-Got unknown atoms [<Atom OD2>, <Atom OD2>].
+ And relevant info: [[<Atom OD2>, 25, <Atom OD2>, 25, np.float32(2.8664)], [<Atom OD2>, 25, <Atom OD2>, 25, np.float32(2.8664)]]Got unknown atoms [<Atom OD2>, <Atom OD2>].
  And relevant info:
  [[<Atom OD2>, 25, <Atom OD2>, 25, np.float32(2.8664)], [<Atom OD2>, 25, <Atom OD2>, 25, np.float32(2.8664)]]
-###############################################################
-###############################################################
-###############################################################
-
-
-The time taken is :22.818779466673732 second or 0.38031299111122885 mins or  0.006338549851853815 hours
-Number of files generated: 3 and files generated:
-['/data5/cadd/software_development/zylin/rapa/examples/1xl2_noH_outputs/1xl2_noH_0.pdb', '/data5/cadd/software_development/zylin/rapa/examples/1xl2_noH_outputs/1xl2_noH_1.pdb', '/data5/cadd/software_development/zylin/rapa/examples/1xl2_noH_outputs/1xl2_noH_2.pdb']
+########################################
+Total number of unknown residues: 22
+Unknown residues:
+ GLN-2 of chain A
+ GLN-7 of chain A
+ GLN-18 of chain A
+ ASP-25 of chain A
+ GLN-58 of chain A
+ GLN-61 of chain A
+ HIS-69 of chain A
+ ASN-83 of chain A
+ ASN-88 of chain A
+ GLN-92 of chain A
+ ASN-98 of chain A
+ GLN-2 of chain B
+ GLN-7 of chain B
+ GLN-18 of chain B
+ ASP-25 of chain B
+ GLN-58 of chain B
+ GLN-61 of chain B
+ HIS-69 of chain B
+ ASN-83 of chain B
+ ASN-88 of chain B
+ GLN-92 of chain B
+ ASN-98 of chain B
+########################################
+Done. Execution time is: 11.837597 seconds
+Number of files generated: 1 and files generated:
+/data5/cadd/software_development/zylin/rapa/examples/1xl2_noH_outputs/1xl2_noH_0.pdb
