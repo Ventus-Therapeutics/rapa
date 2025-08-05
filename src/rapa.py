@@ -67,7 +67,7 @@ def parse_arguments(argv):
                         action="store_true")
 
     parser.add_argument('-k_hlp', '--keep_hlp',
-                        help=' An option for the additional PDB created with the added hydrogen and lone pair coordinates (with suffix "_HLPsp2.pdb") needs to be generated as an output.',
+                        help = 'Keep the PDB created with the added hydrogen and lone pair coordinates ({prefix}_HLPsp2.pdb), Default: off (delete file after)',
                         action="store_true")
 
     parser.add_argument('-hlp', '--HLPsp2_known',
@@ -182,7 +182,7 @@ def main(argv):
 
 
     # setting up the new structure with hydrogen and lone pairs
-    structure = stp.setup_structure(protIDName, outFolder='.', fName=None)
+    structure = stp.setup_structure(protIDName, outFolder=args.output_folder, fName=None)
     stp.set_initial_known_residues_and_rotamers(structure)
 
     # flagging the unknown ASP/GLUs
@@ -245,7 +245,7 @@ def main(argv):
             fInfo.flush()
 
     if not args.keep_hlp:
-        file_hlp = f"{args.protID}" + "_HLPsp2.pdb"
+        file_hlp = f"{args.output_folder}/{args.protID}_HLPsp2.pdb"
         if os.path.exists(file_hlp):
             os.remove(file_hlp)
         else:
