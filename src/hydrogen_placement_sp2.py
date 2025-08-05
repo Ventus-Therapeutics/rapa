@@ -32,7 +32,7 @@ import math
 import Bio
 from Bio import PDB
 from Bio.PDB import calc_angle, Vector, Atom
-import my_residue_atom as mra
+import rapa_residue_atom as rra
 import setup_protein as stp
 import close_atoms as cats
 import global_constants as gc
@@ -186,7 +186,7 @@ def place_lonepair_on_backbone(structure, lastSerial):
         for chain in model.child_list: 
             count = 0
             for res in chain.child_list: 
-                myRes = mra.my_residue(res)
+                myRes = rra.my_residue(res)
                
                 if(myRes.is_valid_amino_acid()==1):
 
@@ -263,9 +263,9 @@ def placeHydrogens_backbone(structure, lastSerial):
             carbonAlphaList =[]
 
             for atom in chain.get_atoms():
-                a = mra.my_atom(atom)
+                a = rra.my_atom(atom)
 
-                if(mra.my_residue(a.get_parent()).is_valid_amino_acid()==1): 
+                if(rra.my_residue(a.get_parent()).is_valid_amino_acid()==1):
                     if(a.get_name() == 'N'):
                         nitrogenList.append(a)
 
@@ -502,7 +502,7 @@ def set_HH_and_lonepair_coords_TYR(sp2, hhCoords):
         for i in range(1, np.shape(allCloseAtoms)[0]):
 
             closeAt = allCloseAtoms[i][0]
-            myCloseAt = mra.my_atom(allCloseAtoms[i][0])
+            myCloseAt = rra.my_atom(allCloseAtoms[i][0])
 
             if(myCloseAt.get_behavior().abbrev == 'ac'):
                 ##Considering donor atom associated with reference atom

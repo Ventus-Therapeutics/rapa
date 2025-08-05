@@ -32,7 +32,7 @@ from Bio.PDB import calc_angle, Vector
 import numpy as np
 import copy
 import setup_protein as stp
-import my_residue_atom as mra
+import rapa_residue_atom as rra
 import global_constants as gc
 
 def hbond_energy(r, theta, gamma, attractive=True,
@@ -143,7 +143,7 @@ def get_close_atom_distance_info(atomCurr, close_atoms, include_self=True):
         target_resid = atomCurr.get_parent().id[1]
 
     for atomClose in close_atoms:
-       aClose = mra.my_atom(atomClose)
+       aClose = rra.my_atom(atomClose)
        dist = atomClose-atomCurr
        resid = atomClose.get_parent().id[1]
        if not include_self and resid == target_resid:
@@ -699,7 +699,7 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
                 enSumAcc = enSumAcc+energy                    
     else:
         
-        myPsAcceptor = mra.my_atom(donorAt) 
+        myPsAcceptor = rra.my_atom(donorAt)
         LPNames = copy.deepcopy(myPsAcceptor.get_lonepair_names())
         #Get various LPs of the acceptor-Gamma will change
         #check if LPNames associated with pseudo acceptor are actually present in the child list of pseduo acceptor's parent
@@ -763,7 +763,7 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
     else: 
         [allCloseAtoms, closeAtmsTBD] = pre_cal_donor_info
 
-    myAcceptorAt = mra.my_atom(acceptorAt)
+    myAcceptorAt = rra.my_atom(acceptorAt)
 
     acceptorAt_vec = acceptorAt.get_vector()##Atom1
     atom1 = acceptorAt

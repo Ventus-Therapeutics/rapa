@@ -36,7 +36,7 @@ import Bio
 from Bio import PDB
 
 import setup_protein as stp
-import my_residue_atom as mra
+import rapa_residue_atom as rra
 import hydrogen_placement_sp2 as hsp2
 import hydrogen_placement_sp3 as hsp3
 import close_atoms as cats
@@ -713,7 +713,7 @@ def energy_of_donor_for_all_close_atoms(hvyAt, allCloseAtoms):
     #energy computation is done, since heavy atom behavior is already known-Its a donor
     for i in range(1, np.shape(allCloseAtoms)[0]):
         currCloseAtom = allCloseAtoms[i][0]
-        closeAtomBehav = mra.my_atom(currCloseAtom).get_behavior().abbrev
+        closeAtomBehav = rra.my_atom(currCloseAtom).get_behavior().abbrev
         currCloseResID = currCloseAtom.parent.id
         modelIDcloseAt = currCloseAtom.parent.parent.parent.id
         chainIDcloseAt = currCloseAtom.parent.parent.id
@@ -814,7 +814,7 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms):
 
     enSumTotal=0
     enValList=[]
-    myHvyAt=mra.my_atom(hvyAt)
+    myHvyAt=rra.my_atom(hvyAt)
     LPAtoms=myHvyAt.get_lonepairs_atoms()
 
     struct=hvyAt.parent.parent.parent.parent
@@ -823,7 +823,7 @@ def energy_of_acceptor_for_all_close_atoms(hvyAt, allCloseAtoms):
 
     for i in range(1, np.shape(allCloseAtoms)[0]):
         currCloseAtom = allCloseAtoms[i][0]
-        closeAtomBehav = mra.my_atom(currCloseAtom).get_behavior().abbrev
+        closeAtomBehav = rra.my_atom(currCloseAtom).get_behavior().abbrev
 
         currCloseResID = currCloseAtom.parent.id
         modelIDcloseAt = currCloseAtom.parent.parent.parent.id
@@ -923,7 +923,7 @@ def compute_energy_for_given_atoms(resState, givenAtoms):
    
     #Iterate over the given atoms in the input (as we need the energy for all those atoms with respect to its close atoms)
     for hvyAt in givenAtoms:
-        myHvyAt = mra.my_atom(hvyAt)
+        myHvyAt = rra.my_atom(hvyAt)
         myHvyAtBehav = myHvyAt.get_behavior().abbrev
 
         #create a custom list to find all close atoms
@@ -974,7 +974,7 @@ def compute_energy_for_given_state(resState):
 
 
     #Find list side chain active atoms, i.e donor/acceptor
-    LOAAresState = mra.my_residue(resState).get_unknown_residue_acceptor_donor_atoms() 
+    LOAAresState = rra.my_residue(resState).get_unknown_residue_acceptor_donor_atoms()
 
     #Find the energy for all the side chain active atoms of the unknown residue
     enSumTotal, enSumForHvys = compute_energy_for_given_atoms(resState, LOAAresState)
@@ -1416,7 +1416,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
         ##Because OG/OG1 are poor acceptors
         if gc.log_file:
             print(f"possibility of original state HIP as the two energy values are: {enSumTotND1} and {enSumTotNE2}")
-        myHIP = mra.my_residue(resHIP)
+        myHIP = rra.my_residue(resHIP)
         LOAA_unknownRes = myHIP.get_unknown_residue_acceptor_donor_atoms()
         
 ###############################Check if one of the acceptor position of SER/THR#####################################
@@ -1476,7 +1476,7 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
         ##Because OG/OG1 are poor acceptors
         if gc.log_file:
             print("possibility of rotamer state HIP...")
-        myHIPR = mra.my_residue(resHIPR)
+        myHIPR = rra.my_residue(resHIPR)
 
         LOAA_unknownResR = myHIPR.get_unknown_residue_acceptor_donor_atoms()
 
@@ -1584,7 +1584,7 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
             print(f"unknown residue number: {count+1}/{lenUnResOrig} and unknown res is: {unknownRes} and its known val:{unknownRes.isKnown} and is rotamer:{unknownRes.isRotamer}, Skip value:{skipVal}, ChangeVal: {changeVal}")
 
 
-        current_unknown_res = mra.my_residue(unknownRes)
+        current_unknown_res = rra.my_residue(unknownRes)
         #Get list of active atoms, list of close atoms, and number of close atoms
         LOAA_unknownRes = current_unknown_res.get_unknown_residue_acceptor_donor_atoms()
         ##This adds close points for rotamer HIS as well:
@@ -1610,10 +1610,10 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
         for neighbor_list in LOCA_unknownRes:
             for i in neighbor_list:
                 # first exclude atoms in LOAA_unknownRes
-                if True not in [mra.if_two_atoms_are_same(i[0], _) for _ in LOAA_unknownRes]:
+                if True not in [rra.if_two_atoms_are_same(i[0], _) for _ in LOAA_unknownRes]:
                     total_valid_neighbor_count += 1
                     # an atom can be known either their parent residue is known or they're backbone atoms
-                    if i[0].parent.isKnown or mra.my_atom(i[0]).is_backbone():
+                    if i[0].parent.isKnown or rra.my_atom(i[0]).is_backbone():
                         total_known_neighbor_count += 1
 
         # For HIS, ASN, GLN, if there are no polar atoms (unknown residues included), if it's HIS, set HIS-> HIE,

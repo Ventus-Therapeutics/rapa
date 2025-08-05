@@ -29,10 +29,10 @@ from Bio import PDB
 from Bio.PDB import calc_angle, Vector, Atom
 
 
-import my_residue_atom as mra
+import rapa_residue_atom as rra
 import setup_protein as stp
 import close_atoms as cats
-import my_math as mm
+import rapa_math as mm
 import global_constants as gc
 
 
@@ -225,7 +225,7 @@ def get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, a
     for i in range(1, np.shape(allCloseAtoms)[0]):
         ##close atoms for which energy needs to be computed 
         closeAt = allCloseAtoms[i][0]
-        myCloseAt = mra.my_atom(allCloseAtoms[i][0])
+        myCloseAt = rra.my_atom(allCloseAtoms[i][0])
 
         if(myCloseAt.get_behavior().abbrev == 'ac'):
             ##Assume the first to be the Hydrogen atom (the others can be either two hydrogen-LYS or two lone pairs-SER/THR)

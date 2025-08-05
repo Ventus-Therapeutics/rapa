@@ -30,7 +30,7 @@ import Bio
 import copy
 
 import numpy as np
-import my_residue_atom as mra
+import rapa_residue_atom as rra
 import global_constants as gc
 
 import Bio
@@ -299,7 +299,7 @@ def get_all_residues(structure,  donotIncludeRes = None):
     allRes = []
     
     for residue in structure.get_residues():
-        r = mra.my_residue(residue)
+        r = rra.my_residue(residue)
         if(r.is_valid_amino_acid() and ( residue != donotIncludeRes) and (residue.resname in gc.validResnames)):
             allRes.append(residue)
 
@@ -331,10 +331,10 @@ def get_donor_acceptor_list(structure, aaType = 'ALL'):
     neededList = [] 
 
     for residue in structure.get_residues():
-        r = mra.my_residue(residue)
+        r = rra.my_residue(residue)
         if r.is_valid_amino_acid():
             for atom in residue:
-                a = mra.my_atom(atom)
+                a = rra.my_atom(atom)
                 abehav = a.get_behavior()[0] 
                 if(aaType == 'DONOR'): 
                     if(abehav == 'do'):neededList.append(atom)
@@ -375,15 +375,15 @@ def get_known_donor_acceptor_list_for_one_atom(structure, at, aaType = 'ALL'):
     neededList = [] 
        
     for residue in structure.get_residues():
-        r = mra.my_residue(residue)
+        r = rra.my_residue(residue)
         if r.is_valid_amino_acid():
             for atom in residue:
-                myACurr = mra.my_atom(atom)
+                myACurr = rra.my_atom(atom)
                 #checking if the residue is know, or part of backbone or atom is part of parent residue
                 cond = ((residue.isKnown == 1) or (myACurr.is_backbone()==1) or (atom in at.parent.child_list))
 
                 if(cond == True):
-                    a = mra.my_atom(atom)
+                    a = rra.my_atom(atom)
                     abehav = a.get_behavior()[0] 
                     if(aaType == 'DONOR'): 
                         if(abehav == 'do'):neededList.append(atom)
@@ -419,10 +419,10 @@ def get_unknown_donor_acceptor_list_for_one_atom(structure, at, aaType = 'ALL'):
 
 
     for residue in structure.get_residues():
-        r = mra.my_residue(residue)
+        r = rra.my_residue(residue)
         if r.is_valid_amino_acid():
             for atom in residue:
-                a = mra.my_atom(atom)
+                a = rra.my_atom(atom)
                 abehav = a.get_behavior()[0] 
                 if(residue.isKnown == 0 and a.is_backbone()==0 and (atom not in at.parent.child_list)):
                     if(aaType == 'DONOR'): 
@@ -449,7 +449,7 @@ def get_unknown_residue_list(structure):
     allResUnknown = []
 
     for residue in structure.get_residues():
-        r = mra.my_residue(residue)
+        r = rra.my_residue(residue)
         if(r.is_valid_amino_acid() ==1):
             if(residue.isKnown == 0):
                 allResUnknown.append(residue)
@@ -473,7 +473,7 @@ def get_centroid(structure):
     count = 0
     for atom in structure.get_atoms():
             count+=1
-            a = mra.my_atom(atom)
+            a = rra.my_atom(atom)
             S = np.vstack([a.get_coord(), sumXYZ])
             sumXYZ =  np.sum(S, axis = 0)
 
@@ -615,7 +615,7 @@ def detect_clash_within_residue_for_all_residues(structure):
     """
 
     for res in structure.get_residues():
-        r = mra.my_residue(res)
+        r = rra.my_residue(res)
         if r.is_valid_amino_acid():
             detect_clash_within_residue(res)
 
@@ -699,7 +699,7 @@ def set_initial_known_residues_and_rotamers(structure):
     """
     
     for res in structure.get_residues():
-         myRes = mra.my_residue(res)
+         myRes = rra.my_residue(res)
          res.isRotamer = 0
          if(myRes.is_residue_of_concern()==1):
             res.isKnown = 0
@@ -758,7 +758,7 @@ def remove_added_hydrogens(structure):
                     'MET': MET_H, 'PHE':PHE_H,'VAL':VAL_H, 'NME':NME_H}
 
     for res in structure.get_residues():
-        myRes = mra.my_residue(res)
+        myRes = rra.my_residue(res)
         if(myRes.is_valid_amino_acid()):
             if(res.resname == 'ACE'): 
                 if gc.log_file:
@@ -789,7 +789,7 @@ def remove_all_hydrogens_from_all_amino_acids(structure):
     for atom in struct.get_atoms():
         count +=1
         res = atom.parent
-        myRes = mra.my_residue(res)
+        myRes = rra.my_residue(res)
         if(myRes.is_valid_amino_acid() and atom.element == 'H'):
             modelID = atom.parent.parent.parent.id
             chainID = atom.parent.parent.id  
@@ -846,7 +846,7 @@ def remove_lonepair(structure):
                     'MET': MET_LP, 'PHE':PHE_LP,'VAL':VAL_LP}
 
     for res in structure.get_residues():
-        myRes = mra.my_residue(res)
+        myRes = rra.my_residue(res)
         if(myRes.is_valid_amino_acid()):
             
             if(res.resname == 'NME'):
