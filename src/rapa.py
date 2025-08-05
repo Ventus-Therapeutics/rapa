@@ -60,12 +60,12 @@ def parse_arguments(argv):
                         help='This flag requests the program to provide a single output pdb file. It is done by setting the cut off that defines degeneracy of unknown residues to zero.',
                         action="store_true")
 
-    parser.add_argument('-l', '--log_file',
-                        help='Log flag creates a .log file which contains details of the run. It is an optional argument.',
-                        action="store_true")
+    parser.add_argument('-l', '--loud', dest='log_file',
+                        help='Print out more details and save it to a log file, default is off',
+                        action='store_true')
 
     parser.add_argument('-d', '--debug',
-                        help='Debug flag creates a .debug file which contains additional details of the run. It is an optional argument.',
+                        help='Print out even more details for debugging',
                         action="store_true")
 
     parser.add_argument('-k_hlp', '--keep_hlp',
@@ -130,25 +130,25 @@ def main(argv):
     # set up structure, know the number of model and chain in the pdb
     structure = stp.setup_structure(args.protID, outFolder='.', fName=None)
     chains = [item for sublist in structure for item in sublist]
-    numModels = len(structure.child_list)
-    numChains = len(chains)
+    num_models = len(structure.child_list)
+    num_chains = len(chains)
 
     if gc.log_file:
         print(f"The PDB ID being used: {args.protID} and start time is: "
               f"{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}")
-        print(f"\nThe structure has number of models {numModels}: {structure.child_list} and number of chains: {numChains}: {chains}\n")
+        print(f"\nThe structure has number of models {num_models}: {structure.child_list} and number of chains: {num_chains}: {chains}\n")
 
     with open(gc.out_info_file, "w") as fInfo:
         fInfo.write(f"PDB ID: {args.protID} \n")
         fInfo.flush()
-        fInfo.write(f"Models: {numModels}: {structure.child_list}\n")
-        fInfo.write(f"Chains: {numChains}: {chains}\n\n")
+        fInfo.write(f"Models: {num_models}: {structure.child_list}\n")
+        fInfo.write(f"Chains: {num_chains}: {chains}\n\n")
         fInfo.flush()
 
     if gc.debug:
         print(f"PDB ID: {args.protID}")
-        print(f"Models: {numModels}: {structure.child_list}")
-        print(f"Chains: {numChains}: {chains}\n")
+        print(f"Models: {num_models}: {structure.child_list}")
+        print(f"Chains: {num_chains}: {chains}\n")
 
 
     # rename HID/HIE/HIP/ASH/GLH->HIS/HIS/HIS/ASP/GLU
@@ -180,7 +180,7 @@ def main(argv):
         protIDName = args.protID + "_HLPsp2"
 
         if gc.log_file:
-            print("\nHydrogen and lone pairs were already present!")
+            print("Hydrogen and lone pairs were already present!")
 
 
     # setting up the new structure with hydrogen and lone pairs

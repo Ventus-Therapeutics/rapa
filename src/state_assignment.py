@@ -1676,7 +1676,7 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
             else:
                 #If not a HIS/all HIS energy values are zero. Declare HIP is not possible.
                 if gc.log_file:
-                    print(f"Not checking for HIP- as I am {unknownRes} of {unknownRes.parent} and currently am not on HIS or all the HIS energies are zero\n")
+                    print(f"Not checking for HIP- as {unknownRes} of {unknownRes.parent} and currently am not on HIS or all the HIS energies are zero\n")
     #########Take the smallest value and subtract from all other values. Find out how many values are<1
             MinEn = sortedEnArray[0,1]
             #The first value is the minimum. So starting from second Val

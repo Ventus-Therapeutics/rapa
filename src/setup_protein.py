@@ -634,6 +634,8 @@ def setup_structure(protID, outFolder = '.', fName = None):
     """
     if(fName == None): fName = protID
     protPDBfile = outFolder + '/' + fName + '.pdb'
+    if not os.path.isfile(protPDBfile):
+        sys.exit(f"Specified PDB file: {protPDBfile} does not exist, Exiting...")
     #Create a parser object:
     parser = Bio.PDB.PDBParser()
     #This object has an attribute get structure parser.get structure returns an object of type structure
@@ -768,8 +770,9 @@ def remove_added_hydrogens(structure):
                 try:
                     res.detach_child(rmh)
                 except KeyError:
-                    if gc.log_file:
-                        print(f"No Hydrogen were present for: {res.resname} with {res.id[1]} and chain: {res.parent}")
+                    #if gc.log_file:
+                    #    print(f"No Hydrogen were present for: {res.resname} with {res.id[1]} and chain: {res.parent}")
+                    pass
     return structure
 
 
@@ -858,8 +861,9 @@ def remove_lonepair(structure):
                 try:
                     res.detach_child(lp)
                 except KeyError:
-                    if gc.log_file:
-                        print(f"No LP were present for: {res.resname} with {res.id[1]} and chain: {res.parent}")
+                    #if gc.log_file:
+                    #    print(f"No LP were present for: {res.resname} with {res.id[1]} and chain: {res.parent}")
+                    pass
     return structure
 
 def write_to_PDB(structure, fname, removeHLP = False, removeHall = False,set_original_centroid=False):
