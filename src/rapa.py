@@ -90,7 +90,7 @@ def parse_arguments(argv):
 
     # set up outputs
     if args.out_prefix == '':
-        args.out_prefix = args.protID + '_out'
+        args.out_prefix = args.protID
 
     args.output_folder = f"{args.out_prefix}_outputs"
     if os.path.isdir(args.output_folder):
