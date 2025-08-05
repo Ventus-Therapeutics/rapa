@@ -153,7 +153,7 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP'):
     #Get all the atoms that needs to be searched for an unknown ASP/GLU residue. Also get a list of all ASPs/GLUs to search
     if(resName == 'ASP'):
         if gc.log_file:
-            print("Checking for unknown ASPs")
+            print("Checking for unknown ASPs...")
 
         searchASP_GLUatoms = get_all_unknown_ASP_OD_atoms(structure)
         allASPs_GLUs = get_all_ASPs(structure)
@@ -162,7 +162,7 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP'):
 
     else:
         if gc.log_file:
-            print("Checking for unknown GLUs\n")
+            print("Checking for unknown GLUs...\n")
 
         searchASP_GLUatoms = get_all_unknown_GLU_OE_atoms(structure)
         allASPs_GLUs = get_all_GLUs(structure)
@@ -212,7 +212,7 @@ def get_all_unknown_ASP_GLU(structure, resName = 'ASP'):
         #Add the removed atoms back to the search list
         searchASP_GLUatoms.append(currASP_GLU[oxygenName1])
         searchASP_GLUatoms.append(currASP_GLU[oxygenName2])
-        if gc.log_file:
+        if gc.debug:
             print(f"potUnknownAtom1: {potUnknownAtom1}, potunknownAtom2: {potUnknownAtom2}")
 
     if(not(unknownASP_GLUatom)):
