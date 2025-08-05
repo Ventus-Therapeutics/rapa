@@ -6,7 +6,7 @@ Copyright (c) 2025 Ventus Therapeutics U.S., Inc.
 
 # 2. Algorithm
 The code follows the following flowchart (fig1 in the [paper](https://pubs.acs.org/doi/full/10.1021/acs.jcim.5c00859)):
-![Flowchart](flowchart.png)
+![Flowchart](flowchart.jpeg)
 
 # 3. Getting started
 
