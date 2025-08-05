@@ -27,54 +27,15 @@ SOFTWARE.
 import argparse
 import sys, os
 import timeit
+from datetime import datetime
 
 import setup_protein as stp
 import hydrogen_placement_sp2 as hsp2
 import state_assignment as sa
 import global_constants as gc
-from misc import prettify_time, Logger
+from misc import prettify_time, Logger, generate_multi_pdb_pymol_script
 
-def generate_multi_pdb_pymol_script(pdb_files, residues, output_pml="multi_pdb_show_residues.pml"):
-    with open(output_pml, 'w') as f:
-        f.write("# Auto-generated PyMOL script for multiple PDBs\n\n")
 
-        # Load all PDBs and assign object names
-        for i, pdb in enumerate(pdb_files):
-            obj_name = f"model_{i}"
-            f.write(f"load {pdb}, {obj_name}\n")
-        f.write("set label_size, 20\n")
-        f.write("bg_color white\n")
-        f.write("cartoon loop\n")
-        f.write("hide everything, all\n")
-        f.write("show cartoon, all\n")
-        f.write("\n")
-
-        # For each residue, show it across all models and store one scene
-        for j, (chain, resi) in enumerate(residues):
-            scene_name = f"res_{chain}_{resi}"
-
-            f.write(f"# Residue {chain}:{resi} across all PDBs\n")
-            obj_name = f"model"
-            sel_name = f"{obj_name}_res_{chain}_{resi}"
-            near_name = f"{sel_name}_near"
-
-            # Select residue and surroundings in this model
-            f.write(f"select {sel_name}, chain {chain} and resi {resi}\n")
-            f.write(f"select {near_name}, byres ({sel_name} around 4)\n")
-            f.write(f"show sticks, {sel_name}\n")
-            f.write(f"show sticks, {near_name}\n")
-
-            # Create a combined selection for zooming and scene
-            f.write(f"color green, * and symbol C\n")
-            f.write(f"color purple, {sel_name} and symbol C\n")
-            f.write(f"zoom {sel_name}\n")
-            f.write(f"scene {scene_name}, store\n")
-            f.write(f"hide sticks, {sel_name}\n")
-            f.write(f"hide sticks, {near_name}\n\n")
-            f.write(f"delete {sel_name}\n")
-            f.write(f"delete {near_name}\n")
-
-        f.write("# End of script\n")
 
 def get_unknown_list_for_pml(structure):
     all_unknown_residues = [] # this will be [('A', 253), ('B', 101)...]]
@@ -114,6 +75,11 @@ def parse_arguments(argv):
     parser.add_argument('-hlp', '--HLPsp2_known',
                         help='A flag to indicate if the additional PDB (having suffix "_HLPsp2.pdb"), with SP2 hydrogen and lone pair coordinates exist. This can occur if the user requested the program to generate this additional PDB by providing "-k_hlp" as a flag in the previous run for the same PDB. Note, it is assumed RAPA for the given PDB is needed to run twice. During the first run the user provided the "-k_hlp" flag and generated the additional PDB (with suffix "_HLPsp2.pdb"). This was then used in the second run by providing "-hlp" in the second run. This two step approach is recommended for debugging as it stores an intermediate calculation and saves computational time.',
                         action="store_true")
+
+    parser.add_argument('--pymol',
+                        help='If on, will generates a PyMOL script(.pml) that will load all the generated pdb files '
+                             'and make each unknown residues a scene',
+                        action='store_true')
 
     parser.add_argument('-v', '--version', action='version', version='%(prog)s 1.1.1 ')
 
@@ -168,7 +134,8 @@ def main(argv):
     numChains = len(chains)
 
     if gc.log_file:
-        print(f"The PDB ID being used: {args.protID} and start time is: {starttime}")
+        print(f"The PDB ID being used: {args.protID} and start time is: "
+              f"{datetime.now().strftime("%Y-%m-%d %H:%M:%S")}")
         print(f"\nThe structure has number of models {numModels}: {structure.child_list} and number of chains: {numChains}: {chains}\n")
 
     with open(gc.out_info_file, "w") as fInfo:
@@ -195,7 +162,7 @@ def main(argv):
     stp.normalize_atom_coords(structure)
 
     ###########################Adding hydrogen and  connected to sp2 side chain atoms of unknown residue ##########################
-    if args.HLPsp2_known:
+    if not args.HLPsp2_known:
         lastSerial = list(structure.get_residues())[-1].child_list[-1].serial_number
         # This does not use neighboring residues
         lastSerial, _ = hsp2.place_lonepair_on_backbone(structure, lastSerial)
@@ -233,8 +200,8 @@ def main(argv):
     # Flag the side chain residue hydrogen position for SER, THR, LYS, TYR is unknown.
     stp.set_initial_residue_side_chain_hydrogen_unknown(structure)
 
-    if gc.log_file:
-        # if the log file option is on, first populate the list of unknown residues for later generating pml script
+    if args.pymol:
+        # if pymol option is on, first populate the list of unknown residues for later generating pml script
         all_unknown_res = get_unknown_list_for_pml(structure)
 
 
@@ -250,13 +217,16 @@ def main(argv):
         print(f"Done. Execution time is: {prettify_time(total_run_time)}")
         print(f"Number of files generated: {len(generated_files)} and files generated:\n"
                 f"{'\n'.join(generated_files)}")
-        generate_multi_pdb_pymol_script(generated_files, all_unknown_res, f'{stp.get_output_folder_name()}/inspect.pml')
+
+    if args.pymol:
+        print("Generating pymol script based on output PDB files")
+        generate_multi_pdb_pymol_script(generated_files, all_unknown_res, f'{gc.out_folder}/inspect.pml')
 
     with open(gc.out_info_file, "a") as fInfo:
         fInfo.write(f"###############################################################\n")
         fInfo.write(f"###############################################################\n")
         fInfo.write(f"###############################################################\n\n\n")
-        fInfo.write(f"Done. Execution time is: {prettify_time(total_run_time)}")
+        fInfo.write(f"Done. Execution time is: {prettify_time(total_run_time)}\n")
         fInfo.write(
             f"Number of files generated: {len(generated_files)} and files generated:\n{'\n'.join(generated_files)}\n")
         fInfo.flush()
@@ -269,7 +239,6 @@ def main(argv):
             fInfo.write(
                 f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
             fInfo.flush()
-
 
     if (not args.keep_hlp):
         file_hlp = f"{args.protID}" + "_HLPsp2.pdb"
