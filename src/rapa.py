@@ -168,7 +168,7 @@ def main(argv):
         lastSerial, _ = hsp2.placeHydrogens_backbone(structure, lastSerial)
         # Adding hydrogen to side chains:
         lastSerial, _ = hsp2.add_sp2_sidechain_hydrogens(structure, lastSerial)
-        fName = f'{args.protID}_HLPsp2.pdb'
+        fName = f'{args.output_folder}/{args.protID}_HLPsp2.pdb'
         stp.write_to_PDB(structure, fName, removeHLP=False, removeHall=False, set_original_centroid=False)
         if gc.log_file:
             print("After adding the hydrogens....")
@@ -200,40 +200,44 @@ def main(argv):
 
     # Get all unkown residues before start resolving structures
     all_unknown_res = get_unknown_list_for_pml(structure)
+
+    # Print out unknown residues that RAPA is dealing with
+    lines = ['\n'+"#"*100, f"\nTotal number of unknown residues: {len(all_unknown_res)}\n", "Unknown residues:\n"]
+    for (chain, res_id, res_name) in all_unknown_res:
+        lines.append(f" {res_name}-{res_id} of chain {chain}\n")
+    msg = ''.join(lines)
     with open(gc.out_info_file, "a") as fInfo:
-        fInfo.write('\n'+"#"*40)
-        fInfo.write(f"\nTotal number of unknown residues: {len(all_unknown_res)}\n")
-        fInfo.write("Unknown residues:\n")
-        for (chain, res_id, res_name) in all_unknown_res:
-            fInfo.write(f" {res_name}-{res_id} of chain {chain}\n")
+        fInfo.write(msg)
         fInfo.flush()
+    print(msg)
 
 
     generated_files, _, branched_residues = sa.resolve_residue_ambiguities_in_one_structure(structure, set_original_centroid=True,
                                                                          generated_files=None, pdb_file_num=None,
                                                                          outprefix=args.out_prefix, branched_residues=None)
     total_run_time = timeit.default_timer() - starttime
+    # print out branching info
     if len(branched_residues) != 0:
-        lines = ['#'*40+'\n', f'Residues w/ degenerate states: (energy of different states within '
+        lines = ['#'*100+'\n', f'Residues w/ degenerate states: (energy of different states within '
                               f'{gc.ECutOff} kcal/mol)\n']
         for (chain, res_id, res_name) in list(set(branched_residues)):
             lines.append(f" {res_name}-{res_id} of chain {chain}\n")
+        msg = ''.join(lines)
         with open(gc.out_info_file, "a") as fInfo:
-            fInfo.write(''.join(lines))
+            fInfo.write(msg)
             fInfo.flush()
-        if gc.log_file:
-            print(''.join(lines))
+        print(msg)
 
     if args.pymol:
         print("Generating pymol script based on output PDB files")
         generate_multi_pdb_pymol_script(generated_files, all_unknown_res, f'{gc.out_folder}/inspect.pml')
 
+    lines = ['#'*100+'\n',f'Done. Execution time is: {prettify_time(total_run_time)}\n',f"Number of files generated: {len(generated_files)} and files generated:\n{'\n'.join(generated_files)}\n"]
+    msg = ''.join(lines)
     with open(gc.out_info_file, "a") as fInfo:
-        lines = ['#'*40+'\n',f'Done. Execution time is: {prettify_time(total_run_time)}\n',f"Number of files generated: {len(generated_files)} and files generated:\n{'\n'.join(generated_files)}\n"]
-        fInfo.write(''.join(lines))
+        fInfo.write(msg)
         fInfo.flush()
-    if gc.log_file:
-        print(''.join(lines))
+    print(msg)
 
     if (over2ASPs > 0 or over2GLUs > 0):
         if gc.log_file:
