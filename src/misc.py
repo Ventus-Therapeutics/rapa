@@ -19,7 +19,7 @@ def generate_multi_pdb_pymol_script(pdb_files, residues, output_pml="multi_pdb_s
         f.write("\n")
 
         # For each residue, show it across all models and store one scene
-        for j, (chain, resi) in enumerate(residues):
+        for j, (chain, resi, _) in enumerate(residues):
             scene_name = f"res_{chain}_{resi}"
 
             f.write(f"# Residue {chain}:{resi} across all PDBs\n")

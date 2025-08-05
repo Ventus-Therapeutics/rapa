@@ -35,14 +35,12 @@ import state_assignment as sa
 import global_constants as gc
 from misc import prettify_time, Logger, generate_multi_pdb_pymol_script
 
-
-
 def get_unknown_list_for_pml(structure):
-    all_unknown_residues = [] # this will be [('A', 253), ('B', 101)...]]
+    all_unknown_residues = [] # this will be [('A', 253, 'HIE'), ('B', 101, 'SER')...]]
     for unknown_res in stp.get_unknown_residue_list(structure):
         chainID = unknown_res.parent.id
         res_num = unknown_res.id[1]
-        all_unknown_residues.append((chainID, res_num))
+        all_unknown_residues.append((chainID, res_num, unknown_res.resname))
     return all_unknown_residues
 
 def parse_arguments(argv):
@@ -200,36 +198,42 @@ def main(argv):
     # Flag the side chain residue hydrogen position for SER, THR, LYS, TYR is unknown.
     stp.set_initial_residue_side_chain_hydrogen_unknown(structure)
 
-    if args.pymol:
-        # if pymol option is on, first populate the list of unknown residues for later generating pml script
-        all_unknown_res = get_unknown_list_for_pml(structure)
+    # Get all unkown residues before start resolving structures
+    all_unknown_res = get_unknown_list_for_pml(structure)
+    with open(gc.out_info_file, "a") as fInfo:
+        fInfo.write('\n'+"#"*40)
+        fInfo.write(f"\nTotal number of unknown residues: {len(all_unknown_res)}\n")
+        fInfo.write("Unknown residues:\n")
+        for (chain, res_id, res_name) in all_unknown_res:
+            fInfo.write(f" {res_name}-{res_id} of chain {chain}\n")
+        fInfo.flush()
 
 
-    generated_files, _ = sa.resolve_residue_ambiguities_in_one_structure(structure, set_original_centroid=True,
+    generated_files, _, branched_residues = sa.resolve_residue_ambiguities_in_one_structure(structure, set_original_centroid=True,
                                                                          generated_files=None, pdb_file_num=None,
-                                                                         outprefix=args.out_prefix)
+                                                                         outprefix=args.out_prefix, branched_residues=None)
     total_run_time = timeit.default_timer() - starttime
-
-    if gc.log_file:
-        print("###############################################################")
-        print("###############################################################")
-        print("###############################################################\n\n")
-        print(f"Done. Execution time is: {prettify_time(total_run_time)}")
-        print(f"Number of files generated: {len(generated_files)} and files generated:\n"
-                f"{'\n'.join(generated_files)}")
+    if len(branched_residues) != 0:
+        lines = ['#'*40+'\n', f'Residues w/ degenerate states: (energy of different states within '
+                              f'{gc.ECutOff} kcal/mol)\n']
+        for (chain, res_id, res_name) in list(set(branched_residues)):
+            lines.append(f" {res_name}-{res_id} of chain {chain}\n")
+        with open(gc.out_info_file, "a") as fInfo:
+            fInfo.write(''.join(lines))
+            fInfo.flush()
+        if gc.log_file:
+            print(''.join(lines))
 
     if args.pymol:
         print("Generating pymol script based on output PDB files")
         generate_multi_pdb_pymol_script(generated_files, all_unknown_res, f'{gc.out_folder}/inspect.pml')
 
     with open(gc.out_info_file, "a") as fInfo:
-        fInfo.write(f"###############################################################\n")
-        fInfo.write(f"###############################################################\n")
-        fInfo.write(f"###############################################################\n\n\n")
-        fInfo.write(f"Done. Execution time is: {prettify_time(total_run_time)}\n")
-        fInfo.write(
-            f"Number of files generated: {len(generated_files)} and files generated:\n{'\n'.join(generated_files)}\n")
+        lines = ['#'*40+'\n',f'Done. Execution time is: {prettify_time(total_run_time)}\n',f"Number of files generated: {len(generated_files)} and files generated:\n{'\n'.join(generated_files)}\n"]
+        fInfo.write(''.join(lines))
         fInfo.flush()
+    if gc.log_file:
+        print(''.join(lines))
 
     if (over2ASPs > 0 or over2GLUs > 0):
         if gc.log_file:
@@ -240,7 +244,7 @@ def main(argv):
                 f"WARNING: There are more than 2 ASPs/GLUs.\n\n over2ASPs: {over2ASPs}\n over2GLUs: {over2GLUs}. Human intervention is required. Look for WARNING in log_file file for details\n")
             fInfo.flush()
 
-    if (not args.keep_hlp):
+    if not args.keep_hlp:
         file_hlp = f"{args.protID}" + "_HLPsp2.pdb"
         if os.path.exists(file_hlp):
             os.remove(file_hlp)

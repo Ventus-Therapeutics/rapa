@@ -1567,7 +1567,8 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
     uniqRes = Counter(unknownResNames).items()
 
     if gc.log_file:
-        print("\n\nNew iterate_list_of_unkwown_residues call")
+        print("\n"+"#"*100)
+        print("New iterate_list_of_unknown_residues call")
         print(f"Unknown residue to iterate over: {unknownResIter}, and its length: {len(unknownResIter)}")
         print(f"The unknowns present: {uniqRes}\n\n")
 
@@ -1718,12 +1719,22 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
     return structure,changeVal,skipVal,skipResInfo
 
 def resolve_residue_ambiguities_in_one_structure(structure, set_original_centroid=False, generated_files=None,
-                                                 pdb_file_num=None, outprefix='out'):
+                                                 pdb_file_num=None, outprefix='out', branched_residues=None):
 
+    """
+    Recursive function to resolve unknown residues, this will only stop when the number of unknown residues is 0
+    generated_files, pdb_file_num, branched_residues are updated recursively to log the process, they are mutable across
+    structure is passed by reference so will be changed after each call
+    """
+    if gc.log_file:
+        print('#'*100)
+        print(f'New resolve_residue_ambiguities_in_one_structure call')
     if generated_files is None:
         generated_files = []
     if pdb_file_num is None:
         pdb_file_num = [0] # make it a list so that it's mutable for recursive call
+    if branched_residues is None:
+        branched_residues = []
 
     num_unknown_res = len(stp.get_unknown_residue_list(structure))
 
@@ -1770,8 +1781,6 @@ def resolve_residue_ambiguities_in_one_structure(structure, set_original_centroi
                 num_unknown_res = len(unknown_res_list)
                 break
 
-
-
             # start branching from the first "ambiguous" residue
             # 0 for the first ambiguous residue, -2 to access all degenerate states that are evaluated
             # these info are being appened by "evaluate_degenerate_cases"
@@ -1781,6 +1790,8 @@ def resolve_residue_ambiguities_in_one_structure(structure, set_original_centroi
                 print(f"The residue to be branched out: {res_to_be_branch}")
                 print(f"Number of degenerate states previously generated to be used for branch: {len(all_degen_struc_names)}")
 
+            # save chain ID, res ID, resname
+            branched_residues.append((res_to_be_branch.parent.id, res_to_be_branch.id[1], res_to_be_branch.resname))
             for count, struc_name in enumerate(all_degen_struc_names):
 
                 modelID = res_to_be_branch.parent.parent.id
@@ -1797,15 +1808,16 @@ def resolve_residue_ambiguities_in_one_structure(structure, set_original_centroi
                 if gc.log_file:
                     print(f"Processing {res_to_be_branch}'s degenerate states: {count+1}/{len(all_degen_struc_names)}")
                     print("Start another 'resolve_residue_ambiguities_in_one_structure call'")
-                _, num_unknown_res = resolve_residue_ambiguities_in_one_structure(structBranch,
+                _, num_unknown_res, _  = resolve_residue_ambiguities_in_one_structure(structBranch,
                                                                                   set_original_centroid=set_original_centroid,
                                                                                   generated_files=generated_files,
                                                                                   pdb_file_num=pdb_file_num,
-                                                                                  outprefix=outprefix)
+                                                                                  outprefix=outprefix,
+                                                                                  branched_residues=branched_residues)
             # it'd only get here when all branches are finished
             # we need to return here to avoid breaking out and write the final PDB again
             if num_unknown_res == 0:
-                return generated_files, num_unknown_res
+                return generated_files, num_unknown_res, branched_residues
 
 
         else:
@@ -1814,7 +1826,8 @@ def resolve_residue_ambiguities_in_one_structure(structure, set_original_centroi
             del skpVal
             del skpInfo
             if gc.log_file:
-                print(f"Number of states set after iteration {loop_count}: {chVal}\n")
+                print(f"Number of states set after one 'iterate_list_of_unknown_residues_and_set_states' call:"
+                      f" {chVal}\n")
                 print(f"Current number of unknown residues: {num_unknown_res}\n")
 
 
@@ -1833,5 +1846,5 @@ def resolve_residue_ambiguities_in_one_structure(structure, set_original_centroi
     # keep a track on number of pdb files written
     pdb_file_num[0] += 1
     stp.write_to_PDB(structure, fPDBfullPath, removeHLP=True, set_original_centroid=set_original_centroid)
-    return generated_files, num_unknown_res
+    return generated_files, num_unknown_res, branched_residues
 
