@@ -76,7 +76,7 @@ $<path to rapa folder>/src/rapa.py -h
 All output files will be in `[input_pdb_prefix or specified_output_prefix]_outputs` folder
 The following files can be found in that folder:
 
-### `[input_pdb_prefix or specified_output_prefix].info`
+### 3.1 [input_pdb_prefix or specified_output_prefix].info
 Information files with:  
 - **Basic information:**  
   - PDB file name, ID, number of models, and chains.  
@@ -91,9 +91,9 @@ Information files with:
   - Number of output PDB files produced.  
   - File path of generated outputs.  
 
-### [input_pdb_prefix or specified_output_prefix]_#.pdb   
+### 3.2 [input_pdb_prefix or specified_output_prefix]_#.pdb   
 Final PDB files with states that RAPA picked based on the calculation.
-### [input_pdb_prefix or specified_output_prefix].log (Generated if `-l` flag is on)
+### 3.3 [input_pdb_prefix or specified_output_prefix].log (Generated if `-l` flag is on)
 Log file contains additional details of the calculation (more detailed than .info file). The messages printed out are saved here.
 - looping and function call information
   -  Record when the recursive function is making a new function call
@@ -102,7 +102,7 @@ Log file contains additional details of the calculation (more detailed than .inf
 - Energy information
   - Details of energy during the evaluation of degenerate states
 
-### [input_pdb_prefix]_HLPsp2.pdb  (Generated if `--keep_hkp` flag is on)
+### 3.4 [input_pdb_prefix]_HLPsp2.pdb  (Generated if `--keep_hkp` flag is on)
 pdb file with sp2 hydrogen and lone pair coordinates computed and added.  
 
 
