@@ -29,8 +29,9 @@ import Bio
 import numpy as np
 import math
 
-from Bio.PDB import *
-
+import Bio
+from Bio import PDB
+from Bio.PDB import calc_angle, Vector, Atom
 import my_residue_atom as mra
 import setup_protein as stp
 import close_atoms as cats
@@ -274,7 +275,7 @@ def placeHydrogens_backbone(structure, lastSerial):
                     if(a.get_name() == 'C'):
                         carbonList.append(a)
 
-            if gc.log_file: print(f"Collected atoms for chain: {chain} and now I will fix backbone H ")
+            if gc.log_file: print(f"Collected atoms for chain: {chain} and start fixing backbone H ")
 
             bbHcoordsInfo =[]
             firstResACE = 0

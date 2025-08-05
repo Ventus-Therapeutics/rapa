@@ -28,12 +28,12 @@ SOFTWARE.
 
 import os
 import sys
-import Bio
 import numpy as np
 
 import copy
 from collections import Counter
-from Bio.PDB import *
+import Bio
+from Bio import PDB
 
 import setup_protein as stp
 import my_residue_atom as mra
@@ -1623,7 +1623,7 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
 
             if unknownRes.resname in ['HIS', 'ASN', 'GLN']:
                 if gc.log_file:
-                    print("This is a {unknownRes.resname} w/o polar atoms nearby, setting state to known!")
+                    print(f"This is a {unknownRes.resname} w/o polar atoms nearby, setting state to known!")
 
                 if unknownRes.resname == 'HIS':
                     setup_HIS(unknownRes, structure, 'HIE')

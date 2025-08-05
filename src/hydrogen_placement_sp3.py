@@ -23,10 +23,10 @@ SOFTWARE.
 
 
 """
-import sys
-import Bio
 import numpy as np
-from Bio.PDB import *
+import Bio
+from Bio import PDB
+from Bio.PDB import calc_angle, Vector, Atom
 
 
 import my_residue_atom as mra

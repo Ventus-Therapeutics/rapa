@@ -26,13 +26,11 @@ SOFTWARE.
 
 
 import os, sys
-import csv
 import Bio
+from Bio import PDB
+from Bio.PDB import calc_angle, Vector
 import numpy as np
-
 import copy
-
-from Bio.PDB import *
 import setup_protein as stp
 import my_residue_atom as mra
 import global_constants as gc

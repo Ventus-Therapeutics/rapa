@@ -33,8 +33,13 @@ import numpy as np
 import my_residue_atom as mra
 import global_constants as gc
 
-from Bio.PDB import *
+import Bio
+from Bio import PDB
 
+import warnings
+from Bio.PDB.PDBExceptions import PDBConstructionWarning
+
+warnings.simplefilter('ignore', PDBConstructionWarning)
 
 def get_all_ASPs(structure):
 
@@ -630,7 +635,7 @@ def setup_structure(protID, outFolder = '.', fName = None):
     if(fName == None): fName = protID
     protPDBfile = outFolder + '/' + fName + '.pdb'
     #Create a parser object:
-    parser = PDBParser()
+    parser = Bio.PDB.PDBParser()
     #This object has an attribute get structure parser.get structure returns an object of type structure
     structure = parser.get_structure(protID, protPDBfile) 
     return structure
@@ -882,7 +887,7 @@ def write_to_PDB(structure, fname, removeHLP = False, removeHall = False,set_ori
     if(set_original_centroid==True):
         set_atom_coords_in_original_frame(structure,gc.xc_orig,gc.yc_orig,gc.zc_orig)
 
-    io = PDBIO()
+    io = Bio.PDB.PDBIO()
     io.set_structure(structure)
     if gc.log_file:
         print(f"Writing file at: {fname} ")
