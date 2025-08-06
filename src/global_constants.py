@@ -79,7 +79,7 @@ atoms_backbone = np.array([ 'N','CA', 'C', 'O'])###O of water will also be consi
 #List of valid residue names
 validResnames =['ALA', 'ARG', 'ASH', 'ASN', 'ASP', 'CYM', 'CYS','CYX','GLH','GLN', 'GLU', 'GLY',
                     'HID','HIE', 'HIP','HIZ','HIM', 'HIS', 'ILE','LEU', 'LYN','LYS', 'MET', 'PHE','PRO','SER','THR','TRP',
-                    'TYR','VAL']
+                    'TYR','VAL', 'SEP']
 
 #type of HIS/ASN/GLN/ASH/GLH
 HIStypes= ['HIP','HIE', 'HID','HIPR', 'HIER', 'HIDR']
