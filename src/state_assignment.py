@@ -1719,22 +1719,31 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
     return structure,changeVal,skipVal,skipResInfo
 
 def resolve_residue_ambiguities_in_one_structure(structure, set_original_centroid=False, generated_files=None,
-                                                 pdb_file_num=None, outprefix='out', branched_residues=None):
+                                                 pdb_file_num=None, outprefix='out', branched_residues=None,
+                                                 call_count=None):
 
     """
     Recursive function to resolve unknown residues, this will only stop when the number of unknown residues is 0
     generated_files, pdb_file_num, branched_residues are updated recursively to log the process, they are mutable across
     structure is passed by reference so will be changed after each call
     """
-    if gc.log_file:
-        print('#'*100)
-        print(f'New resolve_residue_ambiguities_in_one_structure call')
     if generated_files is None:
         generated_files = []
     if pdb_file_num is None:
         pdb_file_num = [0] # make it a list so that it's mutable for recursive call
     if branched_residues is None:
         branched_residues = []
+    if call_count is None:
+        call_count = [0] # make it a list so that it's mutable for recursive call
+
+    call_count[0] += 1
+    # hard break safety for recursive function
+    if call_count[0] > gc.MAX_ITER:
+        sys.exit(f"ERROR: Exceeding maximum recursive function calls {gc.MAX_ITER}. This should never happen. Contact Lin if you see this msg")
+
+    if gc.log_file:
+        print('#'*100)
+        print(f'New resolve_residue_ambiguities_in_one_structure call. Current function call count: {call_count[0]}')
 
     num_unknown_res = len(stp.get_unknown_residue_list(structure))
 
@@ -1742,7 +1751,7 @@ def resolve_residue_ambiguities_in_one_structure(structure, set_original_centroi
     loop_count = 0
     while(num_unknown_res > 0):
         if gc.log_file:
-            print(f'resolve_residue_ambiguities_in_one_structure Iteration: {loop_count}')
+            print(f'resolve_residue_ambiguities_in_one_structure while loop count: {loop_count}')
 
         # iterate over all the unknown residues and set as many states as possible. If a change is made or a state is set then chVal increments by 1 else skpVal increments by 1
         # chVal = total number of unknown states set in this function call
@@ -1813,7 +1822,8 @@ def resolve_residue_ambiguities_in_one_structure(structure, set_original_centroi
                                                                                   generated_files=generated_files,
                                                                                   pdb_file_num=pdb_file_num,
                                                                                   outprefix=outprefix,
-                                                                                  branched_residues=branched_residues)
+                                                                                  branched_residues=branched_residues,
+                                                                                  call_count=call_count)
             # it'd only get here when all branches are finished
             # we need to return here to avoid breaking out and write the final PDB again
             if num_unknown_res == 0:

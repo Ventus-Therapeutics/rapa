@@ -30,6 +30,7 @@ log_file = False
 debug = False
 out_folder = ''
 out_info_file = ''
+MAX_ITER = 512 # maximum loop for recursive, just as insurance
 ECutOff = 1.0 ##Degenerate cases # this will be set when user specified "--single_pdb_out"
 
 ##### global constants
