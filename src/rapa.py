@@ -97,6 +97,7 @@ def parse_arguments(argv):
         print(f"WARNING: specified output folder {args.output_folder} already exist, will overwrite")
     else:
         os.makedirs(args.output_folder)
+    print(f"The calculation result will be saved to the folder: {args.output_folder}")
 
     args.log_name = f"{args.output_folder}/{args.out_prefix}.log"
 

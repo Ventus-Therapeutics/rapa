@@ -183,7 +183,7 @@ def place_lonepair_on_backbone(structure, lastSerial):
         for chain in model.child_list: 
             count = 0
             for res in chain.child_list: 
-                myRes = rra.my_residue(res)
+                myRes = rra.rapa_residue(res)
                
                 if(myRes.is_valid_amino_acid()==1):
 
@@ -260,9 +260,9 @@ def placeHydrogens_backbone(structure, lastSerial):
             carbonAlphaList =[]
 
             for atom in chain.get_atoms():
-                a = rra.my_atom(atom)
+                a = rra.rapa_atom(atom)
 
-                if(rra.my_residue(a.get_parent()).is_valid_amino_acid()==1):
+                if(rra.rapa_residue(a.get_parent()).is_valid_amino_acid()==1):
                     if(a.get_name() == 'N'):
                         nitrogenList.append(a)
 
@@ -499,7 +499,7 @@ def set_HH_and_lonepair_coords_TYR(sp2, hhCoords):
         for i in range(1, np.shape(allCloseAtoms)[0]):
 
             closeAt = allCloseAtoms[i][0]
-            myCloseAt = rra.my_atom(allCloseAtoms[i][0])
+            myCloseAt = rra.rapa_atom(allCloseAtoms[i][0])
 
             if(myCloseAt.get_behavior().abbrev == 'ac'):
                 ##Considering donor atom associated with reference atom

@@ -143,7 +143,7 @@ def get_close_atom_distance_info(atomCurr, close_atoms, include_self=True):
         target_resid = atomCurr.get_parent().id[1]
 
     for atomClose in close_atoms:
-       aClose = rra.my_atom(atomClose)
+       aClose = rra.rapa_atom(atomClose)
        dist = atomClose-atomCurr
        resid = atomClose.get_parent().id[1]
        if not include_self and resid == target_resid:
@@ -699,7 +699,7 @@ def compute_energy_as_acceptor(acceptorAt, lp_vec, donorAt, attractive = 1, atyp
                 enSumAcc = enSumAcc+energy                    
     else:
         
-        myPsAcceptor = rra.my_atom(donorAt)
+        myPsAcceptor = rra.rapa_atom(donorAt)
         LPNames = copy.deepcopy(myPsAcceptor.get_lonepair_names())
         #Get various LPs of the acceptor-Gamma will change
         #check if LPNames associated with pseudo acceptor are actually present in the child list of pseduo acceptor's parent
@@ -763,7 +763,7 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
     else: 
         [allCloseAtoms, closeAtmsTBD] = pre_cal_donor_info
 
-    myAcceptorAt = rra.my_atom(acceptorAt)
+    myAcceptorAt = rra.rapa_atom(acceptorAt)
 
     acceptorAt_vec = acceptorAt.get_vector()##Atom1
     atom1 = acceptorAt

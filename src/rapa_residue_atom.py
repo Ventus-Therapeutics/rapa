@@ -1,7 +1,4 @@
 """
-This contains the two classes(my_residue and my_atom) and its related methods.
-
-
 Copyright (c) 2025 Ventus Therapeutics U.S., Inc.
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,18 +17,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-
 """
 
 import Bio
 from Bio import PDB
 import global_constants as gc
 
-
-############################################################
-#### my_residue class
-########################################################################################################################
 def if_two_atoms_are_same(atom1, atom2):
     """
     Checking if two atom object are the same by checking the coordinates, residue number, and name
@@ -47,8 +38,12 @@ def if_two_atoms_are_same(atom1, atom2):
     if False in [abs(atom1.coord[_]-atom2.coord[_]) < threshold for _ in range(3)]:
         return False
     return True
+############################################################
+#### rapa_residue class
+########################################################################################################################
 
-class my_residue(Bio.PDB.Residue.Residue):
+
+class rapa_residue(Bio.PDB.Residue.Residue):
     
     """Defining a class of my_residue that inherits biopython residue """
 
@@ -104,10 +99,10 @@ class my_residue(Bio.PDB.Residue.Residue):
         return activeAtoms
  
 ############################################################
-#### my_atom class
+#### rapa_atom class
 ########################################################################################################################
 
-class my_atom(Bio.PDB.Atom.Atom): 
+class rapa_atom(Bio.PDB.Atom.Atom):
 
     """ Defining a class of my_atom that inherits biopython atom"""
 
