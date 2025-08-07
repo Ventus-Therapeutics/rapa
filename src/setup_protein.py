@@ -745,7 +745,14 @@ def remove_added_hydrogens(structure):
     GLY_H = ['H']
     ILE_H = ['H']
     LEU_H = ['H']
+
+    #phosphorylated residues
     SEP_H = ['H']
+    PTR_H = ['H']
+    TPO_H = ['H']
+    
+
+  
 
     MET_H = ['H']
     PHE_H = ['H']
@@ -757,7 +764,7 @@ def remove_added_hydrogens(structure):
                     'HIS':HIS_H,'HIE':HIE_H, 'HID':HID_H, 'HIP':HIP_H, 'LYS':LYS_H, 'LYN': LYS_H, 'PRO':PRO_H,
                     'SER':SER_H, 'THR':THR_H, 'TYR':TYR_H, 'TRP':TRP_H,
                     'ALA':ALA_H, 'CYS':CYS_H, 'CYX':CYS_H, 'CYM':CYS_H, 'GLY':GLY_H, 'ILE':ILE_H, 'LEU': LEU_H,
-                    'MET': MET_H, 'PHE':PHE_H,'VAL':VAL_H, 'NME':NME_H, 'SEP': SEP_H}
+                    'MET': MET_H, 'PHE':PHE_H,'VAL':VAL_H, 'NME':NME_H, 'SEP': SEP_H, 'PTR': PTR_H, 'TPO': TPO_H}
 
     for res in structure.get_residues():
         myRes = rra.rapa_residue(res)
@@ -837,7 +844,10 @@ def remove_lonepair(structure):
     GLY_LP = ['LP1', 'LP2']
     ILE_LP = ['LP1', 'LP2']
     LEU_LP = ['LP1', 'LP2']
+    #phosphorylated residues
     SEP_LP = ['LP1', 'LP2']
+    PTR_LP = ['LP1', 'LP2']
+    TPO_LP = ['LP1', 'LP2']
 
     MET_LP = ['LP1', 'LP2']
     PHE_LP = ['LP1', 'LP2']
@@ -848,7 +858,7 @@ def remove_lonepair(structure):
                     'HIS':HIS_LP,'HIE':HIE_LP, 'HID':HID_LP, 'HIP':HIP_LP, 'LYS':LYS_LP, 'LYN': LYS_LP,  'PRO':PRO_LP,
                     'SER':SER_LP, 'THR':THR_LP, 'TYR':TYR_LP, 'TRP':TRP_LP,
                     'ALA':ALA_LP, 'CYS':CYS_LP, 'CYX':CYS_LP, 'CYM':CYS_LP, 'GLY':GLY_LP, 'ILE':ILE_LP , 'LEU': LEU_LP,
-                    'MET': MET_LP, 'PHE':PHE_LP,'VAL':VAL_LP, 'SEP':SEP_LP}
+                    'MET': MET_LP, 'PHE':PHE_LP,'VAL':VAL_LP, 'SEP':SEP_LP, 'PTR': PTR_LP, 'TPO': TPO_LP}
 
     for res in structure.get_residues():
         myRes = rra.rapa_residue(res)
