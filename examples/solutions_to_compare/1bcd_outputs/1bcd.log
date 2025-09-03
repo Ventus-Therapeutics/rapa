@@ -1,17 +1,55 @@
-PROGRAM CALL:python ../src/rapa.py -p 1bcd_noH -o 1bcd_noH -l
-The PDB ID being used: 1bcd_noH and start time is: 2025-08-05 13:10:29
+PROGRAM CALL:python ../../src/rapa.py -p ../1bcd_noH -o 1bcd -l --pymol
+The PDB ID being used: ../1bcd_noH and start time is: 2025-09-03 12:35:13
 
 The structure has number of models 1: [<Model id=0>] and number of chains: 1: [<Chain id=A>]
 
 Collected atoms for chain: <Chain id=A> and start fixing backbone H 
-Writing file at: 1bcd_noH_HLPsp2.pdb 
+Writing file at: 1bcd_outputs/../1bcd_noH_HLPsp2.pdb 
 After adding the hydrogens....
 Checking for unknown ASPs...
 Checking for unknown GLUs...
 
+
 ####################################################################################################
-New resolve_residue_ambiguities_in_one_structure call
-resolve_residue_ambiguities_in_one_structure Iteration: 0
+Total number of unknown residues: 33
+Unknown residues:
+ HIS-3 of chain A
+ HIS-4 of chain A
+ HIS-10 of chain A
+ ASN-11 of chain A
+ HIS-15 of chain A
+ HIS-17 of chain A
+ GLN-28 of chain A
+ HIS-36 of chain A
+ GLN-53 of chain A
+ ASN-61 of chain A
+ ASN-62 of chain A
+ HIS-64 of chain A
+ ASN-67 of chain A
+ GLN-74 of chain A
+ GLN-92 of chain A
+ HIS-94 of chain A
+ HIS-96 of chain A
+ GLN-103 of chain A
+ HIS-107 of chain A
+ HIS-119 of chain A
+ HIS-122 of chain A
+ ASN-124 of chain A
+ GLN-136 of chain A
+ GLN-137 of chain A
+ GLN-158 of chain A
+ ASN-178 of chain A
+ GLN-222 of chain A
+ ASN-230 of chain A
+ ASN-232 of chain A
+ ASN-244 of chain A
+ GLN-249 of chain A
+ ASN-253 of chain A
+ GLN-255 of chain A
+
+####################################################################################################
+New resolve_residue_ambiguities_in_one_structure call. Current function call count: 1
+resolve_residue_ambiguities_in_one_structure while loop count: 0
 
 ####################################################################################################
 New iterate_list_of_unknown_residues call
@@ -154,7 +192,6 @@ Evaluate given residue state, hvyAt: <Atom ND1> and All close atoms: [[<Atom ND1
 ***********************************************************************************************
 
 Place hydrogen for for <Residue LYS het=  resseq=18 icode= > of chain: <Chain id=A>
-Taking h-bonding possibility at angle 0, as all energy values=0
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
@@ -162,14 +199,13 @@ Side chain hydrogen placed, for <Residue LYS het=  resseq=18 icode= > with chain
 
 ***********************************************************************************************
 
-energy sum acceptor from func:-4.216182948394236 and current enSumTotal:-4.216182948394236
-[[[0.0]], [[0.0], [0.0], [np.float64(-4.216182948394236)]]]
+energy sum acceptor from func:-4.216182948394241 and current enSumTotal:-4.216182948394241
+[[[0.0]], [[np.float64(-4.216182948394241)], [0.0], [0.0]]]
 Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 15, 'HIE', 'do', np.float32(0.0)], [<Atom ND1>, 15, 'HIE', 'ac', np.float32(2.1676836)], [<Atom O>, 9, 'LYS', 'ac', np.float32(3.1392734)]]
 
 ***********************************************************************************************
 
 Place hydrogen for for <Residue LYS het=  resseq=9 icode= > of chain: <Chain id=A>
-Taking h-bonding possibility at angle 0, as all energy values=0
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
@@ -177,9 +213,9 @@ Side chain hydrogen placed, for <Residue LYS het=  resseq=9 icode= > with chain:
 
 ***********************************************************************************************
 
-energy sum donor from func:-2.0482270240695484 and current enSumTotal:-6.264409972463785
+energy sum donor from func:-2.0482270240695484 and current enSumTotal:-6.26440997246379
 [[[0.0]], [[np.float64(-2.0482270240695484)], [0.0]]]
-For this state:<Residue HIE het=  resseq=15 icode= > tot energy is: -6.264409972463785
+For this state:<Residue HIE het=  resseq=15 icode= > tot energy is: -6.26440997246379
 ************************************************************************
 ************************************************************************
 ************************************************************************
@@ -189,40 +225,9 @@ Evaluate given residue state, hvyAt: <Atom ND1> and All close atoms: [[<Atom ND1
 ***********************************************************************************************
 
 Place hydrogen for for <Residue LYS het=  resseq=18 icode= > of chain: <Chain id=A>
-Taking h-bonding possibility at angle 0, as all energy values=0
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HID het=  resseq=15 icode= > and distance is: 0.9234865086392251
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:11
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:11
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:11
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HID het=  resseq=15 icode= > and distance is: 0.9258305222936533
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:10
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:10
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:10
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HID het=  resseq=15 icode= > and distance is: 0.9835939970727526
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:9
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:9
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:9
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HID het=  resseq=15 icode= > and distance is: 1.0864442280619477
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:8
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:8
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:8
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HID het=  resseq=15 icode= > and distance is: 1.2204117785595796
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:7
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:7
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:7
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HID het=  resseq=15 icode= > and distance is: 1.3730253304359257
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:6
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:6
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:6
 Side chain hydrogen placed, for <Residue LYS het=  resseq=18 icode= > with chain:<Chain id=A>, added 3 Hs, with s.no now at: 3364 !
 
 ***********************************************************************************************
@@ -234,7 +239,6 @@ Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2
 ***********************************************************************************************
 
 Place hydrogen for for <Residue LYS het=  resseq=9 icode= > of chain: <Chain id=A>
-Taking h-bonding possibility at angle 0, as all energy values=0
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
@@ -274,40 +278,9 @@ Evaluate given residue state, hvyAt: <Atom ND1> and All close atoms: [[<Atom ND1
 ***********************************************************************************************
 
 Place hydrogen for for <Residue LYS het=  resseq=18 icode= > of chain: <Chain id=A>
-Taking h-bonding possibility at angle 0, as all energy values=0
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HIP het=  resseq=15 icode= > and distance is: 0.9234865086392251
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:11
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:11
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:11
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HIP het=  resseq=15 icode= > and distance is: 0.9258305222936533
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:10
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:10
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:10
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HIP het=  resseq=15 icode= > and distance is: 0.9835939970727526
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:9
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:9
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:9
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HIP het=  resseq=15 icode= > and distance is: 1.0864442280619477
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:8
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:8
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:8
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HIP het=  resseq=15 icode= > and distance is: 1.2204117785595796
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:7
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:7
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:7
-potential clash atom = [<Atom HD1>]
-orignal atom: pot Hyd, its parent: <Residue LYS het=  resseq=18 icode= >, pcAtom:<Atom HD1> and parent: <Residue HIP het=  resseq=15 icode= > and distance is: 1.3730253304359257
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:6
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:6
-Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:6
 Side chain hydrogen placed, for <Residue LYS het=  resseq=18 icode= > with chain:<Chain id=A>, added 3 Hs, with s.no now at: 3364 !
 
 ***********************************************************************************************
@@ -322,7 +295,6 @@ Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2
 ***********************************************************************************************
 
 Place hydrogen for for <Residue LYS het=  resseq=9 icode= > of chain: <Chain id=A>
-Taking h-bonding possibility at angle 0, as all energy values=0
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
@@ -349,7 +321,7 @@ For this state:<Residue HIP het=  resseq=15 icode= > tot energy is: 0.0
 ************************************************************************
 continuing as HIP is not an option!!
 One state for current residue: HIE has minimum energy that is more than 1kcal smaller than all the other states.
- Sorted energy for all states are: [np.float64(-6.264409972463785) 0.0 0.0 np.float64(13.91106578868684)]
+ Sorted energy for all states are: [np.float64(-6.26440997246379) 0.0 0.0 np.float64(13.91106578868684)]
 Setting the state to:isRotamer: 0
 
 
@@ -564,7 +536,6 @@ Evaluate given residue state, hvyAt: <Atom ND2> and All close atoms: [[<Atom ND2
 ***********************************************************************************************
 
 Place hydrogen for for <Residue LYS het=  resseq=168 icode= > of chain: <Chain id=A>
-Taking h-bonding possibility at angle 0, as all energy values=0
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
@@ -584,7 +555,6 @@ Evaluate given residue state, hvyAt: <Atom OD1> and All close atoms: [[<Atom OD1
 ***********************************************************************************************
 
 Place hydrogen for for <Residue LYS het=  resseq=168 icode= > of chain: <Chain id=A>
-Taking h-bonding possibility at angle 0, as all energy values=0
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
 Need to look for coord so H does not clash. max hyd=3. Currently at iteration:i:12
@@ -1227,11 +1197,11 @@ Sorted energy for all states are: [np.float64(-0.9816943218227796) np.float64(-0
  np.float64(0.054655410832729956) np.float64(6.957819451671241)]
 Start evaluating if they are actually degenerate...
 Skipping: <Residue HIS het=  resseq=122 icode= > as lowest vals:-0.9816943218227796 and -0.5013866123187762, degenergate Info: [[<Residue HID het=  resseq=122 icode= > np.float64(-0.9816943218227796)
-  <Structure id=1bcd_noH_HLPsp2> <Residue HID het=  resseq=122 icode= >
-  'HID']
+  <Structure id=../1bcd_noH_HLPsp2>
+  <Residue HID het=  resseq=122 icode= > 'HID']
  [<Residue HID het=  resseq=122 icode= > np.float64(-0.5013866123187762)
-  <Structure id=1bcd_noH_HLPsp2> <Residue HID het=  resseq=122 icode= >
-  'HIDR']] with [np.float64(0.0) np.float64(0.48030770950400337)]<1
+  <Structure id=../1bcd_noH_HLPsp2>
+  <Residue HID het=  resseq=122 icode= > 'HIDR']] with [np.float64(0.0) np.float64(0.48030770950400337)]<1
 ###########################################################################
 ################################################################################################################################################################
 unknown residue number: 22/33 and unknown res is: <Residue ASN het=  resseq=124 icode= > and its known val:0 and is rotamer:0, Skip value:1, ChangeVal: 20
@@ -1411,9 +1381,9 @@ Side chain hydrogen placed, for <Residue THR het=  resseq=177 icode= > with chai
 
 ***********************************************************************************************
 
-energy sum donor from func:-1.035181093598907 and current enSumTotal:-1.035181093598907
-[[[0.0], [0.0]], [[0.0], [0.0]], [[[np.float64(-1.035181093598907)]], [[0.0]]], [[[0.0]], [[0.0]]], [[0.0]], [[0.0]]]
-For this state:<Residue ASN het=  resseq=178 icode= > tot energy is: -1.035181093598907
+energy sum donor from func:-1.2958197066378756 and current enSumTotal:-1.2958197066378756
+[[[0.0], [0.0]], [[0.0], [0.0]], [[[np.float64(-1.2958197066378756)]], [[0.0]]], [[[0.0]], [[0.0]]], [[0.0]], [[0.0]]]
+For this state:<Residue ASN het=  resseq=178 icode= > tot energy is: -1.2958197066378756
 ************************************************************************
 ************************************************************************
 ************************************************************************
@@ -1436,19 +1406,19 @@ Side chain hydrogen placed, for <Residue THR het=  resseq=177 icode= > with chai
 
 ***********************************************************************************************
 
-energy sum acceptor from func:1.885541718957045 and current enSumTotal:1.885541718957045
-[[[0.0], [0.0]], [[0.0], [0.0]], [[[np.float64(-0.6144582810429551)]], [[2.5]]], [[[0.0]], [[0.0]]], [[0.0]], [[0.0]]]
+energy sum acceptor from func:-2.452467218392956 and current enSumTotal:-2.452467218392956
+[[[0.0], [0.0]], [[0.0], [0.0]], [[[np.float64(-2.452467218392956)]], [[0.0]]], [[[0.0]], [[0.0]]], [[0.0]], [[0.0]]]
 Evaluate given residue state, hvyAt: <Atom ND2> and All close atoms: [[<Atom ND2>, 178, 'ASN', 'do', np.float32(0.0)], [<Atom OD1>, 178, 'ASN', 'ac', np.float32(2.2220612)]]
-energy sum donor from func:0.0 and current enSumTotal:1.885541718957045
+energy sum donor from func:0.0 and current enSumTotal:-2.452467218392956
 [[[0.0], [0.0]], [[0.0], [0.0]]]
-For this state:<Residue ASN het=  resseq=178 icode= > tot energy is: 1.885541718957045
+For this state:<Residue ASN het=  resseq=178 icode= > tot energy is: -2.452467218392956
 ************************************************************************
 ************************************************************************
 Not checking for HIP- as <Residue ASN het=  resseq=178 icode= > of <Chain id=A> and currently am not on HIS or all the HIS energies are zero
 
 One state for current residue: ASN has minimum energy that is more than 1kcal smaller than all the other states.
- Sorted energy for all states are: [np.float64(-1.035181093598907) np.float64(1.885541718957045)]
-Setting the state to:isRotamer: 0
+ Sorted energy for all states are: [np.float64(-2.452467218392956) np.float64(-1.2958197066378756)]
+Setting the state to:isRotamer: 1
 
 
 ################################################################################################################################################################
@@ -1729,12 +1699,12 @@ Side chain hydrogen placed, for <Residue LYS het=  resseq=257 icode= > with chai
 
 ***********************************************************************************************
 
-energy sum acceptor from func:-1.09473562571217 and current enSumTotal:-1.09473562571217
-[[[0.0], [0.0]], [[0.0], [0.0]], [[np.float64(-1.09473562571217)], [0.0], [0.0]], [[0.0], [0.0], [0.0]]]
+energy sum acceptor from func:0.0 and current enSumTotal:0.0
+[[[0.0], [0.0]], [[0.0], [0.0]], [[0.0], [0.0], [0.0]], [[0.0], [0.0], [0.0]]]
 Evaluate given residue state, hvyAt: <Atom NE2> and All close atoms: [[<Atom NE2>, 255, 'GLN', 'do', np.float32(0.0)], [<Atom OE1>, 255, 'GLN', 'ac', np.float32(2.3012218)]]
-energy sum donor from func:0.0 and current enSumTotal:-1.09473562571217
+energy sum donor from func:0.0 and current enSumTotal:0.0
 [[[0.0], [0.0]], [[0.0], [0.0]]]
-For this state:<Residue GLN het=  resseq=255 icode= > tot energy is: -1.09473562571217
+For this state:<Residue GLN het=  resseq=255 icode= > tot energy is: 0.0
 ************************************************************************
 ************************************************************************
 ************************************************************************
@@ -1754,15 +1724,15 @@ Side chain hydrogen placed, for <Residue LYS het=  resseq=257 icode= > with chai
 
 ***********************************************************************************************
 
-energy sum donor from func:2.629235876794506 and current enSumTotal:2.629235876794506
-[[[0.0], [0.0]], [[0.0], [0.0]], [[np.float64(2.629235876794506)], [0.0], [0.0]], [[0.0], [0.0], [0.0]]]
-For this state:<Residue GLN het=  resseq=255 icode= > tot energy is: 2.629235876794506
+energy sum donor from func:2.6292358882720768 and current enSumTotal:2.6292358882720768
+[[[0.0], [0.0]], [[0.0], [0.0]], [[0.0], [0.0], [np.float64(2.6292358882720768)]], [[0.0], [0.0], [0.0]]]
+For this state:<Residue GLN het=  resseq=255 icode= > tot energy is: 2.6292358882720768
 ************************************************************************
 ************************************************************************
 Not checking for HIP- as <Residue GLN het=  resseq=255 icode= > of <Chain id=A> and currently am not on HIS or all the HIS energies are zero
 
 One state for current residue: GLN has minimum energy that is more than 1kcal smaller than all the other states.
- Sorted energy for all states are: [np.float64(-1.09473562571217) np.float64(2.629235876794506)]
+ Sorted energy for all states are: [0.0 np.float64(2.6292358882720768)]
 Setting the state to:isRotamer: 0
 
 
@@ -1770,7 +1740,7 @@ Number of states set after one 'iterate_list_of_unknown_residues_and_set_states'
 
 Current number of unknown residues: 1
 
-resolve_residue_ambiguities_in_one_structure Iteration: 1
+resolve_residue_ambiguities_in_one_structure while loop count: 1
 
 ####################################################################################################
 New iterate_list_of_unknown_residues call
@@ -1859,11 +1829,11 @@ Sorted energy for all states are: [np.float64(-0.9816943218227796) np.float64(-0
  np.float64(0.054655410832729956) np.float64(6.957819451671241)]
 Start evaluating if they are actually degenerate...
 Skipping: <Residue HIS het=  resseq=122 icode= > as lowest vals:-0.9816943218227796 and -0.5013866123187762, degenergate Info: [[<Residue HID het=  resseq=122 icode= > np.float64(-0.9816943218227796)
-  <Structure id=1bcd_noH_HLPsp2> <Residue HID het=  resseq=122 icode= >
-  'HID']
+  <Structure id=../1bcd_noH_HLPsp2>
+  <Residue HID het=  resseq=122 icode= > 'HID']
  [<Residue HID het=  resseq=122 icode= > np.float64(-0.5013866123187762)
-  <Structure id=1bcd_noH_HLPsp2> <Residue HID het=  resseq=122 icode= >
-  'HIDR']] with [np.float64(0.0) np.float64(0.48030770950400337)]<1
+  <Structure id=../1bcd_noH_HLPsp2>
+  <Residue HID het=  resseq=122 icode= > 'HIDR']] with [np.float64(0.0) np.float64(0.48030770950400337)]<1
 ###########################################################################
 No states set after this iteration
 Start branching
@@ -1872,8 +1842,8 @@ Number of degenerate states previously generated to be used for branch: 2
 Processing <Residue HIS het=  resseq=122 icode= >'s degenerate states: 1/2
 Start another 'resolve_residue_ambiguities_in_one_structure call'
 ####################################################################################################
-New resolve_residue_ambiguities_in_one_structure call
-No more unknown for this structure, Writing result to: 1bcd_noH_0.pdb
+New resolve_residue_ambiguities_in_one_structure call. Current function call count: 2
+No more unknown for this structure, Writing result to: 1bcd_0.pdb
 potential clash atom = [<Atom N>]
 original atom: <Atom C>, its coord: [ -3.248 -10.138  21.927], its parent: <Residue HIE het=  resseq=36 icode= >  orig atm parent is rotamer: 0,
 pcAtom:<Atom N>, coord:[-2.273 -9.445 21.427] and pc atm parent: <Residue THR het=  resseq=37 icode= >, pc atm (parent is rotamer): 0
@@ -2115,13 +2085,13 @@ pcAtom:<Atom C>, coord:[  7.825  -0.685 -17.59 ] and pc atm parent: <Residue THR
 and distance is: 1.2934147119522095 
 
 potential clash atom = [<Atom N>]
-original atom: <Atom C>, its coord: [-13.389   5.034 -13.67 ], its parent: <Residue ASN het=  resseq=178 icode= >  orig atm parent is rotamer: 0,
+original atom: <Atom C>, its coord: [-13.389   5.034 -13.67 ], its parent: <Residue ASN het=  resseq=178 icode= >  orig atm parent is rotamer: 1,
 pcAtom:<Atom N>, coord:[-12.376   4.81  -12.93 ] and pc atm parent: <Residue PHE het=  resseq=179 icode= >, pc atm (parent is rotamer): 0
 and distance is: 1.2743405103683472 
 
 potential clash atom = [<Atom C>]
 original atom: <Atom N>, its coord: [-12.376   4.81  -12.93 ], its parent: <Residue PHE het=  resseq=179 icode= >  orig atm parent is rotamer: 0,
-pcAtom:<Atom C>, coord:[-13.389   5.034 -13.67 ] and pc atm parent: <Residue ASN het=  resseq=178 icode= >, pc atm (parent is rotamer): 0
+pcAtom:<Atom C>, coord:[-13.389   5.034 -13.67 ] and pc atm parent: <Residue ASN het=  resseq=178 icode= >, pc atm (parent is rotamer): 1
 and distance is: 1.2743405103683472 
 
 potential clash atom = [<Atom N>]
@@ -2188,12 +2158,12 @@ Looked for clash within the structure
 
 Looked for clash within all residues
 
-Writing file at: /data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_0.pdb 
+Writing file at: /data5/cadd/software_development/zylin/rapa/examples/solutions_to_compare/1bcd_outputs/1bcd_0.pdb 
 Processing <Residue HIS het=  resseq=122 icode= >'s degenerate states: 2/2
 Start another 'resolve_residue_ambiguities_in_one_structure call'
 ####################################################################################################
-New resolve_residue_ambiguities_in_one_structure call
-No more unknown for this structure, Writing result to: 1bcd_noH_1.pdb
+New resolve_residue_ambiguities_in_one_structure call. Current function call count: 3
+No more unknown for this structure, Writing result to: 1bcd_1.pdb
 potential clash atom = [<Atom N>]
 original atom: <Atom C>, its coord: [ -3.248 -10.138  21.927], its parent: <Residue HIE het=  resseq=36 icode= >  orig atm parent is rotamer: 0,
 pcAtom:<Atom N>, coord:[-2.273 -9.445 21.427] and pc atm parent: <Residue THR het=  resseq=37 icode= >, pc atm (parent is rotamer): 0
@@ -2435,13 +2405,13 @@ pcAtom:<Atom C>, coord:[  7.825  -0.685 -17.59 ] and pc atm parent: <Residue THR
 and distance is: 1.2934147119522095 
 
 potential clash atom = [<Atom N>]
-original atom: <Atom C>, its coord: [-13.389   5.034 -13.67 ], its parent: <Residue ASN het=  resseq=178 icode= >  orig atm parent is rotamer: 0,
+original atom: <Atom C>, its coord: [-13.389   5.034 -13.67 ], its parent: <Residue ASN het=  resseq=178 icode= >  orig atm parent is rotamer: 1,
 pcAtom:<Atom N>, coord:[-12.376   4.81  -12.93 ] and pc atm parent: <Residue PHE het=  resseq=179 icode= >, pc atm (parent is rotamer): 0
 and distance is: 1.2743405103683472 
 
 potential clash atom = [<Atom C>]
 original atom: <Atom N>, its coord: [-12.376   4.81  -12.93 ], its parent: <Residue PHE het=  resseq=179 icode= >  orig atm parent is rotamer: 0,
-pcAtom:<Atom C>, coord:[-13.389   5.034 -13.67 ] and pc atm parent: <Residue ASN het=  resseq=178 icode= >, pc atm (parent is rotamer): 0
+pcAtom:<Atom C>, coord:[-13.389   5.034 -13.67 ] and pc atm parent: <Residue ASN het=  resseq=178 icode= >, pc atm (parent is rotamer): 1
 and distance is: 1.2743405103683472 
 
 potential clash atom = [<Atom N>]
@@ -2508,17 +2478,18 @@ Looked for clash within the structure
 
 Looked for clash within all residues
 
-Writing file at: /data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_1.pdb 
-########################################
+Writing file at: /data5/cadd/software_development/zylin/rapa/examples/solutions_to_compare/1bcd_outputs/1bcd_1.pdb 
+####################################################################################################
 Residues w/ degenerate states: (energy of different states within 1 kcal/mol)
  HIS-122 of chain A
 
-########################################
-Done. Execution time is: 35.453986 seconds
+Generating pymol script based on output PDB files
+####################################################################################################
+Done. Execution time is: 35.627604 seconds
 Number of files generated: 2 and files generated:
-/data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_0.pdb
-/data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_1.pdb
+/data5/cadd/software_development/zylin/rapa/examples/solutions_to_compare/1bcd_outputs/1bcd_0.pdb
+/data5/cadd/software_development/zylin/rapa/examples/solutions_to_compare/1bcd_outputs/1bcd_1.pdb
 
 ************************************************************
-RAPA exiting. Run for the given PDB: 1bcd_noH is completed
+RAPA exiting. Run for the given PDB: ../1bcd_noH is completed
 ************************************************************

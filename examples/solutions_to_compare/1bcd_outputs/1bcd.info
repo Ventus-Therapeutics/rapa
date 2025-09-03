@@ -1,9 +1,9 @@
-PDB ID: 1bcd_noH 
+PDB ID: ../1bcd_noH 
 Models: 1: [<Model id=0>]
 Chains: 1: [<Chain id=A>]
 
 
-########################################
+####################################################################################################
 Total number of unknown residues: 33
 Unknown residues:
  HIS-3 of chain A
@@ -39,11 +39,11 @@ Unknown residues:
  GLN-249 of chain A
  ASN-253 of chain A
  GLN-255 of chain A
-########################################
+####################################################################################################
 Residues w/ degenerate states: (energy of different states within 1 kcal/mol)
  HIS-122 of chain A
-########################################
-Done. Execution time is: 35.453986 seconds
+####################################################################################################
+Done. Execution time is: 35.627604 seconds
 Number of files generated: 2 and files generated:
-/data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_0.pdb
-/data5/cadd/software_development/zylin/rapa/examples/1bcd_noH_outputs/1bcd_noH_1.pdb
+/data5/cadd/software_development/zylin/rapa/examples/solutions_to_compare/1bcd_outputs/1bcd_0.pdb
+/data5/cadd/software_development/zylin/rapa/examples/solutions_to_compare/1bcd_outputs/1bcd_1.pdb

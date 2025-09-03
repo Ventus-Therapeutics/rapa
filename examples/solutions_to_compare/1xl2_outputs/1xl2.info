@@ -1,4 +1,4 @@
-PDB ID: 1xl2_noH 
+PDB ID: ../1xl2_noH 
 Models: 1: [<Model id=0>]
 Chains: 2: [<Chain id=A>, <Chain id=B>]
 
@@ -8,7 +8,7 @@ Got unknown ASPs/GLUs: [<Residue ASP het=  resseq=25 icode= >, <Residue ASP het=
  And relevant info: [[<Atom OD2>, 25, <Atom OD2>, 25, np.float32(2.8664)], [<Atom OD2>, 25, <Atom OD2>, 25, np.float32(2.8664)]]Got unknown atoms [<Atom OD2>, <Atom OD2>].
  And relevant info:
  [[<Atom OD2>, 25, <Atom OD2>, 25, np.float32(2.8664)], [<Atom OD2>, 25, <Atom OD2>, 25, np.float32(2.8664)]]
-########################################
+####################################################################################################
 Total number of unknown residues: 22
 Unknown residues:
  GLN-2 of chain A
@@ -33,7 +33,7 @@ Unknown residues:
  ASN-88 of chain B
  GLN-92 of chain B
  ASN-98 of chain B
-########################################
-Done. Execution time is: 11.837597 seconds
+####################################################################################################
+Done. Execution time is: 11.544915 seconds
 Number of files generated: 1 and files generated:
-/data5/cadd/software_development/zylin/rapa/examples/1xl2_noH_outputs/1xl2_noH_0.pdb
+/data5/cadd/software_development/zylin/rapa/examples/solutions_to_compare/1xl2_outputs/1xl2_0.pdb
