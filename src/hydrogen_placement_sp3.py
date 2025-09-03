@@ -219,8 +219,6 @@ def get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, a
     ##energy summation
     enSum = 0
 
-    energyInteraction = []
-    energyInteraction.append(['angle', 'sp3', 'sp3.parent', 'closeAt', 'closeAt.parent', 'aat0Energy, aat1Energy', 'aat2Energy', 'enSum'])
     ####################################################################################################
     for i in range(1, np.shape(allCloseAtoms)[0]):
         ##close atoms for which energy needs to be computed 
@@ -228,41 +226,47 @@ def get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, a
         myCloseAt = rra.rapa_atom(allCloseAtoms[i][0])
 
         if(myCloseAt.get_behavior().abbrev == 'ac'):
-            ##Assume the first to be the Hydrogen atom (the others can be either two hydrogen-LYS or two lone pairs-SER/THR)
+            # aatPrime: first is the H, then it's 2 H for LYS/LYN then 2lp for SER/THR
+            ##The first to be the hydrogen atom (the others can be either two hydrogen-LYS or two lone pairs-SER/THR)
             aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=1, atype = 'SP3', pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
+            enSum += aat0enSum
 
             if(sp3.parent.resname in ['LYS', 'LYN']):
                 #For the case of two hydrogen:
                 aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3,  attractive=1, atype = 'SP3', pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
                 aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3,  attractive=1, atype = 'SP3', pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
-
-            else:
-                aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt, attractive = 0, atype = 'SP3',  pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
-                aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt, attractive = 0, atype = 'SP3',  pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
-                
-            enSum = enSum + aat0enSum + aat1enSum + aat2enSum
-
+                enSum += (aat1enSum + aat2enSum)
+            #else:
+            # If it's SER/THR, when it's already acting as donor interacting with an acceptor nearby, it's lonepair
+            # won't be interacting with that acceptor due to directionality
+            #
+            #    aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt,
+                #    attractive = 0, atype = 'SP3',  pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
+            #    aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt,
+            #    attractive = 0, atype = 'SP3',  pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
 
         if(myCloseAt.get_behavior().abbrev == 'do'):
-            ##Assume the first to be the hydrogen atom (the others can be either two hydrogen-LYS or two lone pairs-SER/THR)
-            aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=0, atype= 'SP3', pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
+            # aatPrime: first is the H, then it's 2 H for LYS/LYN then 2lp for SER/THR
+            ##The first to be the hydrogen atom (the others can be either two hydrogen-LYS or two lone pairs-SER/THR)
 
             if(sp3.parent.resname in ['LYS', 'LYN']):
+
+                aat0Energy, aat0enSum = cats.compute_energy_as_donor(closeAt, aatPrime[0], sp3, attractive=0,
+                                                                     atype='SP3', pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
                 #For the case of two hydrogen:
                 aat1Energy, aat1enSum = cats.compute_energy_as_donor(closeAt, aatPrime[1], sp3, attractive =0,
                                                                      atype = 'SP3', pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
                 aat2Energy, aat2enSum = cats.compute_energy_as_donor(closeAt, aatPrime[2], sp3, attractive =0, atype = 'SP3', pre_cal_donor_info=pre_cal_acceptor_donor_info['sp3'])
+                enSum += (aat0enSum + aat1enSum + aat2enSum)
 
             else:
+                # for SER/THR if it's acting as an acceptor then it's hydrogen won't be interacting with the donor
+                # anymore
                 aat1Energy, aat1enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[1]), closeAt, attractive = 1, atype = 'SP3', pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
                 aat2Energy, aat2enSum = cats.compute_energy_as_acceptor(sp3, Vector(aatPrime[2]), closeAt, attractive = 1, atype = 'SP3', pre_cal_acceptor_info=pre_cal_acceptor_donor_info['sp3'])
+                enSum += (aat1enSum + aat2enSum)
 
-            enSum = enSum + aat0enSum + aat1enSum + aat2enSum
-
-        energyInteraction.append([ang, sp3, sp3.parent, closeAt, closeAt.parent, aat0Energy,aat1Energy, aat2Energy, enSum])
-
-
-    return aat0Energy, aat1Energy, aat2Energy, enSum
+    return enSum
 #
 
 def optimize_connected_atoms_by_rotation_in_plane(sp3, aboveSp3, aatPrime,allCloseAtoms):
@@ -293,7 +297,7 @@ def optimize_connected_atoms_by_rotation_in_plane(sp3, aboveSp3, aatPrime,allClo
     for ind,ang in enumerate(range(0,endAng,10)):
         aatPrimeRot = np.einsum("ij,kj->ki", mm.get_rotation_matrix(ang), aatPrime)
         aatPrimeMat.append(aatPrimeRot)
-        aat0Energy, aat1Energy, aat2Energy, enSum = get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, aatPrimeMat[ind], allCloseAtoms, ang, pre_cal_acceptor_donor_info = pre_cal_acceptor_donor_info)
+        enSum = get_energy_of_all_close_atoms_for_hydrogen_lonepairs_connected_to_sp3(sp3, aatPrimeMat[ind], allCloseAtoms, ang, pre_cal_acceptor_donor_info = pre_cal_acceptor_donor_info)
         sumEnergyInfo.append([ang, enSum])
 
     S = np.array(sumEnergyInfo)
@@ -382,6 +386,7 @@ def get_close_atom_coords(closeAtoms):
     output: 
         -closeAtomCoords: list of the coordinates of each close atom
     """
+    # Lin: skip the first one, probably because that's the atom itself, we need to get rid of all this...
     numCloseAtoms =  np.shape(closeAtoms)[0] 
     closeAtomCoords =[]
     for i in range(1,numCloseAtoms):
@@ -389,7 +394,8 @@ def get_close_atom_coords(closeAtoms):
     return closeAtomCoords
 
 
-def set_coords_in_prime_reference_frame(sp3, aboveSp3, allCloseAtoms, sp3CoordPrime, aboveSp3CoordPrime, closeAtomCoordsPrime):
+def set_coords_in_prime_reference_frame(sp3, aboveSp3, all_close_atoms, sp3CoordPrime, aboveSp3CoordPrime,
+                                        transform_matrix):
 
     """ 
         objective: To set sp3, connected to sp3 and close atoms coordinate in the prime frame of reference
@@ -403,18 +409,36 @@ def set_coords_in_prime_reference_frame(sp3, aboveSp3, allCloseAtoms, sp3CoordPr
        Output: setting the given atom's coordinates in the prime frame of reference
 
     """
+    # for all close atoms, change the atoms that belong to that residue as well
+    # first collect unique residue that all close atoms belong to
+    # i[1] = residue ID, i[2] = residue name, i[0].parent.full_id[2] = chain ID
+    if len(all_close_atoms) > 0:
+        unique_residue = set([(i[1], i[2], i[0].parent.full_id[2]) for i in all_close_atoms])
+        already_flag = {_: False for _ in unique_residue}
+        all_residue_atoms = []
+        for close_atom_info in all_close_atoms:
+            res_info = (close_atom_info[1], close_atom_info[2], close_atom_info[0].parent.full_id[2])
+            # if this residue haven't been processed yet, process every atom in that residue
+            if not already_flag[res_info]:
+                all_residue_atoms += close_atom_info[0].parent.child_list
+                already_flag[res_info] = True
+        all_residue_atoms_coord = [ _.coord for _ in all_residue_atoms]
+        all_residue_atoms_coord_prime = move_coords_to_prime_reference_frame(sp3.coord, transform_matrix,
+                                                                             all_residue_atoms_coord)
+        for count_i, i in enumerate(all_residue_atoms):
+            # skip sp3 itself
+            if rra.if_two_atoms_are_same(sp3, i) or rra.if_two_atoms_are_same(aboveSp3, i):
+                continue
+            i.set_coord(all_residue_atoms_coord_prime[count_i])
+
 
     sp3.set_coord(sp3CoordPrime)
     aboveSp3.set_coord(aboveSp3CoordPrime)
+    return all_residue_atoms, all_residue_atoms_coord
 
-    if(allCloseAtoms !=[]):
-        if(np.shape(closeAtomCoordsPrime)[0]== 1 ):
-            allCloseAtoms[1][0].set_coord(np.array([closeAtomCoordsPrime[0][0], closeAtomCoordsPrime[0][1], closeAtomCoordsPrime[0][2]]))
-        else:
-            for i in range(1, np.shape(allCloseAtoms)[0]):
-                allCloseAtoms[i][0].set_coord(closeAtomCoordsPrime[i-1])
 
-def set_coords_in_original_reference_frame(sp3, aboveSp3, allCloseAtoms, sp3Coord, aboveSp3Coord, allCloseAtomCoords):
+def set_coords_in_original_reference_frame(sp3, aboveSp3, all_residue_atoms, sp3Coord, aboveSp3Coord,
+                                           all_residue_atoms_coord_ori):
        
     """
         objective: To set sp3, connected to sp3 and close atoms coordinate in the original frame of reference
@@ -431,13 +455,9 @@ def set_coords_in_original_reference_frame(sp3, aboveSp3, allCloseAtoms, sp3Coor
     sp3.set_coord(sp3Coord)
     aboveSp3.set_coord(aboveSp3Coord)
 
-    if(allCloseAtoms !=[]):
-        moveCloseAtoms = np.array(allCloseAtomCoords)
-        if(len(moveCloseAtoms.shape)== 1 ):
-            allCloseAtoms[1][0].set_coords(moveCloseAtoms)
-        else:
-            for i in range(1, np.shape(allCloseAtoms)[0]):
-                allCloseAtoms[i][0].set_coord(moveCloseAtoms[i-1])
+    if len(all_residue_atoms) > 0:
+        for count_i, i in enumerate(all_residue_atoms):
+            i.set_coord(all_residue_atoms_coord_ori[count_i])
 
 
 def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms):
@@ -461,9 +481,7 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms):
                                  -coordAngEnergy[0][0]: optimized coordinate value, np.shape(coordAngEnergy[0][0]) =(3,3)
                                  -coordAngEnergy[0][1]: associated angle & energy, np.shape(coordAngEnergy[0][1])= (2,1)
      """    
-
-
-        
+    # TODO: I don't think it's necessary to translate the coordinates at all
 
 
      bondLen = 1
@@ -484,18 +502,14 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms):
      aat0CoordPrime = primeCoords[2]
 
 #################### Move to new frame of reference###########################
-
-     if(allCloseAtoms):
-        closeAtomCoords = get_close_atom_coords(allCloseAtoms)
-        closeAtomCoordsPrime = move_coords_to_prime_reference_frame(sp3Coord, transformMatrix, closeAtomCoords)
-
-     set_coords_in_prime_reference_frame(sp3, aboveSp3, allCloseAtoms, sp3CoordPrime, aboveSp3CoordPrime, closeAtomCoordsPrime)
+     all_residue_atoms, all_residue_atoms_coord_ori = set_coords_in_prime_reference_frame(sp3, aboveSp3, allCloseAtoms,
+                                                                            sp3CoordPrime, aboveSp3CoordPrime, transformMatrix)
 ##########################In the new frame ####################################################################
      aat0CoordPrimeMod = adjust_first_connected_atom_to_sp3_in_prime_reference_frame(aboveSp3.coord, sp3.coord, aat0CoordPrime)
      aatPrimeDistMin, S, aatPrimeMat = compute_atoms_connected_to_sp3_in_prime_reference_frame(sp3, aboveSp3, allCloseAtoms, aat0CoordPrimeMod)
 
 #########################End the new frame of reference####################################################################
-     set_coords_in_original_reference_frame(sp3, aboveSp3, allCloseAtoms, sp3Coord, aboveSp3Coord, closeAtomCoords)
+     set_coords_in_original_reference_frame(sp3, aboveSp3, all_residue_atoms, sp3Coord, aboveSp3Coord, all_residue_atoms_coord_ori)
 #################### Get back to original frame of reference ###########################
     
      numRows = np.shape(aatPrimeMat)[0]*np.shape(aatPrimeMat)[1]
