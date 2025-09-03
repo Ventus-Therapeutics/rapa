@@ -197,7 +197,7 @@ class rapa_atom(Bio.PDB.Atom.Atom):
             LPNames = dict_LPSCName[self.name+'_'+self.parent.resname]
         
         except KeyError:
-            print(f"No LP for: {self.name} of {self.parent} and chain: {self.parent.parent}\n")
+            #print(f"No LP for: {self.name} of {self.parent} and chain: {self.parent.parent}\n")
             LPNames = None
         
         return LPNames

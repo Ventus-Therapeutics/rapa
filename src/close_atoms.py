@@ -784,24 +784,43 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
             acceptorParentChildNames.append(at.name)
  
         LPNamesIter = copy.deepcopy(LPNames)
-        for lp in LPNamesIter:
-            if(lp not in acceptorParentChildNames):
-                LPNames.remove(lp)
-    
-        if(not LPNames):
+
+        if LPNames is None:
+            # if it gets here, it might be that acceptor is a sp3 atom and hence it's lp cannot be determined since
+            # it can rotate along the axis, hence the whole cone is possible positions for lone pairs
+            # we will place a temporary lone pair here that will satisfy tetrahedral AND making gamma almost 0 since
+            # that will have the strongest hydrogen bond
+
+            # first find the atom that is bonded to sp3 acceptor
+            bonded_atoms = find_bonded_atom(acceptorAt)
+            if len(bonded_atoms) != 1:
+                sys.exit('ERROR: if it gets here, it must be a sp3 acceptor that only has one neighbor, if more or '
+                         'fewer than that, something is wrong. Exiting...')
+            lp = calc_lone_pair_toward_donor(acceptorAt.coord, bonded_atoms[0].coord, donorAt.coord)
+            gamma = get_gamma(donorAt.get_vector(), acceptorAt_vec, Vector(lp['LP'])) # this value should be close to 0
+            energy = hbond_energy(r, theta, gamma, attractive=True)
+            check_energy_range(energy)
+            enValDon.append([energy])
+            enSumDon = enSumDon + energy
+
             if gc.log_file: print(f"##########################In compute_energy_as_donor: No Lone Pairs "
             f"found for acceptor atom:{acceptorAt} of {acceptorAt.parent} and donor atom: {donorAt} of {donorAt.parent} as attractive:{attractive} ################################")
             param.append([donorAt, donorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, hName, atom3,'LPNames[k]','LP_coord',r,theta, 'gamma', 'energy', attractive, atype, allCloseAtoms, closeAtmsTBD, donorAt.parent.isRotamer])
         else:
-            for k in range(len(LPNames)):
-                LP_coord = acceptorAt.parent[LPNames[k]].coord
+            for lp in LPNamesIter:
+                if (lp not in acceptorParentChildNames):
+                    LPNames.remove(lp)
+            for k in LPNames:
+                LP_coord = acceptorAt.parent[k].coord
                 LP_vec = Vector(LP_coord)
                 gamma = get_gamma(donorAt.get_vector(), acceptorAt_vec, LP_vec)
                 energy = hbond_energy(r, theta, gamma, attractive=True)
                 check_energy_range(energy)
                 enValDon.append([energy])
                 enSumDon = enSumDon+energy 
-                param.append([donorAt, donorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2, atom2.coord, hName, atom3,LPNames[k],LP_coord, r,theta, gamma, energy, attractive, atype, allCloseAtoms, closeAtmsTBD, donorAt.parent.isRotamer]) 
+                param.append([donorAt, donorAt.parent, atom1.parent, atom2.parent, atom1, atom1.coord, atom2,
+                              atom2.coord, hName, atom3, k, LP_coord, r,theta, gamma, energy, attractive, atype,
+                              allCloseAtoms, closeAtmsTBD, donorAt.parent.isRotamer])
     else:
         hPresent =0
 
@@ -839,4 +858,87 @@ def compute_energy_as_donor(acceptorAt, hh_coord, donorAt, attractive = 1, atype
 
     return enValDon, enSumDon
 
+def find_bonded_atom(target_atom):
+    """
+    Given an atom in a residue, find the atoms in that residue that is bonded to it based on convalent bond radii
+    """
+    # Covalent radii (approximate, Å)
+    COVALENT_RADII = {
+        "H": 0.37,
+        "C": 0.77,
+        "N": 0.75,
+        "O": 0.73,
+        "S": 1.02,
+        "P": 1.07
+    }
+    tol = 1e-5
+    residue_atoms = target_atom.parent.child_list
+    bonded_atoms = []
+    ri = COVALENT_RADII.get(target_atom.element, 0.77)  # default ~C
+    for j in residue_atoms:
+        try:
+            rj = COVALENT_RADII[j.element]
+        except KeyError:
+            continue # skip unknown elements (maybe LP)
+        cutoff = ri + rj + tol
+        d = np.linalg.norm(target_atom.coord - j.coord)
+        if d < cutoff and d > tol:
+            # d>tol since we want to skip the atom itself
+            bonded_atoms.append(j)
+    return bonded_atoms
+
+def calc_lone_pair_toward_donor(A, X, B, r=1.0, tol=1e-8):
+    """
+    A is the sp3 acceptor atom
+    B is the donor
+    X is the only atom that is bonded to A
+    The exact case: there is lp exactly pointing toward B so that
+    AB dot AX = cos(109.47)
+    The general case: pick the LP direction on the cone that is closest to the B-direction
+    that is, to maximize Alp dot AB
+    return:
+    a dictionary that contains: d: the direction of Alp vector
+                                LP: lone pair coordinate
+                                exact: whether or not the solution is exact
+    """
+    # A, X, B are length-3 arrays
+    A = np.asarray(A, dtype=float)
+    X = np.asarray(X, dtype=float)
+    B = np.asarray(B, dtype=float)
+    n = X - A
+    n /= np.linalg.norm(n)
+    b = B - A
+    b_norm = np.linalg.norm(b)
+    if b_norm < 1e-12:
+        raise ValueError("B coincides with A; direction undefined.")
+    b_hat = b / b_norm
+
+    cos_a = -1.0/3.0
+    sin_a = 2.0*np.sqrt(2.0)/3.0
+
+    # check exact inclusion on cone
+    if abs(np.dot(b_hat, n) - cos_a) <= tol:
+        d = b_hat.copy()   # exact solution: B direction lies on cone
+        exact = True
+    else:
+        # project b_hat into plane perpendicular to n
+        b_perp = b_hat - np.dot(b_hat, n) * n
+        mag = np.linalg.norm(b_perp)
+        if mag < 1e-12:
+            # b is (anti)parallel to n: choose arbitrary perpendicular direction u
+            # pick trial vector not parallel to n
+            trial = np.array([1.0, 0.0, 0.0])
+            if abs(np.dot(trial, n)) > 0.9:
+                trial = np.array([0.0, 1.0, 0.0])
+            u = trial - np.dot(trial, n)*n
+            u /= np.linalg.norm(u)
+            perp_dir = u
+        else:
+            perp_dir = b_perp / mag
+        d = cos_a * n + sin_a * perp_dir
+        d /= np.linalg.norm(d)   # should already be unit, but normalize for safety
+        exact = False
+
+    LP_coord = A + r * d
+    return {"d": d, "LP": LP_coord, "exact": exact}
 
