@@ -43,6 +43,31 @@ def get_unknown_list_for_pml(structure):
         all_unknown_residues.append((chainID, res_num, unknown_res.resname))
     return all_unknown_residues
 
+def append_conect_record(protID, generated_pdbs):
+    """
+    Bio.PDB will ignore any CONECT record, we need to append them back
+    """
+    # first get the CONECT record from the original PDB
+    pdb_file = f'{protID}.pdb'
+    conect_lines = []
+    with open(pdb_file, 'r') as f:
+        for lc, line in enumerate(f):
+            fields = line.split()
+            if fields[0] == 'CONECT':
+                conect_lines.append(line)
+    for i in generated_pdbs:
+        with open(i) as f:
+            lines = f.readlines()
+
+        # remove END
+        if lines[-1].startswith("END"):
+            lines = lines[:-1]
+
+        with open(i, "w") as out:
+            out.writelines(lines)
+            out.writelines(conect_lines)
+            out.write("END\n")
+
 def parse_arguments(argv):
     """
     process arguments and parse them to global when needed
@@ -256,6 +281,7 @@ def main(argv):
         else:
             if gc.debug:
                 print(f"File {file_hlp} does not exist.")
+    append_conect_record(args.protID, generated_files)
 
     print("************************************************************")
     print(f"RAPA exiting. Run for the given PDB: {args.protID} is completed")
