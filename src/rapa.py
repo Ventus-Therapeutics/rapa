@@ -33,7 +33,7 @@ import setup_protein as stp
 import hydrogen_placement_sp2 as hsp2
 import state_assignment as sa
 import global_constants as gc
-from misc import prettify_time, Logger, generate_multi_pdb_pymol_script
+from misc import prettify_time, Logger, generate_multi_pdb_pymol_script, clean_pdb_atom_id, put_pdb_record_back
 
 def get_unknown_list_for_pml(structure):
     all_unknown_residues = [] # this will be [('A', 253, 'HIE'), ('B', 101, 'SER')...]]
@@ -43,30 +43,6 @@ def get_unknown_list_for_pml(structure):
         all_unknown_residues.append((chainID, res_num, unknown_res.resname))
     return all_unknown_residues
 
-def append_conect_record(protID, generated_pdbs):
-    """
-    Bio.PDB will ignore any CONECT record, we need to append them back
-    """
-    # first get the CONECT record from the original PDB
-    pdb_file = f'{protID}.pdb'
-    conect_lines = []
-    with open(pdb_file, 'r') as f:
-        for lc, line in enumerate(f):
-            fields = line.split()
-            if fields[0] == 'CONECT':
-                conect_lines.append(line)
-    for i in generated_pdbs:
-        with open(i) as f:
-            lines = f.readlines()
-
-        # remove END
-        if lines[-1].startswith("END"):
-            lines = lines[:-1]
-
-        with open(i, "w") as out:
-            out.writelines(lines)
-            out.writelines(conect_lines)
-            out.write("END\n")
 
 def parse_arguments(argv):
     """
@@ -151,8 +127,14 @@ def main(argv):
     starttime = timeit.default_timer()
     print('PROGRAM CALL:python {}'.format(' '.join(sys.argv)))
 
+    # first cleaned up the input pdb file atom ID
+    pdb_file = f'./{args.protID}.pdb'
+    if not os.path.isfile(pdb_file):
+        print(f"ERROR: the input pdb file {pdb_file} does not exist. Exiting...")
+        sys.exit(1)
+    cleaned_id_pdb_name, cleaned_id_pdb_full_path = clean_pdb_atom_id(pdb_file)
     # set up structure, know the number of model and chain in the pdb
-    structure = stp.setup_structure(args.protID, outFolder='.', fName=None)
+    structure = stp.setup_structure(args.protID, outFolder='.', fName=cleaned_id_pdb_name)
     chains = [item for sublist in structure for item in sublist]
     num_models = len(structure.child_list)
     num_chains = len(chains)
@@ -281,7 +263,8 @@ def main(argv):
         else:
             if gc.debug:
                 print(f"File {file_hlp} does not exist.")
-    append_conect_record(args.protID, generated_files)
+    put_pdb_record_back(cleaned_id_pdb_full_path, generated_files)
+    os.remove(cleaned_id_pdb_full_path)
 
     print("************************************************************")
     print(f"RAPA exiting. Run for the given PDB: {args.protID} is completed")
