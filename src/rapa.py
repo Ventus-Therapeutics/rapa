@@ -219,7 +219,8 @@ def main(argv):
         fInfo.flush()
     print(msg)
 
-
+    # first set the states of HIS/CYS around Zn
+    structure = sa.set_states_around_metal(structure)
     generated_files, _, branched_residues = sa.resolve_residue_ambiguities_in_one_structure(structure, set_original_centroid=True,
                                                                          generated_files=None, pdb_file_num=None,
                                                                          outprefix=args.out_prefix, branched_residues=None)

@@ -631,7 +631,10 @@ def setup_structure(protID, outFolder = '.', fName = None):
        output: -structure is a class data type that can be used to easily access residues/atoms
 
     """
-    if(fName == None): fName = protID
+    if fName is None:
+        fName = protID
+    else:
+        fName = fName.split('.pdb')[0]
     protPDBfile = outFolder + '/' + fName + '.pdb'
     if not os.path.isfile(protPDBfile):
         sys.exit(f"Specified PDB file: {protPDBfile} does not exist, Exiting...")
@@ -731,6 +734,7 @@ def remove_added_hydrogens(structure):
     HIE_H = ['H','HE2']
     HID_H = ['H','HD1']
     HIP_H = ['H','HD1','HE2']
+    HIM_H = ['H']
 
     LYS_H = ['H','HZ1','HZ2','HZ3']
     PRO_H = []
@@ -761,7 +765,8 @@ def remove_added_hydrogens(structure):
     NME_H = ['H']
 
     removeHdict = {'ARG':ARG_H, 'ASH':ASH_H, 'ASP':ASP_H, 'ASN':ASN_H,'GLH':GLH_H,'GLU':GLU_H, 'GLN':GLN_H, 
-                    'HIS':HIS_H,'HIE':HIE_H, 'HID':HID_H, 'HIP':HIP_H, 'LYS':LYS_H, 'LYN': LYS_H, 'PRO':PRO_H,
+                    'HIS':HIS_H,'HIE':HIE_H, 'HID':HID_H, 'HIP':HIP_H, 'HIM': HIM_H,
+                    'LYS':LYS_H, 'LYN': LYS_H, 'PRO':PRO_H,
                     'SER':SER_H, 'THR':THR_H, 'TYR':TYR_H, 'TRP':TRP_H,
                     'ALA':ALA_H, 'CYS':CYS_H, 'CYX':CYS_H, 'CYM':CYS_H, 'GLY':GLY_H, 'ILE':ILE_H, 'LEU': LEU_H,
                     'MET': MET_H, 'PHE':PHE_H,'VAL':VAL_H, 'NME':NME_H, 'SEP': SEP_H, 'PTR': PTR_H, 'TPO': TPO_H}
@@ -829,6 +834,7 @@ def remove_lonepair(structure):
     HIE_LP = ['LP1','LP2','LP3']
     HID_LP = ['LP1','LP2','LP3','LP3']
     HIP_LP = ['LP1','LP2']
+    HIM_LP = ['LP1', 'LP2', 'LP3', 'LP4']
 
     LYS_LP = ['LP1','LP2']
     PRO_LP = ['LP1','LP2']
@@ -855,7 +861,8 @@ def remove_lonepair(structure):
 
     removeLPdict = {'ACE':ACE_LP,'ARG':ARG_LP, 'ASH':ASH_LP, 'ASP':ASP_LP, 'ASN':ASN_LP,
                     'GLH':GLH_LP,'GLU':GLU_LP, 'GLN':GLN_LP, 
-                    'HIS':HIS_LP,'HIE':HIE_LP, 'HID':HID_LP, 'HIP':HIP_LP, 'LYS':LYS_LP, 'LYN': LYS_LP,  'PRO':PRO_LP,
+                    'HIS':HIS_LP,'HIE':HIE_LP, 'HID':HID_LP, 'HIP':HIP_LP, 'HIM': HIM_LP,
+                    'LYS':LYS_LP, 'LYN': LYS_LP,  'PRO':PRO_LP,
                     'SER':SER_LP, 'THR':THR_LP, 'TYR':TYR_LP, 'TRP':TRP_LP,
                     'ALA':ALA_LP, 'CYS':CYS_LP, 'CYX':CYS_LP, 'CYM':CYS_LP, 'GLY':GLY_LP, 'ILE':ILE_LP , 'LEU': LEU_LP,
                     'MET': MET_LP, 'PHE':PHE_LP,'VAL':VAL_LP, 'SEP':SEP_LP, 'PTR': PTR_LP, 'TPO': TPO_LP}

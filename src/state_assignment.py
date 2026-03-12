@@ -64,20 +64,23 @@ def setup_HIS(HISres, structure, HIStype = None):
 
     #Setup the name. ##HIStype should be "HIE" or "HID" or "HIP".  by over writing it!!
     dict_struct[structName][modelID][chainID][resID].resname = HIStype
-    ####Add the hydrogen
-    HIS_dict={'HIP':hsp2.place_hydrogens_HIP, 'HIE':hsp2.place_hydrogens_HIE,'HID':hsp2.place_hydrogens_HID}
+    # add the hydrogen, HIM does not need this
+    hydrogen_dict={'HIP':hsp2.place_hydrogens_HIP, 'HIE':hsp2.place_hydrogens_HIE,'HID':hsp2.place_hydrogens_HID}
     lastSerial = list(dict_struct[structName].get_residues())[-1].child_list[-1].serial_number
-    lastSerial, hCoord = HIS_dict[HIStype](dict_struct[structName][modelID][chainID][resID], lastSerial)
+    if HIStype in hydrogen_dict.keys():
+        # for those with hydrogens to add, add them and update the last serial number
+        # HIM does not need this
+        lastSerial, hCoord = hydrogen_dict[HIStype](dict_struct[structName][modelID][chainID][resID], lastSerial)
 
-    LP_dict = { 'HIE': [gc.hvysForLPsHIE, gc.LPSCnamesHIE], 'HID': [gc.hvysForLPsHID, gc.LPSCnamesHID]}
-    try:
+    # place LPs, HIP does not need this
+    LP_dict = { 'HIE': [gc.hvysForLPsHIE, gc.LPSCnamesHIE], 'HID': [gc.hvysForLPsHID, gc.LPSCnamesHID],
+                'HIM': [gc.hvysForLPsHIM, gc.LPsCnamesHIM]}
+
+    if HIStype in LP_dict.keys():
         hvys = LP_dict[HIStype][0]
         LPnameAll = LP_dict[HIStype][1]
 
         hsp2.place_lonepair(dict_struct[structName][modelID][chainID][resID], lastSerial, hvys, LPnameAll)
-    except KeyError:
-        if gc.log_file: print(f"No Lone pairs to place for HIStype:{HIStype}, and unknown residue: {HISres} on chain: {HISres.parent}")
-        pass
 
     
     return dict_struct[structName]
@@ -1539,6 +1542,64 @@ def evaluate_HIP_cases(unknownRes, structure, S, changeVal, skipVal, skipResInfo
 
     return structure, changeVal, skipVal, skipResInfo, S, HIPset, HIPdegen
 
+def get_metal_atoms(structure):
+    """
+    Given a Bio.PDB structure check whether there are Zn or Mg in the system
+    if so, put its Bio.pDB "atom" in the list
+    """
+    metal_atoms = []
+    for residue in structure.get_residues():
+        if residue.resname in ['ZN', 'MG']:
+            for atom in residue:
+                metal_atoms.append(atom)
+    return metal_atoms
+
+def is_close_to_metal(side_chain_atoms, metal_atoms, distance_range):
+    close_to_metal = False
+    for at_i in side_chain_atoms:
+        for at_j in metal_atoms:
+            distance = at_i - at_j
+            if distance_range[0] < distance < distance_range[1]:
+                close_to_metal = True
+                break
+    return close_to_metal
+
+def set_states_around_metal(structure):
+    """
+    first set the residue states around Zn
+    HIS if within 1.5~2.4 then set to HIM
+    CYS if within 1.5~.34 then set to CYM
+    """
+    metal_atoms = get_metal_atoms(structure)
+    if len(metal_atoms) > 0:
+        for residue in structure.get_residues():
+            if residue.resname in ['HIS', 'CYS', 'CYM']:
+                modelID = residue.parent.parent.id
+                chainID = residue.parent.id
+                res_from_structure = structure[modelID][chainID][residue.id]
+                if residue.resname == 'HIS':
+                    side_chain_atoms = [res_from_structure['ND1'], res_from_structure['NE2'],
+                                        res_from_structure['CD2'], res_from_structure['CE1']]
+                    set_state = 'HIM'
+                    close_to_metal = is_close_to_metal(side_chain_atoms, metal_atoms, [1.5, 2.4])
+                else:
+                    side_chain_atoms = [res_from_structure['CB'], res_from_structure['SG']]
+                    set_state = 'CYM'
+                    close_to_metal = is_close_to_metal(side_chain_atoms, metal_atoms, [1.5, 3.4])
+
+                if close_to_metal:
+                    if gc.log_file:
+                        print(f"This is a {residue.resname} w/ metal"
+                              f" nearby, setting state to known {set_state}!")
+                    if residue.resname == 'HIS':
+                        setup_HIS(res_from_structure, structure, 'HIM')
+                    else:
+                        structure[modelID][chainID][res_from_structure.id].resname = set_state
+                    structure[modelID][chainID][res_from_structure.id].isKnown = 1
+        return structure
+
+    else:
+        return structure
 
 def iterate_list_of_unknown_residues_and_set_states(structure):
     """
@@ -1573,17 +1634,15 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
         print(f"The unknowns present: {uniqRes}\n\n")
 
     
-    
-    for count, unknownResOrig in enumerate(unknownResIter):    
+    for count, unknownResOrig in enumerate(unknownResIter):
         modelID = unknownResOrig.parent.parent.id
         chainID = unknownResOrig.parent.id
         unknownRes = structure[modelID][chainID][unknownResOrig.id]
         if(unknownRes.isKnown == 1):continue
-        
+
         if gc.log_file:
             print("#"*160)
             print(f"unknown residue number: {count+1}/{num_unknown_res} and unknown res is: {unknownRes} and its known val:{unknownRes.isKnown} and is rotamer:{unknownRes.isRotamer}, Skip value:{skipVal}, ChangeVal: {changeVal}")
-
 
         current_unknown_res = rra.rapa_residue(unknownRes)
         #Get list of active atoms, list of close atoms, and number of close atoms
@@ -1632,8 +1691,9 @@ def iterate_list_of_unknown_residues_and_set_states(structure):
                 unknownRes.isKnown = 1
                 changeVal += 1
             # for other residues, do nothing, they would remain unknown
-            if gc.log_file:
-                print(f"There are no known residues nearby for current residue: {unknownRes.resname},leave it as unknown...")
+            else:
+                if gc.log_file:
+                    print(f"There are no known residues nearby for current residue: {unknownRes.resname},leave it as unknown...")
 
             continue
 

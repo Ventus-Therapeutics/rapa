@@ -66,7 +66,8 @@ behavior = namedtuple('behavior',[ 'abbrev', 'IDval'])
 donor = behavior('do', 1)
 acceptor = behavior('ac', -1)
 doesNothing = behavior('XX', 0)
-behavior_dict = {'do':1, 'ac': -1, 'XX': 0, 'TBD':2, 'bo':2}
+metal = behavior('m', 3)
+behavior_dict = {'do':1, 'ac': -1, 'XX': 0, 'TBD':2, 'bo':2, 'm':3}
 TBD = behavior('TBD',5)
 both = behavior('bo', 2)
 
@@ -144,9 +145,11 @@ LPSCnamesGLN = [['LP3', 'LP4']]
 hvysForLPsHIE = [['CG', 'ND1','CE1']]
 LPSCnamesHIE = [['LP3']]
 
-
 hvysForLPsHID = [['CE1', 'NE2','CD2']]
 LPSCnamesHID = [['LP3']]
+
+hvysForLPsHIM = [['CG', 'ND1','CE1'], ['CE1', 'NE2','CD2']]
+LPsCnamesHIM = [['LP3'],['LP4']]
 
 LPSCnamesSER  = [['LP3']]
 LPSCnamesTHR  = [['LP3']]
