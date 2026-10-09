@@ -568,6 +568,9 @@ def compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms):
 
                     return allAAtInOriginal, allAAt, coordAngEnergy
 
+     # exhausted all angles without finding clash-free placement
+     return allAAtInOriginal, allAAt, coordAngEnergy  # coordAngEnergy will be empty []
+
 
 
 def place_hydrogens_lonepairs_SER_THR(res, lastSerial):
@@ -618,6 +621,13 @@ def place_hydrogens_lonepairs_SER_THR(res, lastSerial):
 
 
     aatInOriginal, aatInOriginalAppended, coordAngEnergy = compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms)
+    if not coordAngEnergy:
+        if gc.log_file:
+            print(f"All placed H/LP has clashes {res}, {res.id[1]} of chain: {res.parent}")
+        updatedLastSerial = lastSerial
+        aatCoords = []
+        return updatedLastSerial, aatCoords
+
     aatCoords = aatInOriginal[-1]
 
     names = ['HG', 'LP3', 'LP4'] if(res.resname == 'SER') else ['HG1', 'LP3', 'LP4']
@@ -684,6 +694,12 @@ def place_hydrogens_lonepairs_LYS(res, lastSerial):
 
     #optimize and relevant coordinates of the hydrogen, associated angle and energy
     aatInOriginal, aatInOriginalAppended, coordAngEnergy = compute_connected_atoms_to_sp3(sp3, aboveSp3, allCloseAtoms)
+    if not coordAngEnergy:
+        if gc.log_file:
+            print(f"All placed H/LP has clashes {res}, {res.id[1]} of chain: {res.parent}")
+        updatedLastSerial = lastSerial
+        aatCoords = []
+        return updatedLastSerial, aatCoords
     hCoords = aatInOriginal[-1]
 
     names = ['HZ1', 'HZ2', 'HZ3']
