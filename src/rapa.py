@@ -71,6 +71,10 @@ def parse_arguments(argv):
                         help = 'Keep the PDB created with the added hydrogen and lone pair coordinates ({prefix}_HLPsp2.pdb), Default: off (delete file after)',
                         action="store_true")
 
+    parser.add_argument('-k', '--keep', dest='keep_asp_glu',
+                        help='Keep all ASP/GLU residues in their deprotonated form; never convert them to ASH/GLH. Default: off',
+                        action="store_true")
+
     parser.add_argument('-hlp', '--HLPsp2_known',
                         help='A flag to indicate if the additional PDB (having suffix "_HLPsp2.pdb"), with SP2 hydrogen and lone pair coordinates exist. This can occur if the user requested the program to generate this additional PDB by providing "-k_hlp" as a flag in the previous run for the same PDB. Note, it is assumed RAPA for the given PDB is needed to run twice. During the first run the user provided the "-k_hlp" flag and generated the additional PDB (with suffix "_HLPsp2.pdb"). This was then used in the second run by providing "-hlp" in the second run. This two step approach is recommended for debugging as it stores an intermediate calculation and saves computational time.',
                         action="store_true")
@@ -193,15 +197,19 @@ def main(argv):
     structure = stp.setup_structure(protIDName, outFolder=args.output_folder, fName=None)
     stp.set_initial_known_residues_and_rotamers(structure)
 
-    # flagging the unknown ASP/GLUs
-    unknownASP, unknownASP_atomInfo = stp.get_all_unknown_ASP_GLU(structure, resName='ASP')
-    unknownGLU, unknownGLU_atomInfo = stp.get_all_unknown_ASP_GLU(structure, resName='GLU')
+    # flagging the unknown ASP/GLUs (skipped with -k/--keep so ASP/GLU are never converted to ASH/GLH)
     over2ASPs = 0
     over2GLUs = 0
-    if (unknownASP):
-        structure, uniqueIDsASP, over2ASPs = stp.accomodate_for_ASPs_GLUs(structure, unknownASP, unknownASP_atomInfo)
-    if (unknownGLU):
-        structure, uniqueIDsGLU, over2GLUs = stp.accomodate_for_ASPs_GLUs(structure, unknownGLU, unknownGLU_atomInfo)
+    if args.keep_asp_glu:
+        if gc.log_file:
+            print("Keeping all ASP/GLU residues as ASP/GLU (-k/--keep); no ASH/GLH will be generated.")
+    else:
+        unknownASP, unknownASP_atomInfo = stp.get_all_unknown_ASP_GLU(structure, resName='ASP')
+        unknownGLU, unknownGLU_atomInfo = stp.get_all_unknown_ASP_GLU(structure, resName='GLU')
+        if (unknownASP):
+            structure, uniqueIDsASP, over2ASPs = stp.accomodate_for_ASPs_GLUs(structure, unknownASP, unknownASP_atomInfo)
+        if (unknownGLU):
+            structure, uniqueIDsGLU, over2GLUs = stp.accomodate_for_ASPs_GLUs(structure, unknownGLU, unknownGLU_atomInfo)
 
     # Flag the side chain residue hydrogen position for SER, THR, LYS, TYR is unknown.
     stp.set_initial_residue_side_chain_hydrogen_unknown(structure)
